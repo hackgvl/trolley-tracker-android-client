@@ -1,5 +1,6 @@
 package codeforgvl.com.trolley_tracker_client;
 
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
@@ -98,10 +99,16 @@ public class MapsActivity extends FragmentActivity {
         for(RoutePoint p : routes[0].RouteShape){
             routeLine.add(new LatLng(p.Lat,p.Lon));
         }
+        routeLine.color(0x7FFF0000);
         mMap.addPolyline(routeLine);
 
         for(RouteStop s : routes[0].Stops){
-            mMap.addMarker(new MarkerOptions().alpha(.5f).icon(IconFactory.getCustomMarker(getBaseContext(), FontAwesomeIcons.fa_map_marker, .4)).position(new LatLng(s.Lat, s.Lon)));
+            mMap.addMarker(new MarkerOptions()
+                    .alpha(.5f)
+                    .title(s.Name)
+                    .snippet(s.Description)
+                    .icon(IconFactory.getCustomMarker(getBaseContext(), FontAwesomeIcons.fa_map_marker, .3, Color.BLUE))
+                    .position(new LatLng(s.Lat, s.Lon)));
         }
     }
 
@@ -136,7 +143,10 @@ public class MapsActivity extends FragmentActivity {
                     trolleyMarkers.get(t.ID).setPosition(new LatLng(t.Lat, t.Lon));
                     keySet.remove(t.ID);
                 } else {
-                    trolleyMarkers.put(t.ID, mMap.addMarker(new MarkerOptions().anchor(0.5f, 0.5f).icon(IconFactory.getCustomMarker(getBaseContext(), FontAwesomeIcons.fa_bus)).position(new LatLng(t.Lat, t.Lon))));
+                    trolleyMarkers.put(t.ID, mMap.addMarker(new MarkerOptions()
+                            .anchor(0.5f, 0.5f)
+                            .icon(IconFactory.getCustomMarker(getBaseContext(), FontAwesomeIcons.fa_bus, .8, Color.GREEN))
+                            .position(new LatLng(t.Lat, t.Lon))));
                 }
             }
 
