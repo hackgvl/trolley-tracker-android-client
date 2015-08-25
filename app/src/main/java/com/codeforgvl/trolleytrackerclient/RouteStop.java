@@ -1,4 +1,4 @@
-package codeforgvl.com.trolley_tracker_client;
+package com.codeforgvl.trolleytrackerclient;
 
 /**
  * Created by Adam Hodges on 8/23/2015.

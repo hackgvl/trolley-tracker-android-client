@@ -1,4 +1,4 @@
-package codeforgvl.com.trolley_tracker_client;
+package com.codeforgvl.trolleytrackerclient;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

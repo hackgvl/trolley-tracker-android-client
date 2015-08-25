@@ -1,4 +1,4 @@
-package codeforgvl.com.trolley_tracker_client;
+package com.codeforgvl.trolleytrackerclient;
 
 import android.content.Context;
 import android.graphics.Bitmap;

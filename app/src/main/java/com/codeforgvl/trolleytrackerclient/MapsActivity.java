@@ -1,4 +1,4 @@
-package codeforgvl.com.trolley_tracker_client;
+package com.codeforgvl.trolleytrackerclient;
 
 import android.graphics.Color;
 import android.os.AsyncTask;
@@ -12,10 +12,8 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.gson.Gson;
-import com.joanzapata.iconify.Iconify;
 import com.joanzapata.iconify.fonts.FontAwesomeIcons;
-import com.joanzapata.iconify.fonts.FontAwesomeModule;
-import com.joanzapata.iconify.fonts.MaterialModule;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;

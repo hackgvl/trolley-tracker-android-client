@@ -1,4 +1,4 @@
-package codeforgvl.com.trolley_tracker_client;
+package com.codeforgvl.trolleytrackerclient;
 
 import java.io.BufferedReader;
 import java.io.IOException;
