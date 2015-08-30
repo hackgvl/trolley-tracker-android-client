@@ -1,4 +1,5 @@
 <resources>
-    <string name="app_name">Greenville Trolley Tracker</string>
+    <string name="app_name">Trolley Tracker</string>
     <string name="title_activity_maps">Trolley Map</string>
+    <string name="loading">LOADING</string>
 </resources>
