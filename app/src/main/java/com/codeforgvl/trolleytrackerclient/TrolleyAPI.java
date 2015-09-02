@@ -1,7 +1,7 @@
 package com.codeforgvl.trolleytrackerclient;
 
-import android.util.Log;
-
+import com.codeforgvl.trolleytrackerclient.data.Trolley;
+import com.codeforgvl.trolleytrackerclient.data.Route;
 import com.google.gson.Gson;
 
 import java.io.BufferedReader;
@@ -47,18 +47,18 @@ public class TrolleyAPI {
         return builder.toString();
     }
 
-    public static TrolleyData[] getRunningTrolleys(){
+    public static Trolley[] getRunningTrolleys(){
         String json = httpGETRequest(Constants.RUNNING_TROLLEYS_ENDPOINT);
-        return new Gson().fromJson(json, TrolleyData[].class);
+        return new Gson().fromJson(json, Trolley[].class);
     }
 
-    public static TrolleyRoute[] getActiveRoutes(){
+    public static Route[] getActiveRoutes(){
         String json = httpGETRequest(Constants.ACTIVE_ROUTES_ENDPOINT);
-        return new Gson().fromJson(json, TrolleyRoute[].class);
+        return new Gson().fromJson(json, Route[].class);
     }
 
-    public static TrolleyRoute getRouteDetails(int routeId){
+    public static Route getRouteDetails(int routeId){
         String json = httpGETRequest(Constants.GetRouteDetailsEndpoint(routeId));
-        return new Gson().fromJson(json, TrolleyRoute.class);
+        return new Gson().fromJson(json, Route.class);
     }
 }

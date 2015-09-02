@@ -2,13 +2,18 @@ package com.codeforgvl.trolleytrackerclient;
 
 import android.graphics.Color;
 import android.os.AsyncTask;
-import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.util.Log;
+
+import com.codeforgvl.trolleytrackerclient.data.LatLon;
+import com.codeforgvl.trolleytrackerclient.data.RouteStop;
+import com.codeforgvl.trolleytrackerclient.data.Trolley;
+import com.codeforgvl.trolleytrackerclient.data.Route;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -31,16 +36,16 @@ public class MapsActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
-        TrolleyData[] trolleys = null;
-        TrolleyRoute[] routes = null;
+        Trolley[] trolleys = null;
+        Route[] routes = null;
         Bundle extras = getIntent().getExtras();
         if (extras != null){
-            Parcelable[] tParcels = extras.getParcelableArray(TrolleyData.TROLLEY_DATA);
-            trolleys = new TrolleyData[tParcels.length];
+            Parcelable[] tParcels = extras.getParcelableArray(Trolley.TROLLEY_KEY);
+            trolleys = new Trolley[tParcels.length];
             System.arraycopy(tParcels, 0, trolleys, 0, tParcels.length);
 
-            Parcelable[] rParcels = extras.getParcelableArray(TrolleyRoute.TROLLEY_ROUTES);
-            routes = new TrolleyRoute[rParcels.length];
+            Parcelable[] rParcels = extras.getParcelableArray(Route.ROUTE_KEY);
+            routes = new Route[rParcels.length];
             System.arraycopy(rParcels, 0, routes, 0, rParcels.length);
         }
         setUpMapIfNeeded(trolleys, routes);
@@ -75,7 +80,7 @@ public class MapsActivity extends FragmentActivity {
      * stopped or paused), {@link #onCreate(Bundle)} may not be called again so we should call this
      * method in {@link #onResume()} to guarantee that it will be called.
      */
-    private void setUpMapIfNeeded(TrolleyData[] trolleys, TrolleyRoute[] routes) {
+    private void setUpMapIfNeeded(Trolley[] trolleys, Route[] routes) {
         // Do a null check to confirm that we have not already instantiated the map.
         if (mMap == null) {
             // Try to obtain the map from the SupportMapFragment.
@@ -100,26 +105,60 @@ public class MapsActivity extends FragmentActivity {
      * <p/>
      * This should only be called once and when we are sure that {@link #mMap} is not null.
      */
-    private void setUpMap(TrolleyData[] trolleys, TrolleyRoute[] routes) {
+    private int getRouteColorForRouteNumber(int ndx){
+        int routeNo = (ndx % 5) + 1;
+        switch (routeNo){
+            case 1:
+                return R.color.route1;
+            case 2:
+                return R.color.route2;
+            case 3:
+                return R.color.route3;
+            case 4:
+                return R.color.route4;
+            default:
+                return R.color.route5;
+        }
+    }
+
+    private int getStopColorForRouteNumber(int ndx){
+        int routeNo = (ndx % 5) + 1;
+        switch (routeNo){
+            case 1:
+                return R.color.stop1;
+            case 2:
+                return R.color.stop2;
+            case 3:
+                return R.color.stop3;
+            case 4:
+                return R.color.stop4;
+            default:
+                return R.color.stop5;
+        }
+    }
+
+    private void setUpMap(Trolley[] trolleys, Route[] routes) {
         //Show users current location
         mMap.setMyLocationEnabled(true);
 
-        //Load stop/route data TODO: handle multiple routes
+        //Load stop/route data
         if(routes != null){
-            PolylineOptions routeLine = new PolylineOptions();
-            for(LatLon p : routes[0].RouteShape){
-                routeLine.add(new LatLng(p.Lat,p.Lon));
-            }
-            routeLine.color(0x7FFF0000);
-            mMap.addPolyline(routeLine);
+            for(int i=0; i<routes.length; i++){
+                PolylineOptions routeLine = new PolylineOptions();
+                for(LatLon p : routes[i].RouteShape){
+                    routeLine.add(new LatLng(p.Lat,p.Lon));
+                }
+                routeLine.color(getRouteColorForRouteNumber(i));
+                mMap.addPolyline(routeLine);
 
-            for(RouteStop s : routes[0].Stops){
-                mMap.addMarker(new MarkerOptions()
-                        .alpha(.5f)
-                        .title(s.Name)
-                        .snippet(s.Description)
-                        .icon(IconFactory.getCustomMarker(getBaseContext(), FontAwesomeIcons.fa_map_marker, .3, Color.BLUE))
-                        .position(new LatLng(s.Lat, s.Lon)));
+                for(RouteStop s : routes[i].Stops){
+                    mMap.addMarker(new MarkerOptions()
+                            .alpha(.5f)
+                            .title(s.Name)
+                            .snippet(s.Description)
+                            .icon(IconFactory.getCustomMarker(getBaseContext(), FontAwesomeIcons.fa_map_marker, .3, getStopColorForRouteNumber(i)))
+                            .position(new LatLng(s.Lat, s.Lon)));
+                }
             }
         }
 
@@ -129,16 +168,17 @@ public class MapsActivity extends FragmentActivity {
         }
     }
 
-    private void updateTrolleys(TrolleyData[] trolleys){
+    private void updateTrolleys(Trolley[] trolleys){
         Set<Integer> keySet = new HashSet<>(trolleyMarkers.keySet());
-        for(TrolleyData t : trolleys){
+        for(int i=0; i < trolleys.length; i++){
+            Trolley t = trolleys[i];
             if(trolleyMarkers.containsKey(t.ID)){
                 trolleyMarkers.get(t.ID).setPosition(new LatLng(t.Lat, t.Lon));
                 keySet.remove(t.ID);
             } else {
                 trolleyMarkers.put(t.ID, mMap.addMarker(new MarkerOptions()
                         .anchor(0.5f, 0.5f)
-                        .icon(IconFactory.getCustomMarker(getBaseContext(), FontAwesomeIcons.fa_bus, .8, Color.GREEN))
+                        .icon(BitmapDescriptorFactory.fromResource((i%0 == 0)? R.drawable.marker1 : R.drawable.marker2))
                         .position(new LatLng(t.Lat, t.Lon))));
             }
         }
@@ -153,13 +193,13 @@ public class MapsActivity extends FragmentActivity {
         }
     }
 
-    private class TrolleyUpdateTask extends AsyncTask<Void, TrolleyData[], Void> {
+    private class TrolleyUpdateTask extends AsyncTask<Void, Trolley[], Void> {
         @Override
         protected Void doInBackground(Void... params) {
             while (!isCancelled()) {
                 Log.d(Constants.LOG_TAG, "requesting trolley update");
 
-                TrolleyData[] trolleyList = TrolleyAPI.getRunningTrolleys();
+                Trolley[] trolleyList = TrolleyAPI.getRunningTrolleys();
 
                 publishProgress(trolleyList);
 
@@ -173,7 +213,7 @@ public class MapsActivity extends FragmentActivity {
         }
 
         @Override
-        protected void onProgressUpdate(TrolleyData[]... trolleyUpdate){
+        protected void onProgressUpdate(Trolley[]... trolleyUpdate){
             Log.d(Constants.LOG_TAG, "processing trolley updates");
 
             updateTrolleys(trolleyUpdate[0]);

@@ -1,4 +1,4 @@
-package com.codeforgvl.trolleytrackerclient;
+package com.codeforgvl.trolleytrackerclient.data;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -6,16 +6,16 @@ import android.os.Parcelable;
 /**
  * Created by Adam Hodges on 8/23/2015.
  */
-public class TrolleyRoute implements Parcelable {
-    static final String TROLLEY_ROUTES = "TROLLEY_ROUTES";
-    String ShortName;
-    String Description;
-    int ID;
-    boolean FlagStopsOnly;
-    String LongName;
+public class Route implements Parcelable {
+    public static final String ROUTE_KEY = "ROUTE_KEY";
+    public String ShortName;
+    public String Description;
+    public int ID;
+    public boolean FlagStopsOnly;
+    public String LongName;
 
-    RouteStop[] Stops;
-    LatLon[] RouteShape;
+    public RouteStop[] Stops;
+    public LatLon[] RouteShape;
 
     @Override
     public int describeContents() {
@@ -33,7 +33,7 @@ public class TrolleyRoute implements Parcelable {
         dest.writeParcelableArray(RouteShape, 0);
     }
 
-    public TrolleyRoute(Parcel in){
+    public Route(Parcel in){
         ShortName = in.readString();
         Description = in.readString();
         ID = in.readInt();
@@ -47,15 +47,15 @@ public class TrolleyRoute implements Parcelable {
         System.arraycopy(rParcelable, 0, RouteShape, 0, rParcelable.length);
     }
 
-    public static final Parcelable.Creator<TrolleyRoute> CREATOR
-            = new Parcelable.Creator<TrolleyRoute>() {
+    public static final Parcelable.Creator<Route> CREATOR
+            = new Parcelable.Creator<Route>() {
 
-        public TrolleyRoute createFromParcel(Parcel in) {
-            return new TrolleyRoute(in);
+        public Route createFromParcel(Parcel in) {
+            return new Route(in);
         }
 
-        public TrolleyRoute[] newArray(int size) {
-            return new TrolleyRoute[size];
+        public Route[] newArray(int size) {
+            return new Route[size];
         }
     };
 }

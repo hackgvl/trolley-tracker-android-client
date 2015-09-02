@@ -1,4 +1,4 @@
-package com.codeforgvl.trolleytrackerclient;
+package com.codeforgvl.trolleytrackerclient.data;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -7,8 +7,8 @@ import android.os.Parcelable;
  * Created by Adam Hodges on 8/23/2015.
  */
 public class LatLon implements Parcelable {
-    double Lat;
-    double Lon;
+    public double Lat;
+    public double Lon;
 
     @Override
     public int describeContents() {

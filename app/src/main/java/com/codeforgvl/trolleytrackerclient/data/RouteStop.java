@@ -1,4 +1,4 @@
-package com.codeforgvl.trolleytrackerclient;
+package com.codeforgvl.trolleytrackerclient.data;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -7,11 +7,11 @@ import android.os.Parcelable;
  * Created by Adam Hodges on 8/23/2015.
  */
 public class RouteStop implements Parcelable{
-    String Description;
-    double Lat;
-    double Lon;
-    String Name;
-    int ID;
+    public String Description;
+    public double Lat;
+    public double Lon;
+    public String Name;
+    public int ID;
 
     @Override
     public int describeContents() {

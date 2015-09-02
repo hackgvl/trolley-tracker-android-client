@@ -4,16 +4,18 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.widget.ProgressBar;
+
+import com.codeforgvl.trolleytrackerclient.data.Trolley;
+import com.codeforgvl.trolleytrackerclient.data.Route;
 
 /**
  * Created by ahodges on 8/26/2015.
  */
 public class SplashScreen extends Activity {
     private ProgressBar mProgress;
-    private TrolleyData[] mTrolleyData;
-    private TrolleyRoute[] mTrolleyRoutes;
+    private Trolley[] mTrolley;
+    private Route[] mRoutes;
     private boolean trolleysLoaded = false;
     private boolean routesLoaded = false;
 
@@ -25,20 +27,25 @@ public class SplashScreen extends Activity {
         mProgress = (ProgressBar) findViewById(R.id.splash_progress_bar);
         mProgress.setProgress(10);
 
-        AsyncTask<Void, Integer, TrolleyRoute[]> routeThread = new AsyncTask<Void, Integer, TrolleyRoute[]>() {
+        AsyncTask<Void, Integer, Route[]> routeThread = new AsyncTask<Void, Integer, Route[]>() {
             @Override
-            protected TrolleyRoute[] doInBackground(Void... params) {
+            protected Route[] doInBackground(Void... params) {
                 publishProgress(5);
                 //HTTP get active routes
-                TrolleyRoute[] activeRoutes = TrolleyAPI.getActiveRoutes();
+                Route[] activeRoutes = TrolleyAPI.getActiveRoutes();
+                publishProgress(20);
 
-                int inc = 40 / activeRoutes.length;
-                //HTTP get each route
-                for(TrolleyRoute route : activeRoutes){
-                    TrolleyRoute details = TrolleyAPI.getRouteDetails(route.ID);
-                    route.RouteShape = details.RouteShape;
-                    route.Stops = details.Stops;
-                    publishProgress(inc);
+                if(activeRoutes.length > 0){
+                    int inc = 40 / activeRoutes.length;
+                    //HTTP get each route
+                    for(Route route : activeRoutes){
+                        Route details = TrolleyAPI.getRouteDetails(route.ID);
+                        route.RouteShape = details.RouteShape;
+                        route.Stops = details.Stops;
+                        publishProgress(inc);
+                    }
+                } else {
+                    publishProgress(40);
                 }
 
                 return activeRoutes;
@@ -50,19 +57,19 @@ public class SplashScreen extends Activity {
             }
 
             @Override
-            protected void onPostExecute(TrolleyRoute[] routes) {
-                mTrolleyRoutes = routes;
+            protected void onPostExecute(Route[] routes) {
+                mRoutes = routes;
                 routesLoaded = true;
                 changeActivitiesIfComplete();
             }
         };
 
-        AsyncTask<Void, Integer, TrolleyData[]> trolleyThread = new AsyncTask<Void, Integer, TrolleyData[]>() {
+        AsyncTask<Void, Integer, Trolley[]> trolleyThread = new AsyncTask<Void, Integer, Trolley[]>() {
             @Override
-            protected TrolleyData[] doInBackground(Void... params) {
+            protected Trolley[] doInBackground(Void... params) {
                 publishProgress(5);
                 //HTTP get running trolleys
-                TrolleyData[] trolleys = TrolleyAPI.getRunningTrolleys();
+                Trolley[] trolleys = TrolleyAPI.getRunningTrolleys();
                 publishProgress(20);
                 return trolleys;
             }
@@ -73,8 +80,8 @@ public class SplashScreen extends Activity {
             }
 
             @Override
-            protected void onPostExecute(TrolleyData[] trolleys){
-                mTrolleyData = trolleys;
+            protected void onPostExecute(Trolley[] trolleys){
+                mTrolley = trolleys;
                 trolleysLoaded = true;
                 changeActivitiesIfComplete();
             }
@@ -87,8 +94,8 @@ public class SplashScreen extends Activity {
     public void changeActivitiesIfComplete(){
         if(trolleysLoaded && routesLoaded){
             Intent intent = new Intent(SplashScreen.this, MapsActivity.class);
-            intent.putExtra(TrolleyData.TROLLEY_DATA, mTrolleyData);
-            intent.putExtra(TrolleyRoute.TROLLEY_ROUTES, mTrolleyRoutes);
+            intent.putExtra(Trolley.TROLLEY_KEY, mTrolley);
+            intent.putExtra(Route.ROUTE_KEY, mRoutes);
             startActivity(intent);
         }
     }

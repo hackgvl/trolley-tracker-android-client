@@ -1,4 +1,4 @@
-package com.codeforgvl.trolleytrackerclient;
+package com.codeforgvl.trolleytrackerclient.data;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -6,13 +6,13 @@ import android.os.Parcelable;
 /**
  * Created by Adam Hodges on 8/23/2015.
  */
-public class TrolleyData implements Parcelable {
-    static final String TROLLEY_DATA = "TROLLEY_DATA";
-    double Lat;
-    double Lon;
-    int ID;
-    int Number;
-    String TrolleyName;
+public class Trolley implements Parcelable {
+    public static final String TROLLEY_KEY = "TROLLEY_KEY";
+    public double Lat;
+    public double Lon;
+    public int ID;
+    public int Number;
+    public String TrolleyName;
 
     @Override
     public int describeContents() {
@@ -28,7 +28,7 @@ public class TrolleyData implements Parcelable {
         dest.writeString(TrolleyName);
     }
 
-    public TrolleyData(Parcel in){
+    public Trolley(Parcel in){
         Lat = in.readDouble();
         Lon = in.readDouble();
         ID = in.readInt();
@@ -36,15 +36,15 @@ public class TrolleyData implements Parcelable {
         TrolleyName = in.readString();
     }
 
-    public static final Parcelable.Creator<TrolleyData> CREATOR
-            = new Parcelable.Creator<TrolleyData>() {
+    public static final Parcelable.Creator<Trolley> CREATOR
+            = new Parcelable.Creator<Trolley>() {
 
-        public TrolleyData createFromParcel(Parcel in) {
-            return new TrolleyData(in);
+        public Trolley createFromParcel(Parcel in) {
+            return new Trolley(in);
         }
 
-        public TrolleyData[] newArray(int size) {
-            return new TrolleyData[size];
+        public Trolley[] newArray(int size) {
+            return new Trolley[size];
         }
     };
 
