@@ -178,7 +178,7 @@ public class MapsActivity extends FragmentActivity {
             } else {
                 trolleyMarkers.put(t.ID, mMap.addMarker(new MarkerOptions()
                         .anchor(0.5f, 0.5f)
-                        .icon(BitmapDescriptorFactory.fromResource((i%0 == 0)? R.drawable.marker1 : R.drawable.marker2))
+                        .icon(BitmapDescriptorFactory.fromResource((i%2 == 0)? R.drawable.marker1 : R.drawable.marker2))
                         .position(new LatLng(t.Lat, t.Lon))));
             }
         }
