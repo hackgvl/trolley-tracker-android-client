@@ -1,9 +1,13 @@
 package com.codeforgvl.trolleytrackerclient;
 
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.Interpolator;
 import android.widget.ProgressBar;
 
 import com.codeforgvl.trolleytrackerclient.data.Trolley;
@@ -13,19 +17,45 @@ import com.codeforgvl.trolleytrackerclient.data.Route;
  * Created by ahodges on 8/26/2015.
  */
 public class SplashScreen extends Activity {
+    private static final Interpolator DEFAULT_INTERPOLATOR = new DecelerateInterpolator();
     private ProgressBar mProgress;
-    private Trolley[] mTrolley;
+    private ObjectAnimator mProgressAnimator;
+    private int currentProgress;
+
+    private Trolley[] mTrolleys;
     private Route[] mRoutes;
+
     private boolean trolleysLoaded = false;
     private boolean routesLoaded = false;
+
+    protected synchronized void setProgressBar(int progress){
+        currentProgress += progress;
+        if(mProgressAnimator.isStarted())
+            mProgressAnimator.cancel();
+        mProgressAnimator.setIntValues(currentProgress + progress);
+        mProgressAnimator.start();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.splash);
 
+        //Set up animated progress bar
+        currentProgress = 0;
         mProgress = (ProgressBar) findViewById(R.id.splash_progress_bar);
-        mProgress.setProgress(10);
+        mProgressAnimator = ObjectAnimator.ofInt(mProgress, "progress", 0, 100);
+        mProgressAnimator.setInterpolator(DEFAULT_INTERPOLATOR);
+        mProgressAnimator.setDuration(1000);
+        mProgressAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                mProgress.setProgress((Integer) animation.getAnimatedValue());
+            }
+        });
+
+        //Initialize progress to 10%
+        setProgressBar(10);
 
         AsyncTask<Void, Integer, Route[]> routeThread = new AsyncTask<Void, Integer, Route[]>() {
             @Override
@@ -53,7 +83,7 @@ public class SplashScreen extends Activity {
 
             @Override
             protected void onProgressUpdate(Integer... progress) {
-                mProgress.setProgress(mProgress.getProgress() + progress[0]);
+                setProgressBar(progress[0]);
             }
 
             @Override
@@ -76,12 +106,12 @@ public class SplashScreen extends Activity {
 
             @Override
             protected void onProgressUpdate(Integer... progress) {
-                mProgress.setProgress(mProgress.getProgress() + progress[0]);
+                setProgressBar(progress[0]);
             }
 
             @Override
             protected void onPostExecute(Trolley[] trolleys){
-                mTrolley = trolleys;
+                mTrolleys = trolleys;
                 trolleysLoaded = true;
                 changeActivitiesIfComplete();
             }
@@ -94,7 +124,7 @@ public class SplashScreen extends Activity {
     public void changeActivitiesIfComplete(){
         if(trolleysLoaded && routesLoaded){
             Intent intent = new Intent(SplashScreen.this, MapsActivity.class);
-            intent.putExtra(Trolley.TROLLEY_KEY, mTrolley);
+            intent.putExtra(Trolley.TROLLEY_KEY, mTrolleys);
             intent.putExtra(Route.ROUTE_KEY, mRoutes);
             startActivity(intent);
         }
