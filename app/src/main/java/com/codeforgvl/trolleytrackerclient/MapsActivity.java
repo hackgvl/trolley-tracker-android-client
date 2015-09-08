@@ -109,15 +109,15 @@ public class MapsActivity extends FragmentActivity {
         int routeNo = (ndx % 5) + 1;
         switch (routeNo){
             case 1:
-                return R.color.route1;
+                return getResources().getColor(R.color.route1);
             case 2:
-                return R.color.route2;
+                return getResources().getColor(R.color.route2);
             case 3:
-                return R.color.route3;
+                return getResources().getColor(R.color.route3);
             case 4:
-                return R.color.route4;
+                return getResources().getColor(R.color.route4);
             default:
-                return R.color.route5;
+                return getResources().getColor(R.color.route5);
         }
     }
 
@@ -125,15 +125,15 @@ public class MapsActivity extends FragmentActivity {
         int routeNo = (ndx % 5) + 1;
         switch (routeNo){
             case 1:
-                return R.color.stop1;
+                return getResources().getColor(R.color.stop1);
             case 2:
-                return R.color.stop2;
+                return getResources().getColor(R.color.stop2);
             case 3:
-                return R.color.stop3;
+                return getResources().getColor(R.color.stop3);
             case 4:
-                return R.color.stop4;
+                return getResources().getColor(R.color.stop4);
             default:
-                return R.color.stop5;
+                return getResources().getColor(R.color.stop5);
         }
     }
 
@@ -153,10 +153,10 @@ public class MapsActivity extends FragmentActivity {
 
                 for(RouteStop s : routes[i].Stops){
                     mMap.addMarker(new MarkerOptions()
-                            .alpha(.5f)
+                            .alpha(.8f)
                             .title(s.Name)
                             .snippet(s.Description)
-                            .icon(IconFactory.getCustomMarker(getBaseContext(), FontAwesomeIcons.fa_map_marker, .3, getStopColorForRouteNumber(i)))
+                            .icon(IconFactory.getCustomMarker(getBaseContext(), FontAwesomeIcons.fa_map_marker, .1, getStopColorForRouteNumber(i)))
                             .position(new LatLng(s.Lat, s.Lon)));
                 }
             }

@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="route1">#3D315B</color>
-    <color name="stop1">#7659D1</color>
-    <color name="route2">#708B75</color>
-    <color name="stop2">#9AB87A</color>
-    <color name="route3">#EFC818</color>
-    <color name="stop3">#FEDF66</color>
-    <color name="route4">#097450</color>
-    <color name="stop4">#3DE0A5</color>
-    <color name="route5">#2B2D42</color>
-    <color name="stop5">#8D99AE</color>
+    <color name="route1">#CC3D315B</color>
+    <color name="stop1">#CC7659D1</color>
+    <color name="route2">#CC708B75</color>
+    <color name="stop2">#CC9AB87A</color>
+    <color name="route3">#CCEFC818</color>
+    <color name="stop3">#CCFEDF66</color>
+    <color name="route4">#CC097450</color>
+    <color name="stop4">#CC3DE0A5</color>
+    <color name="route5">#CC2B2D42</color>
+    <color name="stop5">#CC8D99AE</color>
 </resources>
