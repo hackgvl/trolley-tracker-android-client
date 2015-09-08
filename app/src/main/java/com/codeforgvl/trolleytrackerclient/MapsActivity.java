@@ -137,6 +137,14 @@ public class MapsActivity extends FragmentActivity {
         }
     }
 
+    private final double MIN_JITTER = .9999995;
+    private final double MAX_JITTER = 1.0000005;
+    private LatLng getInexactCoords(double lat, double lon){
+        double newLat = lat * (Math.random() * (MAX_JITTER - MIN_JITTER) + MIN_JITTER);
+        double newLon = lon * (Math.random() * (MAX_JITTER - MIN_JITTER) + MIN_JITTER);
+        return new LatLng(newLat, newLon);
+    }
+
     private void setUpMap(Trolley[] trolleys, Route[] routes) {
         //Show users current location
         mMap.setMyLocationEnabled(true);
@@ -157,7 +165,7 @@ public class MapsActivity extends FragmentActivity {
                             .title(s.Name)
                             .snippet(s.Description)
                             .icon(IconFactory.getCustomMarker(getBaseContext(), FontAwesomeIcons.fa_map_marker, .1, getStopColorForRouteNumber(i)))
-                            .position(new LatLng(s.Lat, s.Lon)));
+                            .position(getInexactCoords(s.Lat, s.Lon)));
                 }
             }
         }
