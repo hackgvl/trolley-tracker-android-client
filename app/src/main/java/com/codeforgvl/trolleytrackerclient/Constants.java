@@ -5,7 +5,7 @@ package com.codeforgvl.trolleytrackerclient;
  */
 public class Constants {
     public static final String LOG_TAG = "TROLLEYTRACKER";
-    public static final String HOST = "api.yeahthattrolley.com";
+    public static final String HOST = BuildConfig.DEBUG ? "yeahthattrolley.azurewebsites.net" : "api.yeahthattrolley.com";
     public static final String API_PATH = "/api/v1/";
     public static final String RUNNING_TROLLEYS_ENDPOINT = "http://" + HOST + API_PATH + "Trolleys/Running";
     public static final String ACTIVE_ROUTES_ENDPOINT = "http://" + HOST + API_PATH + "Routes/Active";
