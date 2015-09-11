@@ -1,6 +1,5 @@
 package com.codeforgvl.trolleytrackerclient;
 
-import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Parcelable;
 import android.support.v4.app.FragmentActivity;
@@ -18,7 +17,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
-import com.joanzapata.iconify.fonts.FontAwesomeIcons;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -137,14 +135,6 @@ public class MapsActivity extends FragmentActivity {
         }
     }
 
-    private final double MIN_JITTER = .9999995;
-    private final double MAX_JITTER = 1.0000005;
-    private LatLng getInexactCoords(double lat, double lon){
-        double newLat = lat * (Math.random() * (MAX_JITTER - MIN_JITTER) + MIN_JITTER);
-        double newLon = lon * (Math.random() * (MAX_JITTER - MIN_JITTER) + MIN_JITTER);
-        return new LatLng(newLat, newLon);
-    }
-
     private void setUpMap(Trolley[] trolleys, Route[] routes) {
         //Show users current location
         mMap.setMyLocationEnabled(true);
@@ -159,13 +149,14 @@ public class MapsActivity extends FragmentActivity {
                 routeLine.color(getRouteColorForRouteNumber(i));
                 mMap.addPolyline(routeLine);
 
+
                 for(RouteStop s : routes[i].Stops){
                     mMap.addMarker(new MarkerOptions()
-                            .alpha(.8f)
                             .title(s.Name)
                             .snippet(s.Description)
-                            .icon(IconFactory.getCustomMarker(getBaseContext(), FontAwesomeIcons.fa_map_marker, .1, getStopColorForRouteNumber(i)))
-                            .position(getInexactCoords(s.Lat, s.Lon)));
+                            .anchor(0.5f, 0.5f)
+                            .icon(IconFactory.getStopIcon(getBaseContext(), getStopColorForRouteNumber(i)))
+                            .position(new LatLng(s.Lat, s.Lon)));
                 }
             }
         }
