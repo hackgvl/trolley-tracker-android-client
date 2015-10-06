@@ -2,9 +2,15 @@
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <item name="android:background">#515583</item>
-        <item name="android:textColor">#FFFFFF</item>
+        <item name="android:background">@color/background_purple</item>
+        <item name="android:textColor">@color/white</item>
         <item name="android:progressBarStyleHorizontal">@style/ProgressBarAppTheme</item>
+        <item name="colorAccent">@color/light_green</item>
+    </style>
+
+    <style name="DrawerStyle" parent="Theme.AppCompat.Light">
+        <item name="android:background">@color/background_material_light</item>
+        <item name="android:textColor">@color/font_primary</item>
     </style>
 
 </resources>

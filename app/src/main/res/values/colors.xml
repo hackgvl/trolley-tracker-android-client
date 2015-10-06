@@ -10,4 +10,13 @@
     <color name="stop4">#CC3DE0A5</color>
     <color name="route5">#CC2B2D42</color>
     <color name="stop5">#CC8D99AE</color>
+    <color name="background_purple">#515583</color>
+    <color name="notification_bar">#363B73</color>
+    <color name="background_gray">#E2E2E2</color>
+    <color name="light_green">#ADB81E</color>
+    <color name="font_color">#000000</color>
+    <color name="font_primary">#DE000000</color>
+    <color name="font_secondary">#8A000000</color>
+    <color name="font_hint">#61000000</color>
+    <color name="white">#FFFFFF</color>
 </resources>

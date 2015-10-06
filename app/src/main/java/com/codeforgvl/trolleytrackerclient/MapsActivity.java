@@ -2,14 +2,18 @@ package com.codeforgvl.trolleytrackerclient;
 
 import android.os.AsyncTask;
 import android.os.Parcelable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.TextView;
 
 import com.codeforgvl.trolleytrackerclient.data.LatLon;
 import com.codeforgvl.trolleytrackerclient.data.RouteStop;
 import com.codeforgvl.trolleytrackerclient.data.Trolley;
 import com.codeforgvl.trolleytrackerclient.data.Route;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -17,14 +21,21 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.joanzapata.iconify.IconDrawable;
+import com.joanzapata.iconify.fonts.FontAwesomeIcons;
+import com.joanzapata.iconify.fonts.MaterialIcons;
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
-public class MapsActivity extends FragmentActivity {
+public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarkerClickListener, GoogleMap.OnMapClickListener {
+
+    private SlidingUpPanelLayout drawer;
 
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
+    private Marker selectedMarker;
     private HashMap<Integer, Marker> trolleyMarkers = new HashMap<>();
 
     private TrolleyUpdateTask mUpdateTask;
@@ -33,6 +44,11 @@ public class MapsActivity extends FragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+
+        ((FloatingActionButton)findViewById(R.id.myFAB)).setImageDrawable(new IconDrawable(this, MaterialIcons.md_directions_walk).colorRes(R.color.white));
+
+        drawer = (SlidingUpPanelLayout)findViewById(R.id.sliding_layout);
+        drawer.setPanelSlideListener(new DrawerListener());
 
         Trolley[] trolleys = null;
         Route[] routes = null;
@@ -136,6 +152,12 @@ public class MapsActivity extends FragmentActivity {
     }
 
     private void setUpMap(Trolley[] trolleys, Route[] routes) {
+        //Capture marker clicks, show 'selected' marker
+        mMap.setOnMarkerClickListener(this);
+        mMap.setOnMapClickListener(this);
+        selectedMarker = mMap.addMarker(new MarkerOptions().position(new LatLng(0,0)).visible(false));
+        mMap.setInfoWindowAdapter(new MapWindowAdapter(this));
+
         //Show users current location
         mMap.setMyLocationEnabled(true);
 
@@ -177,7 +199,8 @@ public class MapsActivity extends FragmentActivity {
             } else {
                 trolleyMarkers.put(t.ID, mMap.addMarker(new MarkerOptions()
                         .anchor(0.5f, 0.5f)
-                        .icon(BitmapDescriptorFactory.fromResource((i%2 == 0)? R.drawable.marker1 : R.drawable.marker2))
+                        .title("Trolley " + (i + 1))
+                        .icon(BitmapDescriptorFactory.fromResource((i % 2 == 0) ? R.drawable.marker1 : R.drawable.marker2))
                         .position(new LatLng(t.Lat, t.Lon))));
             }
         }
@@ -190,6 +213,30 @@ public class MapsActivity extends FragmentActivity {
         for(Integer trolleyID : trolleyMarkers.keySet()){
             Log.d(Constants.LOG_TAG, trolleyMarkers.get(trolleyID).getPosition().toString());
         }
+    }
+
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        //Don't show 'selected' marker when user clicks on a trolley
+        if(!trolleyMarkers.values().contains(marker)){
+            selectedMarker.setPosition(marker.getPosition());
+            selectedMarker.setVisible(true);
+            selectedMarker.showInfoWindow();
+        } else {
+            selectedMarker.setVisible(false);
+        }
+        ((TextView)drawer.findViewById(R.id.drawer_title)).setText(marker.getTitle());
+        drawer.setPanelState(SlidingUpPanelLayout.PanelState.ANCHORED);
+
+        //Animate to center
+        mMap.animateCamera(CameraUpdateFactory.newLatLng(marker.getPosition()), 400, null);
+        return true;
+    }
+
+    @Override
+    public void onMapClick(LatLng latLng) {
+        drawer.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+        selectedMarker.setVisible(false);
     }
 
     private class TrolleyUpdateTask extends AsyncTask<Void, Trolley[], Void> {
@@ -216,6 +263,33 @@ public class MapsActivity extends FragmentActivity {
             Log.d(Constants.LOG_TAG, "processing trolley updates");
 
             updateTrolleys(trolleyUpdate[0]);
+        }
+    }
+
+    private class DrawerListener implements SlidingUpPanelLayout.PanelSlideListener {
+        @Override
+        public void onPanelAnchored(View view) {
+
+        }
+
+        @Override
+        public void onPanelHidden(View view) {
+
+        }
+
+        @Override
+        public void onPanelSlide(View view, float v) {
+
+        }
+
+        @Override
+        public void onPanelCollapsed(View view) {
+
+        }
+
+        @Override
+        public void onPanelExpanded(View view) {
+
         }
     }
 }

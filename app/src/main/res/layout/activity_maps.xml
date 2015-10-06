@@ -1,7 +1,22 @@
-<fragment xmlns:android="http://schemas.android.com/apk/res/android"
+<com.sothree.slidinguppanel.SlidingUpPanelLayout
+    xmlns:sothree="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:map="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="match_parent" android:id="@+id/map" tools:context=".MapsActivity"
-    android:name="com.google.android.gms.maps.SupportMapFragment"
-    map:cameraTargetLat="34.852432" map:cameraTargetLng="-82.398216"
-    map:cameraZoom="14"/>
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/sliding_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="bottom"
+    sothree:umanoAnchorPoint="0.3"
+    sothree:umanoPanelHeight="90dp"
+    sothree:umanoShadowHeight="4dp"
+    sothree:umanoFadeColor="@android:color/transparent">
+    <fragment
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" android:id="@+id/map" tools:context=".MapsActivity"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        map:cameraTargetLat="34.852432" map:cameraTargetLng="-82.398216"
+        map:cameraZoom="14"/>
+    <include layout="@layout/drawer"/>
+</com.sothree.slidinguppanel.SlidingUpPanelLayout>
+
