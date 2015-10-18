@@ -27,6 +27,7 @@ dependencies {
     compile 'com.joanzapata.iconify:android-iconify-material:2.0.8'
     compile 'com.joanzapata.iconify:android-iconify-fontawesome:2.0.8'
     compile 'com.sothree.slidinguppanel:library:3.1.1'
+    compile 'joda-time:joda-time:2.8.2' // for joda
     compile 'com.android.support:design:22.2.0'
     compile 'com.android.support:design:22.2.0'
 }

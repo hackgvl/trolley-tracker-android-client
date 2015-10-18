@@ -29,6 +29,8 @@
         android:id="@+id/myFAB"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        app:borderWidth="0dp"
+        app:elevation="4dp"
         android:clickable="true"
         app:layout_anchor="@id/drawer_layout"
         app:layout_anchorGravity="top|right|end"

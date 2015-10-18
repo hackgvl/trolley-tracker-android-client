@@ -1,5 +1,6 @@
 package com.codeforgvl.trolleytrackerclient;
 
+import com.codeforgvl.trolleytrackerclient.data.RouteSchedule;
 import com.codeforgvl.trolleytrackerclient.data.Trolley;
 import com.codeforgvl.trolleytrackerclient.data.Route;
 import com.google.gson.Gson;
@@ -55,6 +56,11 @@ public class TrolleyAPI {
     public static Route[] getActiveRoutes(){
         String json = httpGETRequest(Constants.ACTIVE_ROUTES_ENDPOINT);
         return new Gson().fromJson(json, Route[].class);
+    }
+
+    public static RouteSchedule[] getRouteSchedule(){
+        String json = httpGETRequest(Constants.ROUTE_SCHEDULE_ENDPOINT);
+        return new Gson().fromJson(json, RouteSchedule[].class);
     }
 
     public static Route getRouteDetails(int routeId){

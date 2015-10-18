@@ -10,6 +10,7 @@ import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 import android.widget.ProgressBar;
 
+import com.codeforgvl.trolleytrackerclient.data.RouteSchedule;
 import com.codeforgvl.trolleytrackerclient.data.Trolley;
 import com.codeforgvl.trolleytrackerclient.data.Route;
 
@@ -24,9 +25,11 @@ public class SplashScreen extends Activity {
 
     private Trolley[] mTrolleys;
     private Route[] mRoutes;
+    private RouteSchedule[] mSchedule;
 
     private boolean trolleysLoaded = false;
     private boolean routesLoaded = false;
+    private boolean scheduleLoaded = false;
 
     protected synchronized void setProgressBar(int progress){
         currentProgress += progress;
@@ -54,8 +57,8 @@ public class SplashScreen extends Activity {
             }
         });
 
-        //Initialize progress to 10%
-        setProgressBar(10);
+        //Initialize progress to 5%
+        setProgressBar(5);
 
         AsyncTask<Void, Integer, Route[]> routeThread = new AsyncTask<Void, Integer, Route[]>() {
             @Override
@@ -63,10 +66,10 @@ public class SplashScreen extends Activity {
                 publishProgress(5);
                 //HTTP get active routes
                 Route[] activeRoutes = TrolleyAPI.getActiveRoutes();
-                publishProgress(20);
+                publishProgress(15);
 
                 if(activeRoutes.length > 0){
-                    int inc = 40 / activeRoutes.length;
+                    int inc = 35 / activeRoutes.length;
                     //HTTP get each route
                     for(Route route : activeRoutes){
                         Route details = TrolleyAPI.getRouteDetails(route.ID);
@@ -75,7 +78,7 @@ public class SplashScreen extends Activity {
                         publishProgress(inc);
                     }
                 } else {
-                    publishProgress(40);
+                    publishProgress(35);
                 }
 
                 return activeRoutes;
@@ -100,7 +103,7 @@ public class SplashScreen extends Activity {
                 publishProgress(5);
                 //HTTP get running trolleys
                 Trolley[] trolleys = TrolleyAPI.getRunningTrolleys();
-                publishProgress(20);
+                publishProgress(15);
                 return trolleys;
             }
 
@@ -117,15 +120,40 @@ public class SplashScreen extends Activity {
             }
         };
 
+        AsyncTask<Void, Integer, RouteSchedule[]> scheduleThread = new AsyncTask<Void, Integer, RouteSchedule[]>() {
+            @Override
+            protected RouteSchedule[] doInBackground(Void... params) {
+                publishProgress(5);
+                //HTTP get running trolleys
+                RouteSchedule[] schedule = TrolleyAPI.getRouteSchedule();
+                publishProgress(15);
+                return schedule;
+            }
+
+            @Override
+            protected void onProgressUpdate(Integer... progress) {
+                setProgressBar(progress[0]);
+            }
+
+            @Override
+            protected void onPostExecute(RouteSchedule[] schedule){
+                mSchedule = schedule;
+                scheduleLoaded = true;
+                changeActivitiesIfComplete();
+            }
+        };
+
         routeThread.execute();
         trolleyThread.execute();
+        scheduleThread.execute();
     }
 
     public void changeActivitiesIfComplete(){
-        if(trolleysLoaded && routesLoaded){
+        if(trolleysLoaded && routesLoaded && scheduleLoaded){
             Intent intent = new Intent(SplashScreen.this, MapsActivity.class);
             intent.putExtra(Trolley.TROLLEY_KEY, mTrolleys);
             intent.putExtra(Route.ROUTE_KEY, mRoutes);
+            intent.putExtra(RouteSchedule.SCHEDULE_KEY, mSchedule);
             startActivity(intent);
         }
     }

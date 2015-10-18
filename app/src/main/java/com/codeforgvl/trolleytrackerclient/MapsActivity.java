@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.codeforgvl.trolleytrackerclient.data.LatLon;
+import com.codeforgvl.trolleytrackerclient.data.RouteSchedule;
 import com.codeforgvl.trolleytrackerclient.data.RouteStop;
 import com.codeforgvl.trolleytrackerclient.data.Trolley;
 import com.codeforgvl.trolleytrackerclient.data.Route;
@@ -45,6 +46,8 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
     private HashMap<Integer, Marker> trolleyMarkers = new HashMap<>();
 
     private TrolleyUpdateTask mUpdateTask;
+
+    private RouteSchedule[] mSchedule;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,8 +83,14 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
             Parcelable[] rParcels = extras.getParcelableArray(Route.ROUTE_KEY);
             routes = new Route[rParcels.length];
             System.arraycopy(rParcels, 0, routes, 0, rParcels.length);
+
+            Parcelable[] sParcels = extras.getParcelableArray(RouteSchedule.SCHEDULE_KEY);
+            mSchedule = new RouteSchedule[sParcels.length];
+            System.arraycopy(sParcels, 0, mSchedule, 0, sParcels.length);
         }
         setUpMapIfNeeded(trolleys, routes);
+
+        mMap.setOnMyLocationChangeListener(this);
     }
 
     @Override
@@ -250,6 +259,7 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
             selectedMarker.showInfoWindow();
         } else {
             selectedMarker.setVisible(false);
+            fab.setVisibility(View.GONE);
         }
         ((TextView)drawer.findViewById(R.id.drawer_title)).setText(marker.getTitle());
         drawer.setPanelState(SlidingUpPanelLayout.PanelState.ANCHORED);
@@ -279,7 +289,7 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
                 bounds.include(m.getPosition());
             }
             bounds.include(new LatLng(location.getLatitude(), location.getLongitude()));
-            int padding = 0;
+            int padding = 256;
             CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds.build(), padding);
             mMap.animateCamera(cu);
             firstFix = false;
