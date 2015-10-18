@@ -1,5 +1,9 @@
 package com.codeforgvl.trolleytrackerclient;
 
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.location.Location;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Parcelable;
 import android.support.design.widget.FloatingActionButton;
@@ -13,11 +17,13 @@ import com.codeforgvl.trolleytrackerclient.data.LatLon;
 import com.codeforgvl.trolleytrackerclient.data.RouteStop;
 import com.codeforgvl.trolleytrackerclient.data.Trolley;
 import com.codeforgvl.trolleytrackerclient.data.Route;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
@@ -30,9 +36,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
-public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarkerClickListener, GoogleMap.OnMapClickListener {
-
+public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarkerClickListener, GoogleMap.OnMapClickListener, GoogleMap.OnMyLocationChangeListener {
     private SlidingUpPanelLayout drawer;
+    private FloatingActionButton fab;
 
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private Marker selectedMarker;
@@ -49,6 +55,19 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
 
         drawer = (SlidingUpPanelLayout)findViewById(R.id.sliding_layout);
         drawer.setPanelSlideListener(new DrawerListener());
+
+        fab = (FloatingActionButton)findViewById(R.id.myFAB);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (selectedMarker != null) {
+                    LatLng ll = selectedMarker.getPosition();
+                    Uri directionsUri = Uri.parse("google.navigation:q=" + ll.latitude + "," + ll.longitude + "&mode=w");
+                    Intent mapIntent = new Intent(Intent.ACTION_VIEW, directionsUri);
+                    startActivity(mapIntent);
+                }
+            }
+        });
 
         Trolley[] trolleys = null;
         Route[] routes = null;
@@ -219,6 +238,13 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
     public boolean onMarkerClick(Marker marker) {
         //Don't show 'selected' marker when user clicks on a trolley
         if(!trolleyMarkers.values().contains(marker)){
+            if(drawer.getPanelState() == SlidingUpPanelLayout.PanelState.HIDDEN){
+                drawer.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+            }
+            if(fab.getVisibility() != View.VISIBLE){
+                fab.setVisibility(View.VISIBLE);
+            }
+
             selectedMarker.setPosition(marker.getPosition());
             selectedMarker.setVisible(true);
             selectedMarker.showInfoWindow();
@@ -235,8 +261,29 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
 
     @Override
     public void onMapClick(LatLng latLng) {
-        drawer.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
         selectedMarker.setVisible(false);
+        if(drawer.getPanelState() != SlidingUpPanelLayout.PanelState.HIDDEN){
+            drawer.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
+        }
+        if(fab.getVisibility() == View.VISIBLE){
+            fab.setVisibility(View.GONE);
+        }
+    }
+
+    private boolean firstFix = true;
+    @Override
+    public void onMyLocationChange(Location location) {
+        if(firstFix){
+            LatLngBounds.Builder bounds = new LatLngBounds.Builder();
+            for(Marker m : trolleyMarkers.values()){
+                bounds.include(m.getPosition());
+            }
+            bounds.include(new LatLng(location.getLatitude(), location.getLongitude()));
+            int padding = 0;
+            CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds.build(), padding);
+            mMap.animateCamera(cu);
+            firstFix = false;
+        }
     }
 
     private class TrolleyUpdateTask extends AsyncTask<Void, Trolley[], Void> {
