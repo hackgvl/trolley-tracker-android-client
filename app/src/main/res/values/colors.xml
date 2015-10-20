@@ -12,6 +12,7 @@
     <color name="stop5">#CC8D99AE</color>
     <color name="background_purple">#515583</color>
     <color name="notification_bar">#363B73</color>
+    <color name="background_light">#fffafafa</color>
     <color name="background_gray">#E2E2E2</color>
     <color name="light_green">#ADB81E</color>
     <color name="font_color">#000000</color>

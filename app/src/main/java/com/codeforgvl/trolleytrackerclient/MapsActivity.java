@@ -89,8 +89,6 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
             System.arraycopy(sParcels, 0, mSchedule, 0, sParcels.length);
         }
         setUpMapIfNeeded(trolleys, routes);
-
-        mMap.setOnMyLocationChangeListener(this);
     }
 
     @Override
@@ -184,6 +182,7 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
         mMap.setOnMarkerClickListener(this);
         mMap.setOnMapClickListener(this);
         selectedMarker = mMap.addMarker(new MarkerOptions().position(new LatLng(0,0)).visible(false));
+
         mMap.setInfoWindowAdapter(new MapWindowAdapter(this));
 
         //Show users current location
@@ -215,6 +214,8 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
         if(trolleys != null){
             updateTrolleys(trolleys);
         }
+
+        mMap.setOnMyLocationChangeListener(this);
     }
 
     private void updateTrolleys(Trolley[] trolleys){
@@ -245,11 +246,13 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
 
     @Override
     public boolean onMarkerClick(Marker marker) {
+        if(marker.equals(selectedMarker)){
+            selectedMarker.showInfoWindow();
+            return true;
+        }
+
         //Don't show 'selected' marker when user clicks on a trolley
         if(!trolleyMarkers.values().contains(marker)){
-            if(drawer.getPanelState() == SlidingUpPanelLayout.PanelState.HIDDEN){
-                drawer.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
-            }
             if(fab.getVisibility() != View.VISIBLE){
                 fab.setVisibility(View.VISIBLE);
             }
@@ -261,8 +264,12 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
             selectedMarker.setVisible(false);
             fab.setVisibility(View.GONE);
         }
+
+        if(drawer.getPanelState() == SlidingUpPanelLayout.PanelState.HIDDEN){
+            drawer.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+        }
+
         ((TextView)drawer.findViewById(R.id.drawer_title)).setText(marker.getTitle());
-        drawer.setPanelState(SlidingUpPanelLayout.PanelState.ANCHORED);
 
         //Animate to center
         mMap.animateCamera(CameraUpdateFactory.newLatLng(marker.getPosition()), 400, null);

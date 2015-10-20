@@ -8,9 +8,4 @@
         <item name="colorAccent">@color/light_green</item>
     </style>
 
-    <style name="DrawerStyle" parent="Theme.AppCompat.Light">
-        <item name="android:background">@color/background_material_light</item>
-        <item name="android:textColor">@color/font_primary</item>
-    </style>
-
 </resources>
