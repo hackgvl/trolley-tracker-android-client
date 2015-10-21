@@ -2,6 +2,7 @@ package com.codeforgvl.trolleytrackerclient;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Point;
 import android.location.Location;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -10,6 +11,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Display;
 import android.view.View;
 import android.widget.TextView;
 
@@ -296,7 +298,12 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
                 bounds.include(m.getPosition());
             }
             bounds.include(new LatLng(location.getLatitude(), location.getLongitude()));
-            int padding = 256;
+
+            Display display = getWindowManager().getDefaultDisplay();
+            Point size = new Point();
+            display.getSize(size);
+
+            int padding = size.x / 4;
             CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds.build(), padding);
             mMap.animateCamera(cu);
             firstFix = false;
