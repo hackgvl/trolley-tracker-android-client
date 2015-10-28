@@ -23,6 +23,7 @@ import com.codeforgvl.trolleytrackerclient.data.Route;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
@@ -56,7 +57,9 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
-        ((FloatingActionButton)findViewById(R.id.myFAB)).setImageDrawable(new IconDrawable(this, MaterialIcons.md_directions_walk).colorRes(R.color.white));
+        MapsInitializer.initialize(getApplicationContext());
+
+        ((FloatingActionButton) findViewById(R.id.myFAB)).setImageDrawable(new IconDrawable(this, MaterialIcons.md_directions_walk).colorRes(R.color.white));
 
         drawer = (SlidingUpPanelLayout)findViewById(R.id.sliding_layout);
         drawer.setPanelSlideListener(new DrawerListener());
