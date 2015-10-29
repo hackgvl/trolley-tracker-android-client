@@ -232,7 +232,7 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
                 keySet.remove(t.ID);
             } else {
                 trolleyMarkers.put(t.ID, mMap.addMarker(new MarkerOptions()
-                        .anchor(0.5f, 0.5f)
+                        .anchor(0.5f, 1.0f)
                         .title("Trolley " + (i + 1))
                         .icon(BitmapDescriptorFactory.fromResource((i % 2 == 0) ? R.drawable.marker1 : R.drawable.marker2))
                         .position(new LatLng(t.Lat, t.Lon))));
