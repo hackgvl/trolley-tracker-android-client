@@ -296,19 +296,21 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
     @Override
     public void onMyLocationChange(Location location) {
         if(firstFix){
-            LatLngBounds.Builder bounds = new LatLngBounds.Builder();
-            for(Marker m : trolleyMarkers.values()){
-                bounds.include(m.getPosition());
+            if(!trolleyMarkers.isEmpty()){
+                LatLngBounds.Builder bounds = new LatLngBounds.Builder();
+                for(Marker m : trolleyMarkers.values()){
+                    bounds.include(m.getPosition());
+                }
+                bounds.include(new LatLng(location.getLatitude(), location.getLongitude()));
+
+                Display display = getWindowManager().getDefaultDisplay();
+                Point size = new Point();
+                display.getSize(size);
+
+                int padding = size.x / 4;
+                CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds.build(), padding);
+                mMap.animateCamera(cu);
             }
-            bounds.include(new LatLng(location.getLatitude(), location.getLongitude()));
-
-            Display display = getWindowManager().getDefaultDisplay();
-            Point size = new Point();
-            display.getSize(size);
-
-            int padding = size.x / 4;
-            CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds.build(), padding);
-            mMap.animateCamera(cu);
             firstFix = false;
         }
     }
