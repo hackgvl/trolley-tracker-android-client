@@ -1,4 +1,4 @@
-package com.codeforgvl.trolleytrackerclient;
+package com.codeforgvl.trolleytrackerclient.activities;
 
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
@@ -10,9 +10,11 @@ import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 import android.widget.ProgressBar;
 
-import com.codeforgvl.trolleytrackerclient.data.RouteSchedule;
-import com.codeforgvl.trolleytrackerclient.data.Trolley;
-import com.codeforgvl.trolleytrackerclient.data.Route;
+import com.codeforgvl.trolleytrackerclient.R;
+import com.codeforgvl.trolleytrackerclient.data.TrolleyAPI;
+import com.codeforgvl.trolleytrackerclient.models.RouteSchedule;
+import com.codeforgvl.trolleytrackerclient.models.Trolley;
+import com.codeforgvl.trolleytrackerclient.models.Route;
 
 /**
  * Created by ahodges on 8/26/2015.
@@ -42,7 +44,7 @@ public class SplashScreen extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.splash);
+        setContentView(R.layout.activity_splash);
 
         //Set up animated progress bar
         currentProgress = 0;

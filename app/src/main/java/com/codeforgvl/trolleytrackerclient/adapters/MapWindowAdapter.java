@@ -1,9 +1,10 @@
-package com.codeforgvl.trolleytrackerclient;
+package com.codeforgvl.trolleytrackerclient.adapters;
 
 import android.app.Activity;
 import android.content.Context;
 import android.view.View;
 
+import com.codeforgvl.trolleytrackerclient.R;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.Marker;
 
@@ -20,7 +21,7 @@ public class MapWindowAdapter implements GoogleMap.InfoWindowAdapter {
     // Hack to prevent info window from displaying: use a 0dp/0dp frame
     @Override
     public View getInfoWindow(Marker marker) {
-        View v = ((Activity) context).getLayoutInflater().inflate(R.layout.no_info_window, null);
+        View v = ((Activity) context).getLayoutInflater().inflate(R.layout.adapter_no_info_window, null);
         return v;
     }
 

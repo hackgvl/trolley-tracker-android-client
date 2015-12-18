@@ -1,4 +1,4 @@
-package com.codeforgvl.trolleytrackerclient.data;
+package com.codeforgvl.trolleytrackerclient.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;

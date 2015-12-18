@@ -1,8 +1,9 @@
-package com.codeforgvl.trolleytrackerclient;
+package com.codeforgvl.trolleytrackerclient.data;
 
-import com.codeforgvl.trolleytrackerclient.data.RouteSchedule;
-import com.codeforgvl.trolleytrackerclient.data.Trolley;
-import com.codeforgvl.trolleytrackerclient.data.Route;
+import com.codeforgvl.trolleytrackerclient.Constants;
+import com.codeforgvl.trolleytrackerclient.models.RouteSchedule;
+import com.codeforgvl.trolleytrackerclient.models.Trolley;
+import com.codeforgvl.trolleytrackerclient.models.Route;
 import com.google.gson.Gson;
 
 import java.io.BufferedReader;

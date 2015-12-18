@@ -1,4 +1,4 @@
-package com.codeforgvl.trolleytrackerclient;
+package com.codeforgvl.trolleytrackerclient.helpers;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -8,6 +8,7 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
 
+import com.codeforgvl.trolleytrackerclient.R;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.joanzapata.iconify.Icon;
