@@ -8,6 +8,8 @@ import android.os.Parcelable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.Display;
 import android.view.View;
 import android.widget.TextView;
@@ -30,9 +32,14 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.fonts.MaterialIcons;
+import com.mikepenz.materialdrawer.Drawer;
+import com.mikepenz.materialdrawer.DrawerBuilder;
+import com.mikepenz.materialdrawer.model.DividerDrawerItem;
+import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
+import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
-public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarkerClickListener, GoogleMap.OnMapClickListener, GoogleMap.OnMyLocationChangeListener {
+public class MapsActivity extends AppCompatActivity implements GoogleMap.OnMarkerClickListener, GoogleMap.OnMapClickListener, GoogleMap.OnMyLocationChangeListener {
     public GoogleMap mMap; // Might be null if Google Play services APK is not available.
 
     private SlidingUpPanelLayout drawer;
@@ -48,7 +55,21 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
-        MapsInitializer.initialize(getApplicationContext());
+        //Initialize UI
+        Toolbar myToolbar = (Toolbar)findViewById(R.id.my_toolbar);
+        setSupportActionBar(myToolbar);
+
+        Drawer menu = new DrawerBuilder()
+                .withActivity(this)
+                .withToolbar(myToolbar)
+                .withHeader(R.layout.fragment_menu_header)
+                .addDrawerItems(
+                        new PrimaryDrawerItem().withName(R.string.menu_map).withIcon(new IconDrawable(this, MaterialIcons.md_map)),
+                        //new PrimaryDrawerItem().withName(R.string.menu_schedule).withIcon(new IconDrawable(this, MaterialIcons.md_schedule)),
+                        new DividerDrawerItem()//,
+                        //new SecondaryDrawerItem().withName(R.string.menu_settings).withIcon(new IconDrawable(this, MaterialIcons.md_settings))
+                )
+                .build();
 
         ((FloatingActionButton) findViewById(R.id.myFAB)).setImageDrawable(new IconDrawable(this, MaterialIcons.md_directions_walk).colorRes(R.color.white));
 
@@ -67,6 +88,8 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
                 }
             }
         });
+
+        MapsInitializer.initialize(getApplicationContext());
 
         Trolley[] trolleys = null;
         Route[] routes = null;

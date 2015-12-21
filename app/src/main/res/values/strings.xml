@@ -1,5 +1,8 @@
 <resources>
     <string name="app_name">Trolley Tracker</string>
-    <string name="title_activity_maps">Trolley Map</string>
+    <string name="title_activity_maps">Trolley Tracker</string>
     <string name="loading">LOADING</string>
+    <string name="menu_map">Live Map</string>
+    <string name="menu_schedule">Schedule</string>
+    <string name="menu_settings">Settings</string>
 </resources>
