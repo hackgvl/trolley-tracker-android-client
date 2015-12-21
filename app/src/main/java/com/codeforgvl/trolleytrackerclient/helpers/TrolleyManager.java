@@ -5,8 +5,8 @@ import android.util.Log;
 
 import com.codeforgvl.trolleytrackerclient.Constants;
 import com.codeforgvl.trolleytrackerclient.R;
-import com.codeforgvl.trolleytrackerclient.activities.MapsActivity;
 import com.codeforgvl.trolleytrackerclient.data.TrolleyAPI;
+import com.codeforgvl.trolleytrackerclient.fragments.MapFragment;
 import com.codeforgvl.trolleytrackerclient.models.Trolley;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
@@ -22,12 +22,12 @@ import java.util.Set;
  * Created by ahodges on 12/18/2015.
  */
 public class TrolleyManager {
-    private MapsActivity mActivity;
+    private MapFragment mapFragment;
     private HashMap<Integer, Marker> trolleyMarkers = new HashMap<>();
     private TrolleyUpdateTask mUpdateTask;
 
-    public TrolleyManager(MapsActivity activity, Trolley[] trolleys){
-        mActivity = activity;
+    public TrolleyManager(MapFragment activity, Trolley[] trolleys){
+        mapFragment = activity;
         if(trolleys != null){
             updateTrolleys(trolleys);
         }
@@ -62,7 +62,7 @@ public class TrolleyManager {
                 trolleyMarkers.get(t.ID).setPosition(new LatLng(t.Lat, t.Lon));
                 keySet.remove(t.ID);
             } else {
-                trolleyMarkers.put(t.ID, mActivity.mMap.addMarker(new MarkerOptions()
+                trolleyMarkers.put(t.ID, mapFragment.mMap.addMarker(new MarkerOptions()
                         .anchor(0.5f, 1.0f)
                         .title("Trolley " + t.ID)
                         .icon(BitmapDescriptorFactory.fromResource(((t.ID - 1) % 2 == 0) ? R.drawable.marker1 : R.drawable.marker2))

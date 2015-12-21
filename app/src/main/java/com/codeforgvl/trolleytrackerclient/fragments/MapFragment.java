@@ -1,26 +1,27 @@
-package com.codeforgvl.trolleytrackerclient.activities;
+package com.codeforgvl.trolleytrackerclient.fragments;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Point;
 import android.location.Location;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.FragmentActivity;
-import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import android.support.v4.app.Fragment;
 import android.view.Display;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.codeforgvl.trolleytrackerclient.adapters.MapWindowAdapter;
 import com.codeforgvl.trolleytrackerclient.R;
+import com.codeforgvl.trolleytrackerclient.adapters.MapWindowAdapter;
 import com.codeforgvl.trolleytrackerclient.helpers.RouteManager;
 import com.codeforgvl.trolleytrackerclient.helpers.TrolleyManager;
+import com.codeforgvl.trolleytrackerclient.models.Route;
 import com.codeforgvl.trolleytrackerclient.models.RouteSchedule;
 import com.codeforgvl.trolleytrackerclient.models.Trolley;
-import com.codeforgvl.trolleytrackerclient.models.Route;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -32,14 +33,11 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.fonts.MaterialIcons;
-import com.mikepenz.materialdrawer.Drawer;
-import com.mikepenz.materialdrawer.DrawerBuilder;
-import com.mikepenz.materialdrawer.model.DividerDrawerItem;
-import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
-import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
-public class MapsActivity extends AppCompatActivity implements GoogleMap.OnMarkerClickListener, GoogleMap.OnMapClickListener, GoogleMap.OnMyLocationChangeListener {
+public class MapFragment extends Fragment implements GoogleMap.OnMarkerClickListener, GoogleMap.OnMapClickListener, GoogleMap.OnMyLocationChangeListener  {
+    private OnFragmentInteractionListener mListener;
+
     public GoogleMap mMap; // Might be null if Google Play services APK is not available.
 
     private SlidingUpPanelLayout drawer;
@@ -50,33 +48,36 @@ public class MapsActivity extends AppCompatActivity implements GoogleMap.OnMarke
     private TrolleyManager trolleyMan;
     private RouteManager routeMan;
 
+    public static MapFragment newInstance(Bundle args) {
+        MapFragment fragment = new MapFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    public MapFragment() {
+        // Required empty public constructor
+    }
+
+    Bundle extras = null;
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_maps);
 
-        //Initialize UI
-        Toolbar myToolbar = (Toolbar)findViewById(R.id.my_toolbar);
-        setSupportActionBar(myToolbar);
+        extras = getArguments();
+    }
 
-        Drawer menu = new DrawerBuilder()
-                .withActivity(this)
-                .withToolbar(myToolbar)
-                .withHeader(R.layout.fragment_menu_header)
-                .addDrawerItems(
-                        new PrimaryDrawerItem().withName(R.string.menu_map).withIcon(new IconDrawable(this, MaterialIcons.md_map)),
-                        //new PrimaryDrawerItem().withName(R.string.menu_schedule).withIcon(new IconDrawable(this, MaterialIcons.md_schedule)),
-                        new DividerDrawerItem()//,
-                        //new SecondaryDrawerItem().withName(R.string.menu_settings).withIcon(new IconDrawable(this, MaterialIcons.md_settings))
-                )
-                .build();
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        View view = inflater.inflate(R.layout.fragment_map, container, false);
 
-        ((FloatingActionButton) findViewById(R.id.myFAB)).setImageDrawable(new IconDrawable(this, MaterialIcons.md_directions_walk).colorRes(R.color.white));
+        ((FloatingActionButton) view.findViewById(R.id.myFAB)).setImageDrawable(new IconDrawable(getContext(), MaterialIcons.md_directions_walk).colorRes(R.color.white));
 
-        drawer = (SlidingUpPanelLayout)findViewById(R.id.sliding_layout);
+        drawer = (SlidingUpPanelLayout)view.findViewById(R.id.sliding_layout);
         drawer.setPanelSlideListener(new DrawerListener());
 
-        fab = (FloatingActionButton)findViewById(R.id.myFAB);
+        fab = (FloatingActionButton)view.findViewById(R.id.myFAB);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -89,13 +90,11 @@ public class MapsActivity extends AppCompatActivity implements GoogleMap.OnMarke
             }
         });
 
-        MapsInitializer.initialize(getApplicationContext());
+        MapsInitializer.initialize(getContext());
 
         Trolley[] trolleys = null;
         Route[] routes = null;
         RouteSchedule[] schedules = null;
-
-        Bundle extras = getIntent().getExtras();
         if (extras != null){
             Parcelable[] tParcels = extras.getParcelableArray(Trolley.TROLLEY_KEY);
             trolleys = new Trolley[tParcels.length];
@@ -110,41 +109,14 @@ public class MapsActivity extends AppCompatActivity implements GoogleMap.OnMarke
             System.arraycopy(sParcels, 0, schedules, 0, sParcels.length);
         }
         setUpMapIfNeeded(trolleys, routes, schedules);
+        return view;
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        setUpMapIfNeeded(null, null, null);
-    }
-
-    @Override
-    protected void onPause(){
-        super.onPause();
-        trolleyMan.stopUpdates();
-        routeMan.stopUpdates();
-    }
-
-    /**
-     * Sets up the map if it is possible to do so (i.e., the Google Play services APK is correctly
-     * installed) and the map has not already been instantiated.. This will ensure that we only ever
-     * call setUpMap once when {@link #mMap} is not null.
-     * <p/>
-     * If it isn't installed {@link SupportMapFragment} (and
-     * {@link com.google.android.gms.maps.MapView MapView}) will show a prompt for the user to
-     * install/update the Google Play services APK on their device.
-     * <p/>
-     * A user can return to this FragmentActivity after following the prompt and correctly
-     * installing/updating/enabling the Google Play services. Since the FragmentActivity may not
-     * have been completely destroyed during this process (it is likely that it would only be
-     * stopped or paused), {@link #onCreate(Bundle)} may not be called again so we should call this
-     * method in {@link #onResume()} to guarantee that it will be called.
-     */
     private void setUpMapIfNeeded(Trolley[] trolleys, Route[] routes, RouteSchedule[] schedules) {
         // Do a null check to confirm that we have not already instantiated the map.
         if (mMap == null) {
             // Try to obtain the map from the SupportMapFragment.
-            mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map))
+            mMap = ((SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map))
                     .getMap();
             // Check if we were successful in obtaining the map.
             if (mMap != null) {
@@ -153,7 +125,7 @@ public class MapsActivity extends AppCompatActivity implements GoogleMap.OnMarke
                 mMap.setOnMapClickListener(this);
                 selectedMarker = mMap.addMarker(new MarkerOptions().position(new LatLng(0,0)).visible(false));
 
-                mMap.setInfoWindowAdapter(new MapWindowAdapter(this));
+                mMap.setInfoWindowAdapter(new MapWindowAdapter(getContext()));
 
                 //Show users current location
                 mMap.setMyLocationEnabled(true);
@@ -230,7 +202,7 @@ public class MapsActivity extends AppCompatActivity implements GoogleMap.OnMarke
                 }
                 bounds.include(new LatLng(location.getLatitude(), location.getLongitude()));
 
-                Display display = getWindowManager().getDefaultDisplay();
+                Display display = getActivity().getWindowManager().getDefaultDisplay();
                 Point size = new Point();
                 display.getSize(size);
 
@@ -241,7 +213,6 @@ public class MapsActivity extends AppCompatActivity implements GoogleMap.OnMarke
             firstFix = false;
         }
     }
-
 
     private class DrawerListener implements SlidingUpPanelLayout.PanelSlideListener {
         @Override
@@ -269,4 +240,39 @@ public class MapsActivity extends AppCompatActivity implements GoogleMap.OnMarke
 
         }
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        setUpMapIfNeeded(null, null, null);
+    }
+
+    @Override
+    public void onPause(){
+        super.onPause();
+        trolleyMan.stopUpdates();
+        routeMan.stopUpdates();
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        try {
+            mListener = (OnFragmentInteractionListener) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(context.toString()
+                    + " must implement OnFragmentInteractionListener");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
+    }
+
+    public interface OnFragmentInteractionListener {
+        public void onFragmentInteraction(Uri uri);
+    }
+
 }

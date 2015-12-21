@@ -31,7 +31,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activities.MapsActivity"
+            android:name=".activities.MainActivity"
             android:label="@string/title_activity_maps" >
             <intent-filter>
                 <action android:name="com.codeforgvl.trolleytrackerclient.MAINACTIVITY" />

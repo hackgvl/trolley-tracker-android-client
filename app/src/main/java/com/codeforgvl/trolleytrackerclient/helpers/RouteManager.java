@@ -1,7 +1,7 @@
 package com.codeforgvl.trolleytrackerclient.helpers;
 
 import com.codeforgvl.trolleytrackerclient.Constants;
-import com.codeforgvl.trolleytrackerclient.activities.MapsActivity;
+import com.codeforgvl.trolleytrackerclient.fragments.MapFragment;
 import com.codeforgvl.trolleytrackerclient.models.LatLon;
 import com.codeforgvl.trolleytrackerclient.models.Route;
 import com.codeforgvl.trolleytrackerclient.models.RouteSchedule;
@@ -14,12 +14,12 @@ import com.google.android.gms.maps.model.PolylineOptions;
  * Created by ahodges on 12/18/2015.
  */
 public class RouteManager {
-    private MapsActivity mActivity;
+    private MapFragment mapFragment;
 
     private RouteSchedule[] mSchedule;
 
-    public RouteManager(MapsActivity activity, Route[] routes, RouteSchedule[] schedules){
-        mActivity = activity;
+    public RouteManager(MapFragment activity, Route[] routes, RouteSchedule[] schedules){
+        mapFragment = activity;
         if(routes != null){
             updateRoutes(routes);
         }
@@ -51,16 +51,16 @@ public class RouteManager {
             for(LatLon p : routes[i].RouteShape){
                 routeLine.add(new LatLng(p.Lat,p.Lon));
             }
-            routeLine.color(Constants.getRouteColorForRouteNumber(mActivity, i));
-            mActivity.mMap.addPolyline(routeLine);
+            routeLine.color(Constants.getRouteColorForRouteNumber(mapFragment.getContext(), i));
+            mapFragment.mMap.addPolyline(routeLine);
 
 
             for(RouteStop s : routes[i].Stops){
-                mActivity.mMap.addMarker(new MarkerOptions()
+                mapFragment.mMap.addMarker(new MarkerOptions()
                         .title(s.Name)
                         .snippet(s.Description)
                         .anchor(0.5f, 0.5f)
-                        .icon(IconFactory.getStopIcon(mActivity.getBaseContext(), Constants.getStopColorForRouteNumber(mActivity, i)))
+                        .icon(IconFactory.getStopIcon(mapFragment.getContext(), Constants.getStopColorForRouteNumber(mapFragment.getContext(), i)))
                         .position(new LatLng(s.Lat, s.Lon)));
             }
         }

@@ -152,7 +152,7 @@ public class SplashScreen extends Activity {
 
     public void changeActivitiesIfComplete(){
         if(trolleysLoaded && routesLoaded && scheduleLoaded){
-            Intent intent = new Intent(SplashScreen.this, MapsActivity.class);
+            Intent intent = new Intent(SplashScreen.this, MainActivity.class);
             intent.putExtra(Trolley.TROLLEY_KEY, mTrolleys);
             intent.putExtra(Route.ROUTE_KEY, mRoutes);
             intent.putExtra(RouteSchedule.SCHEDULE_KEY, mSchedule);

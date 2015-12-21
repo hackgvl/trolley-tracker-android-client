@@ -1,8 +1,12 @@
 <resources>
     <string name="app_name">Trolley Tracker</string>
     <string name="title_activity_maps">Trolley Tracker</string>
+    <string name="title_activity_schedule">Schedule</string>
     <string name="loading">LOADING</string>
     <string name="menu_map">Live Map</string>
     <string name="menu_schedule">Schedule</string>
     <string name="menu_settings">Settings</string>
+
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
