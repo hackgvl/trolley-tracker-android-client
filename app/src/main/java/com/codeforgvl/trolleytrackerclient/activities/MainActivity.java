@@ -32,11 +32,14 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnFra
 
             mapFragment = MapFragment.newInstance(getIntent().getExtras());
             scheduleFragment = ScheduleFragment.newInstance(getIntent().getExtras());
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, mapFragment).commit();
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.fragment_container, scheduleFragment).hide(scheduleFragment)
+                    .add(R.id.fragment_container, mapFragment)
+                    .commit();
         }
 
         //Initialize UI
-        Toolbar myToolbar = (Toolbar)findViewById(R.id.my_toolbar);
+        final Toolbar myToolbar = (Toolbar)findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolbar);
 
         Drawer menu = new DrawerBuilder()
@@ -55,9 +58,11 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnFra
                         switch (position) {
                             case 1:
                                 getSupportFragmentManager().beginTransaction().show(mapFragment).hide(scheduleFragment).commit();
+                                myToolbar.setTitle(R.string.title_fragment_maps);
                                 break;
                             case 2:
                                 getSupportFragmentManager().beginTransaction().hide(mapFragment).show(scheduleFragment).commit();
+                                myToolbar.setTitle(R.string.title_fragment_schedule);
                                 break;
                         }
                         return false;

@@ -18,13 +18,10 @@ public class RouteManager {
 
     private RouteSchedule[] mSchedule;
 
-    public RouteManager(MapFragment activity, Route[] routes, RouteSchedule[] schedules){
+    public RouteManager(MapFragment activity, Route[] routes){
         mapFragment = activity;
         if(routes != null){
             updateRoutes(routes);
-        }
-        if(schedules != null){
-            updateSchedule(schedules);
         }
     }
 

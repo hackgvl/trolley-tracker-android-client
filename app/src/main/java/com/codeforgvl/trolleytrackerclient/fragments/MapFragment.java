@@ -58,11 +58,10 @@ public class MapFragment extends Fragment implements GoogleMap.OnMarkerClickList
         // Required empty public constructor
     }
 
-    Bundle extras = null;
+    private Bundle extras;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         extras = getArguments();
     }
 
@@ -94,7 +93,6 @@ public class MapFragment extends Fragment implements GoogleMap.OnMarkerClickList
 
         Trolley[] trolleys = null;
         Route[] routes = null;
-        RouteSchedule[] schedules = null;
         if (extras != null){
             Parcelable[] tParcels = extras.getParcelableArray(Trolley.TROLLEY_KEY);
             trolleys = new Trolley[tParcels.length];
@@ -103,16 +101,12 @@ public class MapFragment extends Fragment implements GoogleMap.OnMarkerClickList
             Parcelable[] rParcels = extras.getParcelableArray(Route.ROUTE_KEY);
             routes = new Route[rParcels.length];
             System.arraycopy(rParcels, 0, routes, 0, rParcels.length);
-
-            Parcelable[] sParcels = extras.getParcelableArray(RouteSchedule.SCHEDULE_KEY);
-            schedules = new RouteSchedule[sParcels.length];
-            System.arraycopy(sParcels, 0, schedules, 0, sParcels.length);
         }
-        setUpMapIfNeeded(trolleys, routes, schedules);
+        setUpMapIfNeeded(trolleys, routes);
         return view;
     }
 
-    private void setUpMapIfNeeded(Trolley[] trolleys, Route[] routes, RouteSchedule[] schedules) {
+    private void setUpMapIfNeeded(Trolley[] trolleys, Route[] routes) {
         // Do a null check to confirm that we have not already instantiated the map.
         if (mMap == null) {
             // Try to obtain the map from the SupportMapFragment.
@@ -134,7 +128,7 @@ public class MapFragment extends Fragment implements GoogleMap.OnMarkerClickList
 
             //Load stop/route data
             if(routeMan == null){
-                routeMan = new RouteManager(this, routes, schedules);
+                routeMan = new RouteManager(this, routes);
             }
 
             //Load current trolley position
@@ -244,7 +238,7 @@ public class MapFragment extends Fragment implements GoogleMap.OnMarkerClickList
     @Override
     public void onResume() {
         super.onResume();
-        setUpMapIfNeeded(null, null, null);
+        setUpMapIfNeeded(null, null);
     }
 
     @Override
