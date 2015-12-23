@@ -15,12 +15,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.codeforgvl.trolleytrackerclient.R;
 import com.codeforgvl.trolleytrackerclient.adapters.MapWindowAdapter;
 import com.codeforgvl.trolleytrackerclient.helpers.RouteManager;
 import com.codeforgvl.trolleytrackerclient.helpers.TrolleyManager;
 import com.codeforgvl.trolleytrackerclient.models.Route;
-import com.codeforgvl.trolleytrackerclient.models.RouteSchedule;
 import com.codeforgvl.trolleytrackerclient.models.Trolley;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -36,7 +37,7 @@ import com.joanzapata.iconify.fonts.MaterialIcons;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 public class MapFragment extends Fragment implements GoogleMap.OnMarkerClickListener, GoogleMap.OnMapClickListener, GoogleMap.OnMyLocationChangeListener  {
-    private OnFragmentInteractionListener mListener;
+    private OnNavigateScheduleRequest mListener;
 
     public GoogleMap mMap; // Might be null if Google Play services APK is not available.
 
@@ -252,10 +253,10 @@ public class MapFragment extends Fragment implements GoogleMap.OnMarkerClickList
     public void onAttach(Context context) {
         super.onAttach(context);
         try {
-            mListener = (OnFragmentInteractionListener) context;
+            mListener = (OnNavigateScheduleRequest) context;
         } catch (ClassCastException e) {
             throw new ClassCastException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
+                    + " must implement OnNavigateScheduleRequest");
         }
     }
 
@@ -265,8 +266,21 @@ public class MapFragment extends Fragment implements GoogleMap.OnMarkerClickList
         mListener = null;
     }
 
-    public interface OnFragmentInteractionListener {
-        public void onFragmentInteraction(Uri uri);
+    public interface OnNavigateScheduleRequest {
+        void onNavigateSchedule();
     }
 
+    public void showNoTrolleysDialog(){
+        new MaterialDialog.Builder(getContext())
+                .title(R.string.no_trolleys_title)
+                .content(R.string.no_trolleys_message)
+                .positiveText(R.string.no_trolleys_button)
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(MaterialDialog dialog, DialogAction which) {
+                        mListener.onNavigateSchedule();
+                    }
+                })
+                .show();
+    }
 }

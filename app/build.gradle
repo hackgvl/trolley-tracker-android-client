@@ -19,10 +19,6 @@ android {
     }
 }
 
-repositories {
-    jcenter()
-}
-
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:23.1.0'
@@ -38,4 +34,7 @@ dependencies {
     compile 'com.android.support:design:23.1.0'
     compile 'com.android.support:design:23.1.0'
     compile 'com.yqritc:recyclerview-flexibledivider:1.2.6'
+    compile('com.github.afollestad.material-dialogs:core:0.8.5.3@aar') {
+        transitive = true
+    }
 }

@@ -25,6 +25,7 @@ public class TrolleyManager {
     private MapFragment mapFragment;
     private HashMap<Integer, Marker> trolleyMarkers = new HashMap<>();
     private TrolleyUpdateTask mUpdateTask;
+    private boolean notifiedEmpty = false;
 
     public TrolleyManager(MapFragment activity, Trolley[] trolleys){
         mapFragment = activity;
@@ -75,8 +76,13 @@ public class TrolleyManager {
             trolleyMarkers.remove(deadTrolleyID);
         }
 
-        for(Integer trolleyID : trolleyMarkers.keySet()){
-            Log.d(Constants.LOG_TAG, trolleyMarkers.get(trolleyID).getPosition().toString());
+        if(trolleyMarkers.isEmpty()){
+            if(!notifiedEmpty){
+                mapFragment.showNoTrolleysDialog();
+                notifiedEmpty = true;
+            }
+        } else {
+            notifiedEmpty = false;
         }
     }
 

@@ -16,9 +16,11 @@ import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
-public class MainActivity extends AppCompatActivity implements MapFragment.OnFragmentInteractionListener {
+public class MainActivity extends AppCompatActivity implements MapFragment.OnNavigateScheduleRequest {
     private MapFragment mapFragment;
     private ScheduleFragment scheduleFragment;
+    private Toolbar myToolbar;
+    private Drawer menu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,10 +41,10 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnFra
         }
 
         //Initialize UI
-        final Toolbar myToolbar = (Toolbar)findViewById(R.id.my_toolbar);
+        myToolbar = (Toolbar)findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolbar);
 
-        Drawer menu = new DrawerBuilder()
+        menu = new DrawerBuilder()
                 .withActivity(this)
                 .withToolbar(myToolbar)
                 .withHeader(R.layout.view_menu_header)
@@ -72,8 +74,10 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnFra
     }
 
     @Override
-    public void onFragmentInteraction(Uri uri) {
-
+    public void onNavigateSchedule() {
+        getSupportFragmentManager().beginTransaction().hide(mapFragment).show(scheduleFragment).commit();
+        myToolbar.setTitle(R.string.title_fragment_schedule);
+        menu.setSelectionAtPosition(2);
     }
 
 }
