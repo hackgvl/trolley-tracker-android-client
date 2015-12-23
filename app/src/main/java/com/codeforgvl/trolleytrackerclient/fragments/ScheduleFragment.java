@@ -3,19 +3,19 @@ package com.codeforgvl.trolleytrackerclient.fragments;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.codeforgvl.trolleytrackerclient.R;
+import com.codeforgvl.trolleytrackerclient.adapters.ScheduleAdapter;
 import com.codeforgvl.trolleytrackerclient.models.RouteSchedule;
+import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
 
 import java.util.ArrayList;
-
-import it.gmariotti.cardslib.library.internal.Card;
-import it.gmariotti.cardslib.library.internal.CardArrayAdapter;
-import it.gmariotti.cardslib.library.internal.CardHeader;
-import it.gmariotti.cardslib.library.view.CardListView;
+import java.util.List;
 
 /**
  * Created by ahodges on 12/21/2015.
@@ -31,7 +31,7 @@ public class ScheduleFragment extends Fragment {
         // Required empty public constructor
     }
 
-    ArrayList<Card> schedule = new ArrayList<>();
+    ScheduleAdapter mAdapter;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,14 +39,11 @@ public class ScheduleFragment extends Fragment {
 
         if(extras != null){
             Parcelable[] sParcels = extras.getParcelableArray(RouteSchedule.SCHEDULE_KEY);
+            List<RouteSchedule> rsList = new ArrayList<>(sParcels.length);
             for(Parcelable s : sParcels){
-                RouteSchedule rs = (RouteSchedule)s;
-                Card card = new Card(getContext());
-                CardHeader header = new CardHeader(getContext());
-                header.setTitle(String.format(getString(R.string.schedule_title), rs.DayOfWeek, rs.StartTime, rs.EndTime));
-                card.addCardHeader(header);
-                schedule.add(card);
+                rsList.add((RouteSchedule)s);
             }
+            mAdapter = new ScheduleAdapter(rsList);
         }
     }
 
@@ -55,10 +52,11 @@ public class ScheduleFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_schedule, container, false);
 
-        CardArrayAdapter mCardArrayAdapter = new CardArrayAdapter(getContext(), schedule);
-        CardListView listView = (CardListView)view.findViewById(R.id.scheduleList);
+        RecyclerView listView = (RecyclerView)view.findViewById(R.id.scheduleList);
         if(listView != null){
-            listView.setAdapter(mCardArrayAdapter);
+            listView.setAdapter(mAdapter);
+            listView.addItemDecoration(new HorizontalDividerItemDecoration.Builder(getContext()).build());
+            listView.setLayoutManager(new LinearLayoutManager(getContext()));
         }
 
         return view;

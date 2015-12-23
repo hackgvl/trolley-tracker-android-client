@@ -19,6 +19,10 @@ android {
     }
 }
 
+repositories {
+    jcenter()
+}
+
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:23.1.0'
@@ -33,5 +37,5 @@ dependencies {
     compile 'joda-time:joda-time:2.8.2' // for joda
     compile 'com.android.support:design:23.1.0'
     compile 'com.android.support:design:23.1.0'
-    compile 'com.github.gabrielemariotti.cards:cardslib-core:2.1.0'
+    compile 'com.yqritc:recyclerview-flexibledivider:1.2.6'
 }
