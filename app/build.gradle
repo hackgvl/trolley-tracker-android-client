@@ -8,8 +8,8 @@ android {
         applicationId "com.codeforgvl.trolleytrackerclient"
         minSdkVersion 14
         targetSdkVersion 23
-        versionCode 8
-        versionName "1.06"
+        versionCode 9
+        versionName "1.1"
     }
     buildTypes {
         release {
