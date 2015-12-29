@@ -6,7 +6,7 @@
     <string name="menu_map">Live Map</string>
     <string name="menu_schedule">Schedule</string>
     <string name="menu_settings">Settings</string>
-    <string name="schedule_title">%1$s %2$s - %3$s</string>
+    <string name="schedule_title">%1$s - %2$s</string>
     <string name="no_trolleys_title">No Trolleys Available</string>
     <string name="no_trolleys_message">There are no trolleys running at this time. Please refer to the schedule to find the next scheduled trolley route.</string>
     <string name="no_trolleys_button">View Schedule</string>

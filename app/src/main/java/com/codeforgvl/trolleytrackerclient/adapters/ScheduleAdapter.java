@@ -8,15 +8,23 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.codeforgvl.trolleytrackerclient.R;
-import com.codeforgvl.trolleytrackerclient.models.Route;
-import com.codeforgvl.trolleytrackerclient.models.RouteSchedule;
+import com.codeforgvl.trolleytrackerclient.models.ScheduledRoute;
+import com.codeforgvl.trolleytrackerclient.models.json.RouteSchedule;
 
+import org.joda.time.DateTime;
+
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 /**
  * Created by Adam Hodges on 12/23/2015.
  */
 public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHolder> {
+
+    private final Context mContext;
+    private List<ScheduledRoute> mSchedules;
+
     // Provide a direct reference to each of the views within a data item
     // Used to cache the views within the item layout for fast access
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -38,19 +46,18 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
         }
     }
 
-    private List<RouteSchedule> mSchedules;
-    public ScheduleAdapter(List<RouteSchedule> schedules){
+    public ScheduleAdapter(Context context, List<ScheduledRoute> schedules){
+        mContext = context;
         mSchedules = schedules;
     }
 
     // Usually involves inflating a layout from XML and returning the holder
     @Override
     public ScheduleAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        Context context = parent.getContext();
-        LayoutInflater inflater = LayoutInflater.from(context);
+        LayoutInflater inflater = LayoutInflater.from(mContext);
 
         // Inflate the custom layout
-        View scheduleView = inflater.inflate(R.layout.view_item_schedule, parent, false);
+        View scheduleView = inflater.inflate(R.layout.view_schedule_item, parent, false);
 
         // Return a new holder instance
         ViewHolder viewHolder = new ViewHolder(scheduleView);
@@ -61,11 +68,17 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
     @Override
     public void onBindViewHolder(ScheduleAdapter.ViewHolder viewHolder, int position) {
         // Get the data model based on position
-        RouteSchedule rs = mSchedules.get(position);
+        ScheduledRoute sr = mSchedules.get(position);
+        RouteSchedule rs = sr.getRouteSchedule();
 
         // Set item views based on the data model
-        viewHolder.timeTextView.setText(String.format(viewHolder.parentView.getContext().getString(R.string.schedule_title), rs.DayOfWeek, rs.StartTime, rs.EndTime));
+        DateTime start = sr.getInterval().getStart();
+        DateTime end = sr.getInterval().getEnd();
+        viewHolder.timeTextView.setText(String.format(viewHolder.parentView.getContext().getString(R.string.schedule_title), rs.StartTime, rs.EndTime));
         viewHolder.routeNameView.setText(rs.RouteLongName);
+
+        viewHolder.parentView.setSelected(sr.getInterval().containsNow());
+        viewHolder.parentView.setEnabled(!sr.getInterval().getEnd().isBeforeNow());
     }
 
     // Return the total count of items

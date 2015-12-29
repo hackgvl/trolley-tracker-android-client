@@ -7,7 +7,7 @@ import com.codeforgvl.trolleytrackerclient.Constants;
 import com.codeforgvl.trolleytrackerclient.R;
 import com.codeforgvl.trolleytrackerclient.data.TrolleyAPI;
 import com.codeforgvl.trolleytrackerclient.fragments.MapFragment;
-import com.codeforgvl.trolleytrackerclient.models.Trolley;
+import com.codeforgvl.trolleytrackerclient.models.json.Trolley;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;

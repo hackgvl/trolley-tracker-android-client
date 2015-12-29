@@ -54,4 +54,14 @@ public class Constants {
                 return ContextCompat.getColor(context, R.color.stop5);
         }
     }
+
+    public enum DayOfWeek {
+        Monday,
+        Tuesday,
+        Wednesday,
+        Thursday,
+        Friday,
+        Saturday,
+        Sunday
+    }
 }

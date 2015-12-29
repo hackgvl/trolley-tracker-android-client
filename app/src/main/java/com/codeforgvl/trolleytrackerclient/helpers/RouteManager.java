@@ -2,10 +2,10 @@ package com.codeforgvl.trolleytrackerclient.helpers;
 
 import com.codeforgvl.trolleytrackerclient.Constants;
 import com.codeforgvl.trolleytrackerclient.fragments.MapFragment;
-import com.codeforgvl.trolleytrackerclient.models.LatLon;
-import com.codeforgvl.trolleytrackerclient.models.Route;
-import com.codeforgvl.trolleytrackerclient.models.RouteSchedule;
-import com.codeforgvl.trolleytrackerclient.models.RouteStop;
+import com.codeforgvl.trolleytrackerclient.models.json.LatLon;
+import com.codeforgvl.trolleytrackerclient.models.json.Route;
+import com.codeforgvl.trolleytrackerclient.models.json.RouteSchedule;
+import com.codeforgvl.trolleytrackerclient.models.json.RouteStop;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;

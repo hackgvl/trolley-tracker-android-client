@@ -12,9 +12,9 @@ import android.widget.ProgressBar;
 
 import com.codeforgvl.trolleytrackerclient.R;
 import com.codeforgvl.trolleytrackerclient.data.TrolleyAPI;
-import com.codeforgvl.trolleytrackerclient.models.RouteSchedule;
-import com.codeforgvl.trolleytrackerclient.models.Trolley;
-import com.codeforgvl.trolleytrackerclient.models.Route;
+import com.codeforgvl.trolleytrackerclient.models.json.RouteSchedule;
+import com.codeforgvl.trolleytrackerclient.models.json.Trolley;
+import com.codeforgvl.trolleytrackerclient.models.json.Route;
 
 /**
  * Created by ahodges on 8/26/2015.

@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:drawable="@color/light_green" android:state_pressed="false" android:state_selected="true"></item>
-    <item android:drawable="@android:color/background_light" android:state_pressed="false" android:state_selected="false"></item>
+    <item android:state_selected="true" android:state_enabled="true">
+        <color android:color="@color/light_green"></color>
+    </item>
+    <item android:state_selected="false" android:state_enabled="true">
+        <color android:color="@color/background_light"></color>
+    </item>
+    <item android:state_enabled="false">
+        <color android:color="@color/background_gray"></color>
+    </item>
 </selector>
