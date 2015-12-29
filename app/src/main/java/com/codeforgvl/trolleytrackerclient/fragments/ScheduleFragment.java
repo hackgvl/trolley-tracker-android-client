@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 
 import com.codeforgvl.trolleytrackerclient.R;
 import com.codeforgvl.trolleytrackerclient.adapters.ScheduleAdapter;
+import com.codeforgvl.trolleytrackerclient.models.Route;
 import com.codeforgvl.trolleytrackerclient.models.RouteSchedule;
 import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
 
@@ -31,6 +32,7 @@ public class ScheduleFragment extends Fragment {
         // Required empty public constructor
     }
 
+    Route[] activeRoutes;
     ScheduleAdapter mAdapter;
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -44,6 +46,22 @@ public class ScheduleFragment extends Fragment {
                 rsList.add((RouteSchedule)s);
             }
             mAdapter = new ScheduleAdapter(rsList);
+
+            Parcelable[] rParcels = extras.getParcelableArray(Route.ROUTE_KEY);
+            activeRoutes = new Route[rParcels.length];
+            System.arraycopy(rParcels, 0, activeRoutes, 0, rParcels.length);
+
+            for(Route r : activeRoutes){
+               // mAdapter
+            }
+        }
+    }
+
+    @Override
+    public void onHiddenChanged(boolean hidden){
+        super.onHiddenChanged(hidden);
+        if (!hidden) {
+            getActivity().setTitle(R.string.title_fragment_schedule);
         }
     }
 

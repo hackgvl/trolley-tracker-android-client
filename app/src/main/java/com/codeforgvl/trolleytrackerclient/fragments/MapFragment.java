@@ -243,6 +243,14 @@ public class MapFragment extends Fragment implements GoogleMap.OnMarkerClickList
     }
 
     @Override
+    public void onHiddenChanged(boolean hidden){
+        super.onHiddenChanged(hidden);
+        if (!hidden) {
+            getActivity().setTitle(R.string.title_fragment_maps);
+        }
+    }
+
+    @Override
     public void onPause(){
         super.onPause();
         trolleyMan.stopUpdates();
