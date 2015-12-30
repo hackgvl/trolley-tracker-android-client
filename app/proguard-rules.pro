@@ -15,3 +15,26 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
+-keep class org.joda.time.** {*;}
+-keep public class com.google.android.gms.* { public *; }
+-keepnames class org.apache.** {*;}
+-keep public class org.apache.** {*;}
+-dontwarn com.google.android.gms.**
+
+## GSON 2.2.4 specific rules ##
+
+# Gson uses generic type information stored in a class file when working with fields. Proguard
+# removes such information by default, so configure it to keep all of it.
+-keepattributes Signature
+
+# For using GSON @Expose annotation
+-keepattributes *Annotation*
+
+-keepattributes EnclosingMethod
+
+# Gson specific classes
+-keep class sun.misc.Unsafe { *; }
+-keep class com.google.gson.stream.** { *; }
+
+#Don't obfuscate member names for json classes - these are used for deserializing
+-keepclassmembers class com.codeforgvl.trolleytrackerclient.models.json.** {*;}

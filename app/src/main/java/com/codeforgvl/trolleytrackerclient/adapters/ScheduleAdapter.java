@@ -11,10 +11,6 @@ import com.codeforgvl.trolleytrackerclient.R;
 import com.codeforgvl.trolleytrackerclient.models.ScheduledRoute;
 import com.codeforgvl.trolleytrackerclient.models.json.RouteSchedule;
 
-import org.joda.time.DateTime;
-
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 /**
@@ -72,9 +68,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
         RouteSchedule rs = sr.getRouteSchedule();
 
         // Set item views based on the data model
-        DateTime start = sr.getInterval().getStart();
-        DateTime end = sr.getInterval().getEnd();
-        viewHolder.timeTextView.setText(String.format(viewHolder.parentView.getContext().getString(R.string.schedule_title), rs.StartTime, rs.EndTime));
+        viewHolder.timeTextView.setText(String.format(viewHolder.parentView.getContext().getString(R.string.schedule_time_format), rs.StartTime, rs.EndTime));
         viewHolder.routeNameView.setText(rs.RouteLongName);
 
         viewHolder.parentView.setSelected(sr.getInterval().containsNow());

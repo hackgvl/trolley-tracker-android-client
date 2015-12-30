@@ -8,12 +8,12 @@ android {
         applicationId "com.codeforgvl.trolleytrackerclient"
         minSdkVersion 14
         targetSdkVersion 23
-        versionCode 9
-        versionName "1.1"
+        versionCode 10
+        versionName "1.11"
     }
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
@@ -21,6 +21,7 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_7
         targetCompatibility JavaVersion.VERSION_1_7
     }
+    useLibrary 'org.apache.http.legacy'
 }
 
 dependencies {
@@ -34,7 +35,7 @@ dependencies {
     compile('com.mikepenz:materialdrawer:4.5.9@aar') {
         transitive = true
     }
-    compile 'joda-time:joda-time:2.8.2' // for joda
+    compile 'net.danlew:android.joda:2.9.1' // for joda
     compile 'com.android.support:design:23.1.0'
     compile 'com.android.support:design:23.1.0'
     compile 'com.yqritc:recyclerview-flexibledivider:1.2.6'

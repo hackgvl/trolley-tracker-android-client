@@ -1,9 +1,13 @@
 package com.codeforgvl.trolleytrackerclient.models;
 
+import com.codeforgvl.trolleytrackerclient.Constants;
+import com.codeforgvl.trolleytrackerclient.Utils;
 import com.codeforgvl.trolleytrackerclient.models.json.RouteSchedule;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeFieldType;
 import org.joda.time.Interval;
+import org.joda.time.Partial;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
@@ -20,14 +24,16 @@ public class ScheduledRoute implements Comparable {
     public ScheduledRoute(RouteSchedule rs) {
         schedule = rs;
 
+        DateTime now = DateTime.now();
+        Partial dayPartial = new Partial().with(DateTimeFieldType.dayOfWeek(), Constants.DayOfWeek.valueOf(rs.DayOfWeek).ordinal() + 1);
+        DateTime startDay = Utils.rollForwardWith(now, dayPartial);
+
         DateTime schedStartDate = DateTime.parse(rs.DayOfWeek + " " + rs.StartTime, INPUT_DATE_FORMAT);
         DateTime schedEndDate = DateTime.parse(rs.DayOfWeek + " " + rs.EndTime, INPUT_DATE_FORMAT);
 
-        DateTime nextStart = DateTime.now()
-                .withDayOfWeek(schedStartDate.dayOfWeek().get())
+        DateTime nextStart = startDay
                 .withTime(schedStartDate.getHourOfDay(), schedStartDate.getMinuteOfHour(), 0, 0);
-        DateTime nextEnd = DateTime.now()
-                .withDayOfWeek(schedEndDate.dayOfWeek().get())
+        DateTime nextEnd = startDay
                 .withTime(schedEndDate.getHourOfDay(), schedEndDate.getMinuteOfHour(), 0, 0);
 
         dayOfWeek = nextStart.getDayOfWeek();
@@ -41,10 +47,6 @@ public class ScheduledRoute implements Comparable {
     }
     public int getDayOfWeek(){
         return dayOfWeek;
-    }
-
-    public String getStartDate(){
-        return interval.getStart().toString("M/d");
     }
 
     @Override

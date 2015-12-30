@@ -9,7 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.codeforgvl.trolleytrackerclient.Constants;
 import com.codeforgvl.trolleytrackerclient.R;
 import com.codeforgvl.trolleytrackerclient.adapters.ScheduleAdapter;
 import com.codeforgvl.trolleytrackerclient.adapters.SimpleSectionedRecyclerViewAdapter;
@@ -18,6 +17,7 @@ import com.codeforgvl.trolleytrackerclient.models.json.RouteSchedule;
 import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
 
 import org.joda.time.DateTime;
+import org.joda.time.DurationFieldType;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -41,7 +41,6 @@ public class ScheduleFragment extends Fragment {
 
 
     SimpleSectionedRecyclerViewAdapter mSectionedAdapter;
-    int scrollTo = 0;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -54,14 +53,12 @@ public class ScheduleFragment extends Fragment {
             //Create list of ScheduledRoute objects, count them by day
             List<ScheduledRoute> srList = new ArrayList<>(sParcels.length);
             HashMap<Integer,Integer> dayCount = new HashMap<>(7);
-            HashMap<Integer,String> dayDate = new HashMap<>(7);
             for(Parcelable s : sParcels){
                 RouteSchedule rs = (RouteSchedule)s;
                 ScheduledRoute sr = new ScheduledRoute(rs);
 
                 if(!dayCount.containsKey(sr.getDayOfWeek())){
                     dayCount.put(sr.getDayOfWeek(), 1);
-                    dayDate.put(sr.getDayOfWeek(), sr.getStartDate());
                 } else {
                     dayCount.put(sr.getDayOfWeek(), dayCount.get(sr.getDayOfWeek()) + 1);
                 }
@@ -70,19 +67,17 @@ public class ScheduleFragment extends Fragment {
             }
 
             //Insert section headers appropriately
-            int today = DateTime.now().dayOfWeek().get();
-
+            DateTime now = DateTime.now();
             List<SimpleSectionedRecyclerViewAdapter.Section> sections = new ArrayList<>(7);
             int entryNo = 0;
             for(int day = 1; day < 8; day++){
-                if(day == today){
-                    scrollTo = entryNo + 1;
-                }
-                String header = Constants.DayOfWeek.values()[day - 1].name() + " " + dayDate.get(day);
+                String header = now.toString(getString(R.string.schedule_date_format));
                 sections.add(new SimpleSectionedRecyclerViewAdapter.Section(entryNo, header));
-                if(dayCount.containsKey(day)){
-                    entryNo += dayCount.get(day);
+                if(dayCount.containsKey(now.getDayOfWeek())){
+                    entryNo += dayCount.get(now.getDayOfWeek());
                 }
+
+                now = now.withFieldAdded(DurationFieldType.days(), 1);
             }
 
             //Sort schedule
@@ -116,7 +111,6 @@ public class ScheduleFragment extends Fragment {
             listView.addItemDecoration(new HorizontalDividerItemDecoration.Builder(getContext()).build());
             LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
             listView.setLayoutManager(layoutManager);
-            layoutManager.scrollToPosition(scrollTo);
         }
 
         return view;
