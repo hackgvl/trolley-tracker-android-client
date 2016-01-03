@@ -37,4 +37,4 @@
 -keep class com.google.gson.stream.** { *; }
 
 #Don't obfuscate member names for json classes - these are used for deserializing
--keepclassmembers class com.codeforgvl.trolleytrackerclient.models.json.** {*;}
+-dontobfuscate

@@ -1,6 +1,7 @@
 package com.codeforgvl.trolleytrackerclient.helpers;
 
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.util.Log;
 
 import com.codeforgvl.trolleytrackerclient.Constants;
@@ -22,10 +23,13 @@ import java.util.Set;
  * Created by ahodges on 12/18/2015.
  */
 public class TrolleyManager {
+    public static final String NOTIFIED_EMPTY_KEY = "NOTIFIED_EMPTY";
     private MapFragment mapFragment;
     private HashMap<Integer, Marker> trolleyMarkers = new HashMap<>();
     private TrolleyUpdateTask mUpdateTask;
     private boolean notifiedEmpty = false;
+
+    private Trolley[] lastTrolleyUpdate;
 
     public TrolleyManager(MapFragment activity, Trolley[] trolleys){
         mapFragment = activity;
@@ -53,6 +57,10 @@ public class TrolleyManager {
         if(mUpdateTask != null){
             mUpdateTask.cancel(false);
         }
+    }
+
+    public void setNotifiedEmpty(boolean val){
+        notifiedEmpty = val;
     }
 
     private void updateTrolleys(Trolley[] trolleys){
@@ -84,6 +92,8 @@ public class TrolleyManager {
         } else {
             notifiedEmpty = false;
         }
+
+        lastTrolleyUpdate = trolleys;
     }
 
     private class TrolleyUpdateTask extends AsyncTask<Void, Trolley[], Void> {
@@ -111,5 +121,10 @@ public class TrolleyManager {
 
             updateTrolleys(trolleyUpdate[0]);
         }
+    }
+
+    public void saveInstanceState(Bundle savedInstanceState){
+        savedInstanceState.putParcelableArray(Trolley.TROLLEY_KEY, lastTrolleyUpdate);
+        savedInstanceState.putBoolean(NOTIFIED_EMPTY_KEY, notifiedEmpty);
     }
 }

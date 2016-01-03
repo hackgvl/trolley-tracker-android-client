@@ -2,7 +2,9 @@ package com.codeforgvl.trolleytrackerclient.fragments;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.Point;
+import android.graphics.drawable.GradientDrawable;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
@@ -59,11 +61,11 @@ public class MapFragment extends Fragment implements GoogleMap.OnMarkerClickList
         // Required empty public constructor
     }
 
-    private Bundle extras;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        extras = getArguments();
+
+        MapsInitializer.initialize(getContext());
     }
 
     @Override
@@ -90,24 +92,61 @@ public class MapFragment extends Fragment implements GoogleMap.OnMarkerClickList
             }
         });
 
-        MapsInitializer.initialize(getContext());
+        setUpMapIfNeeded();
 
-        Trolley[] trolleys = null;
-        Route[] routes = null;
-        if (extras != null){
-            Parcelable[] tParcels = extras.getParcelableArray(Trolley.TROLLEY_KEY);
-            trolleys = new Trolley[tParcels.length];
-            System.arraycopy(tParcels, 0, trolleys, 0, tParcels.length);
+        processBundle(getArguments());
+        routeMan.startUpdates();
+        trolleyMan.startUpdates();
 
-            Parcelable[] rParcels = extras.getParcelableArray(Route.ROUTE_KEY);
-            routes = new Route[rParcels.length];
-            System.arraycopy(rParcels, 0, routes, 0, rParcels.length);
-        }
-        setUpMapIfNeeded(trolleys, routes);
         return view;
     }
 
-    private void setUpMapIfNeeded(Trolley[] trolleys, Route[] routes) {
+    private void processBundle(Bundle b){
+        if(b == null){
+            return;
+        }
+        Trolley[] trolleys = null;
+        Route[] routes = null;
+        if (b != null){
+            Parcelable[] tParcels = b.getParcelableArray(Trolley.TROLLEY_KEY);
+            trolleys = new Trolley[tParcels.length];
+            System.arraycopy(tParcels, 0, trolleys, 0, tParcels.length);
+
+            Parcelable[] rParcels = b.getParcelableArray(Route.ROUTE_KEY);
+            routes = new Route[rParcels.length];
+            System.arraycopy(rParcels, 0, routes, 0, rParcels.length);
+        }
+
+        //Load stop/route data
+        if(routeMan == null){
+            routeMan = new RouteManager(this, routes);
+        }
+
+        //Load current trolley position
+        if(trolleyMan == null){
+            trolleyMan = new TrolleyManager(this, trolleys);
+        }
+
+        trolleyMan.setNotifiedEmpty(b.getBoolean(TrolleyManager.NOTIFIED_EMPTY_KEY, false));
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState){
+        super.onActivityCreated(savedInstanceState);
+
+        if (savedInstanceState != null){
+            processBundle(savedInstanceState);
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState){
+        super.onSaveInstanceState(outState);
+        trolleyMan.saveInstanceState(outState);
+        routeMan.saveInstanceState(outState);
+    }
+
+    private void setUpMapIfNeeded() {
         // Do a null check to confirm that we have not already instantiated the map.
         if (mMap == null) {
             // Try to obtain the map from the SupportMapFragment.
@@ -118,7 +157,7 @@ public class MapFragment extends Fragment implements GoogleMap.OnMarkerClickList
                 //Capture marker clicks, show 'selected' marker
                 mMap.setOnMarkerClickListener(this);
                 mMap.setOnMapClickListener(this);
-                selectedMarker = mMap.addMarker(new MarkerOptions().position(new LatLng(0,0)).visible(false));
+                selectedMarker = mMap.addMarker(new MarkerOptions().position(new LatLng(0, 0)).visible(false));
 
                 mMap.setInfoWindowAdapter(new MapWindowAdapter(getContext()));
 
@@ -126,20 +165,7 @@ public class MapFragment extends Fragment implements GoogleMap.OnMarkerClickList
                 mMap.setMyLocationEnabled(true);
                 mMap.setOnMyLocationChangeListener(this);
             }
-
-            //Load stop/route data
-            if(routeMan == null){
-                routeMan = new RouteManager(this, routes);
-            }
-
-            //Load current trolley position
-            if(trolleyMan == null){
-                trolleyMan = new TrolleyManager(this, trolleys);
-            }
         }
-
-        routeMan.startUpdates();
-        trolleyMan.startUpdates();
     }
 
 
@@ -190,6 +216,11 @@ public class MapFragment extends Fragment implements GoogleMap.OnMarkerClickList
     @Override
     public void onMyLocationChange(Location location) {
         if(firstFix){
+            View mapView = getActivity().findViewById(R.id.map);
+            if(mapView.getHeight() == 0 || mapView.getWidth() == 0){
+                return; //map layout not rendered yet
+            }
+
             if(!trolleyMan.isEmpty()){
                 LatLngBounds.Builder bounds = new LatLngBounds.Builder();
                 for(Marker m : trolleyMan.getMarkers()){
@@ -201,8 +232,10 @@ public class MapFragment extends Fragment implements GoogleMap.OnMarkerClickList
                 Point size = new Point();
                 display.getSize(size);
 
-                int padding = size.x / 4;
+
+                int padding = ((getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)? size.x : size.y) / 4;
                 CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds.build(), padding);
+
                 mMap.animateCamera(cu);
             }
             firstFix = false;
@@ -239,7 +272,7 @@ public class MapFragment extends Fragment implements GoogleMap.OnMarkerClickList
     @Override
     public void onResume() {
         super.onResume();
-        setUpMapIfNeeded(null, null);
+        setUpMapIfNeeded();
     }
 
     @Override

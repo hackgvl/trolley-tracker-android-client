@@ -29,6 +29,8 @@ import java.util.List;
  */
 public class ScheduleFragment extends Fragment {
 
+    RouteSchedule[] routeSchedules;
+
     public static ScheduleFragment newInstance(Bundle args) {
         ScheduleFragment fragment = new ScheduleFragment();
         fragment.setArguments(args);
@@ -48,47 +50,68 @@ public class ScheduleFragment extends Fragment {
         Bundle extras = getArguments();
 
         if(extras != null){
-            Parcelable[] sParcels = extras.getParcelableArray(RouteSchedule.SCHEDULE_KEY);
-
-            //Create list of ScheduledRoute objects, count them by day
-            List<ScheduledRoute> srList = new ArrayList<>(sParcels.length);
-            HashMap<Integer,Integer> dayCount = new HashMap<>(7);
-            for(Parcelable s : sParcels){
-                RouteSchedule rs = (RouteSchedule)s;
-                ScheduledRoute sr = new ScheduledRoute(rs);
-
-                if(!dayCount.containsKey(sr.getDayOfWeek())){
-                    dayCount.put(sr.getDayOfWeek(), 1);
-                } else {
-                    dayCount.put(sr.getDayOfWeek(), dayCount.get(sr.getDayOfWeek()) + 1);
-                }
-
-                srList.add(sr);
-            }
-
-            //Insert section headers appropriately
-            DateTime now = DateTime.now();
-            List<SimpleSectionedRecyclerViewAdapter.Section> sections = new ArrayList<>(7);
-            int entryNo = 0;
-            for(int day = 1; day < 8; day++){
-                String header = now.toString(getString(R.string.schedule_date_format));
-                sections.add(new SimpleSectionedRecyclerViewAdapter.Section(entryNo, header));
-                if(dayCount.containsKey(now.getDayOfWeek())){
-                    entryNo += dayCount.get(now.getDayOfWeek());
-                }
-
-                now = now.withFieldAdded(DurationFieldType.days(), 1);
-            }
-
-            //Sort schedule
-            Collections.sort(srList);
-
-            //Create adapters
-            ScheduleAdapter mAdapter = new ScheduleAdapter(getContext(), srList);
-            SimpleSectionedRecyclerViewAdapter.Section[] dummy = new SimpleSectionedRecyclerViewAdapter.Section[sections.size()];
-            mSectionedAdapter = new SimpleSectionedRecyclerViewAdapter(getContext(), R.layout.view_schedule_header, R.id.section_text, mAdapter);
-            mSectionedAdapter.setSections(sections.toArray(dummy));
+            processBundle(extras);
         }
+    }
+
+    private void processBundle(Bundle b){
+        if(b == null){
+            return;
+        }
+        Parcelable[] sParcels = b.getParcelableArray(RouteSchedule.SCHEDULE_KEY);
+        routeSchedules = new RouteSchedule[sParcels.length];
+        System.arraycopy(sParcels, 0, routeSchedules, 0, sParcels.length);
+
+        //Create list of ScheduledRoute objects, count them by day
+        List<ScheduledRoute> srList = new ArrayList<>(routeSchedules.length);
+        HashMap<Integer,Integer> dayCount = new HashMap<>(7);
+        for(RouteSchedule rs : routeSchedules){
+            ScheduledRoute sr = new ScheduledRoute(rs);
+
+            if(!dayCount.containsKey(sr.getDayOfWeek())){
+                dayCount.put(sr.getDayOfWeek(), 1);
+            } else {
+                dayCount.put(sr.getDayOfWeek(), dayCount.get(sr.getDayOfWeek()) + 1);
+            }
+
+            srList.add(sr);
+        }
+
+        //Insert section headers appropriately
+        DateTime now = DateTime.now();
+        List<SimpleSectionedRecyclerViewAdapter.Section> sections = new ArrayList<>(7);
+        int entryNo = 0;
+        for(int day = 1; day < 8; day++){
+            String header = now.toString(getString(R.string.schedule_date_format));
+            sections.add(new SimpleSectionedRecyclerViewAdapter.Section(entryNo, header));
+            if(dayCount.containsKey(now.getDayOfWeek())){
+                entryNo += dayCount.get(now.getDayOfWeek());
+            }
+
+            now = now.withFieldAdded(DurationFieldType.days(), 1);
+        }
+
+        //Sort schedule
+        Collections.sort(srList);
+
+        //Create adapters
+        ScheduleAdapter mAdapter = new ScheduleAdapter(getContext(), srList);
+        SimpleSectionedRecyclerViewAdapter.Section[] dummy = new SimpleSectionedRecyclerViewAdapter.Section[sections.size()];
+        mSectionedAdapter = new SimpleSectionedRecyclerViewAdapter(getContext(), R.layout.view_schedule_header, R.id.section_text, mAdapter);
+        mSectionedAdapter.setSections(sections.toArray(dummy));
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState){
+        super.onActivityCreated(savedInstanceState);
+
+        processBundle(savedInstanceState);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState){
+        super.onSaveInstanceState(outState);
+        outState.putParcelableArray(RouteSchedule.SCHEDULE_KEY, routeSchedules);
     }
 
     @Override

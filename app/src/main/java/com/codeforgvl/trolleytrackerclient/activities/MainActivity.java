@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import com.codeforgvl.trolleytrackerclient.R;
+import com.codeforgvl.trolleytrackerclient.Utils;
 import com.codeforgvl.trolleytrackerclient.fragments.MapFragment;
 import com.codeforgvl.trolleytrackerclient.fragments.ScheduleFragment;
 import com.joanzapata.iconify.IconDrawable;
@@ -21,6 +22,7 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnNav
     public final static int SCHEDULE_FRAGMENT_ID = 2;
     public final static String MAP_FRAGMENT_TAG = "MAP_FRAGMENT";
     public final static String SCHEDULE_FRAGMENT_TAG = "SCHEDULE_FRAGMENT";
+    public final static String ACTIVE_FRAGMENT_TAG = "ACTIVE_FRAGMENT";
 
     private MapFragment mapFragment;
     private ScheduleFragment scheduleFragment;
@@ -31,18 +33,37 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnNav
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        int selectedFragmentID = MAP_FRAGMENT_ID;
         if(findViewById(R.id.fragment_container) != null){
             if(savedInstanceState != null){
-                return;
-            }
+                mapFragment = (MapFragment)getSupportFragmentManager().getFragment(savedInstanceState, MAP_FRAGMENT_TAG);
+                scheduleFragment = (ScheduleFragment)getSupportFragmentManager().getFragment(savedInstanceState, SCHEDULE_FRAGMENT_TAG);
 
-            getSupportFragmentManager().addOnBackStackChangedListener(this);
-            mapFragment = MapFragment.newInstance(getIntent().getExtras());
-            scheduleFragment = ScheduleFragment.newInstance(getIntent().getExtras());
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.fragment_container, scheduleFragment, SCHEDULE_FRAGMENT_TAG).hide(scheduleFragment)
-                    .add(R.id.fragment_container, mapFragment, MAP_FRAGMENT_TAG)
-                    .commit();
+                String activeFragment = savedInstanceState.getString(ACTIVE_FRAGMENT_TAG);
+                if(activeFragment != null){
+                    switch (activeFragment){
+                        case MAP_FRAGMENT_TAG:
+                            showMap();
+                            selectedFragmentID = MAP_FRAGMENT_ID;
+                            break;
+                        case SCHEDULE_FRAGMENT_TAG:
+                            showSchedule();
+                            selectedFragmentID = SCHEDULE_FRAGMENT_ID;
+                            break;
+                    }
+                }
+
+            } else {
+
+                mapFragment = MapFragment.newInstance(getIntent().getExtras());
+                scheduleFragment = ScheduleFragment.newInstance(getIntent().getExtras());
+
+                getSupportFragmentManager().beginTransaction()
+                        .add(R.id.fragment_container, scheduleFragment, SCHEDULE_FRAGMENT_TAG).hide(scheduleFragment)
+                        .add(R.id.fragment_container, mapFragment, MAP_FRAGMENT_TAG)
+                        .commit();
+                getSupportFragmentManager().addOnBackStackChangedListener(this);
+            }
         }
 
         //Initialize UI
@@ -51,6 +72,7 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnNav
 
         menu = new DrawerBuilder()
                 .withActivity(this)
+                .withSelectedItem(selectedFragmentID)
                 .withToolbar(myToolbar)
                 .withHeader(R.layout.view_menu_header)
                 .addDrawerItems(
@@ -64,22 +86,39 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnNav
                     public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
                         switch (drawerItem.getIdentifier()) {
                             case MAP_FRAGMENT_ID:
-                                getSupportFragmentManager().beginTransaction().addToBackStack(MAP_FRAGMENT_TAG)
-                                        .show(mapFragment)
-                                        .hide(scheduleFragment)
-                                        .commit();
+                                showMap();
                                 break;
                             case SCHEDULE_FRAGMENT_ID:
-                                getSupportFragmentManager().beginTransaction().addToBackStack(SCHEDULE_FRAGMENT_TAG)
-                                        .hide(mapFragment)
-                                        .show(scheduleFragment)
-                                        .commit();
+                                showSchedule();
                                 break;
                         }
                         return false;
                     }
                 })
                 .build();
+    }
+
+    private void showMap(){
+        getSupportFragmentManager().beginTransaction().addToBackStack(MAP_FRAGMENT_TAG)
+                .show(mapFragment)
+                .hide(scheduleFragment)
+                .commit();
+    }
+
+    private void showSchedule(){
+        getSupportFragmentManager().beginTransaction().addToBackStack(SCHEDULE_FRAGMENT_TAG)
+                .hide(mapFragment)
+                .show(scheduleFragment)
+                .commit();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        getSupportFragmentManager().putFragment(outState, MAP_FRAGMENT_TAG, mapFragment);
+        getSupportFragmentManager().putFragment(outState, SCHEDULE_FRAGMENT_TAG, scheduleFragment);
+        outState.putString(ACTIVE_FRAGMENT_TAG, Utils.getActiveFragmentName(getSupportFragmentManager()));
     }
 
     @Override
@@ -89,11 +128,8 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnNav
 
     @Override
     public void onBackStackChanged() {
-        FragmentManager fm = getSupportFragmentManager();
-        int stackSize = fm.getBackStackEntryCount();
-        if(stackSize > 0){
-            String fragTag = fm.getBackStackEntryAt(stackSize - 1).getName();
-
+        String fragTag = Utils.getActiveFragmentName(getSupportFragmentManager());
+        if(fragTag != null){
             switch (fragTag){
                 case MAP_FRAGMENT_TAG:
                     menu.setSelection(MAP_FRAGMENT_ID, false);

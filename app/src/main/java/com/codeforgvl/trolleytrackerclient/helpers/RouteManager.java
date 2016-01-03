@@ -1,5 +1,7 @@
 package com.codeforgvl.trolleytrackerclient.helpers;
 
+import android.os.Bundle;
+
 import com.codeforgvl.trolleytrackerclient.Constants;
 import com.codeforgvl.trolleytrackerclient.fragments.MapFragment;
 import com.codeforgvl.trolleytrackerclient.models.json.LatLon;
@@ -16,12 +18,13 @@ import com.google.android.gms.maps.model.PolylineOptions;
 public class RouteManager {
     private MapFragment mapFragment;
 
-    private RouteSchedule[] mSchedule;
+    private Route[] mRoutes;
 
     public RouteManager(MapFragment activity, Route[] routes){
         mapFragment = activity;
         if(routes != null){
-            updateRoutes(routes);
+            mRoutes = routes;
+            updateRoutes(mRoutes);
         }
     }
 
@@ -61,5 +64,9 @@ public class RouteManager {
                         .position(new LatLng(s.Lat, s.Lon)));
             }
         }
+    }
+
+    public void saveInstanceState(Bundle savedInstanceState){
+        savedInstanceState.putParcelableArray(Route.ROUTE_KEY, mRoutes);
     }
 }
