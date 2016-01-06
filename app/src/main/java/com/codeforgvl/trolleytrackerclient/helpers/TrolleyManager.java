@@ -2,6 +2,7 @@ package com.codeforgvl.trolleytrackerclient.helpers;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
 
 import com.codeforgvl.trolleytrackerclient.Constants;
@@ -14,6 +15,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import org.joda.time.DateTime;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -23,6 +26,7 @@ import java.util.Set;
  * Created by ahodges on 12/18/2015.
  */
 public class TrolleyManager {
+    public static final String TROLLEY_LAST_UPDATED_KEY = "TROLLEY_LAST_UPDATED_KEY";
     public static final String NOTIFIED_EMPTY_KEY = "NOTIFIED_EMPTY";
     private MapFragment mapFragment;
     private HashMap<Integer, Marker> trolleyMarkers = new HashMap<>();
@@ -30,11 +34,27 @@ public class TrolleyManager {
     private boolean notifiedEmpty = false;
 
     private Trolley[] lastTrolleyUpdate;
+    private Long lastUpdatedAt;
 
-    public TrolleyManager(MapFragment activity, Trolley[] trolleys){
+    public TrolleyManager(MapFragment activity){
         mapFragment = activity;
-        if(trolleys != null){
-            updateTrolleys(trolleys);
+    }
+
+    public void processBundle(Bundle b){
+        if(b == null){
+            return;
+        }
+        Trolley[] trolleys = null;
+        if (b != null){
+            DateTime lastUpdate = new DateTime(b.getLong(TROLLEY_LAST_UPDATED_KEY));
+            if(!lastUpdate.isBefore(DateTime.now().minusMinutes(1))){
+                Parcelable[] tParcels = b.getParcelableArray(Trolley.TROLLEY_KEY);
+                trolleys = new Trolley[tParcels.length];
+                System.arraycopy(tParcels, 0, trolleys, 0, tParcels.length);
+                updateTrolleys(trolleys);
+            }
+
+            notifiedEmpty = b.getBoolean(TrolleyManager.NOTIFIED_EMPTY_KEY, false);
         }
     }
 
@@ -57,10 +77,6 @@ public class TrolleyManager {
         if(mUpdateTask != null){
             mUpdateTask.cancel(false);
         }
-    }
-
-    public void setNotifiedEmpty(boolean val){
-        notifiedEmpty = val;
     }
 
     private void updateTrolleys(Trolley[] trolleys){
@@ -94,6 +110,7 @@ public class TrolleyManager {
         }
 
         lastTrolleyUpdate = trolleys;
+        lastUpdatedAt = DateTime.now().getMillis();
     }
 
     private class TrolleyUpdateTask extends AsyncTask<Void, Trolley[], Void> {
@@ -126,5 +143,6 @@ public class TrolleyManager {
     public void saveInstanceState(Bundle savedInstanceState){
         savedInstanceState.putParcelableArray(Trolley.TROLLEY_KEY, lastTrolleyUpdate);
         savedInstanceState.putBoolean(NOTIFIED_EMPTY_KEY, notifiedEmpty);
+        savedInstanceState.putLong(TROLLEY_LAST_UPDATED_KEY, lastUpdatedAt);
     }
 }

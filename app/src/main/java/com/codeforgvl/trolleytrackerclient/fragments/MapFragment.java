@@ -105,29 +105,18 @@ public class MapFragment extends Fragment implements GoogleMap.OnMarkerClickList
         if(b == null){
             return;
         }
-        Trolley[] trolleys = null;
-        Route[] routes = null;
-        if (b != null){
-            Parcelable[] tParcels = b.getParcelableArray(Trolley.TROLLEY_KEY);
-            trolleys = new Trolley[tParcels.length];
-            System.arraycopy(tParcels, 0, trolleys, 0, tParcels.length);
-
-            Parcelable[] rParcels = b.getParcelableArray(Route.ROUTE_KEY);
-            routes = new Route[rParcels.length];
-            System.arraycopy(rParcels, 0, routes, 0, rParcels.length);
-        }
 
         //Load stop/route data
         if(routeMan == null){
-            routeMan = new RouteManager(this, routes);
+            routeMan = new RouteManager(this);
         }
+        routeMan.processBundle(b);
 
         //Load current trolley position
         if(trolleyMan == null){
-            trolleyMan = new TrolleyManager(this, trolleys);
+            trolleyMan = new TrolleyManager(this);
         }
-
-        trolleyMan.setNotifiedEmpty(b.getBoolean(TrolleyManager.NOTIFIED_EMPTY_KEY, false));
+        trolleyMan.processBundle(b);
     }
 
     @Override

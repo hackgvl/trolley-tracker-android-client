@@ -1,6 +1,7 @@
 package com.codeforgvl.trolleytrackerclient.helpers;
 
 import android.os.Bundle;
+import android.os.Parcelable;
 
 import com.codeforgvl.trolleytrackerclient.Constants;
 import com.codeforgvl.trolleytrackerclient.fragments.MapFragment;
@@ -8,6 +9,7 @@ import com.codeforgvl.trolleytrackerclient.models.json.LatLon;
 import com.codeforgvl.trolleytrackerclient.models.json.Route;
 import com.codeforgvl.trolleytrackerclient.models.json.RouteSchedule;
 import com.codeforgvl.trolleytrackerclient.models.json.RouteStop;
+import com.codeforgvl.trolleytrackerclient.models.json.Trolley;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
@@ -20,10 +22,19 @@ public class RouteManager {
 
     private Route[] mRoutes;
 
-    public RouteManager(MapFragment activity, Route[] routes){
+    public RouteManager(MapFragment activity){
         mapFragment = activity;
-        if(routes != null){
-            mRoutes = routes;
+    }
+
+    public void processBundle(Bundle b){
+        if(b == null){
+            return;
+        }
+
+        if (b != null){
+            Parcelable[] rParcels = b.getParcelableArray(Route.ROUTE_KEY);
+            mRoutes = new Route[rParcels.length];
+            System.arraycopy(rParcels, 0, mRoutes, 0, rParcels.length);
             updateRoutes(mRoutes);
         }
     }
@@ -39,10 +50,6 @@ public class RouteManager {
         //if(mUpdateTask != null){
         //    mUpdateTask.cancel(false);
         //}
-    }
-
-    public void updateSchedule(RouteSchedule[] schedules){
-
     }
 
     public void updateRoutes(Route[] routes){
