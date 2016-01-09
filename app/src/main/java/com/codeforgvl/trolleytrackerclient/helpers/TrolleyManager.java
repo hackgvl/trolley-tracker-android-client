@@ -26,7 +26,6 @@ import java.util.Set;
  * Created by ahodges on 12/18/2015.
  */
 public class TrolleyManager {
-    private static final String TROLLEY_LAST_UPDATED_KEY = "TROLLEY_LAST_UPDATED_KEY";
     private static final String NOTIFIED_EMPTY_KEY = "NOTIFIED_EMPTY";
     private MapFragment mapFragment;
     private HashMap<Integer, Marker> trolleyMarkers = new HashMap<>();
@@ -46,7 +45,7 @@ public class TrolleyManager {
         }
         Trolley[] trolleys = null;
         if (b != null){
-            lastUpdatedAt = b.getLong(TROLLEY_LAST_UPDATED_KEY);
+            lastUpdatedAt = b.getLong(Trolley.LAST_UPDATED_KEY);
             DateTime lastUpdate = new DateTime(lastUpdatedAt);
             if(!lastUpdate.isBefore(DateTime.now().minusMinutes(1))){
                 Parcelable[] tParcels = b.getParcelableArray(Trolley.TROLLEY_KEY);
@@ -74,7 +73,7 @@ public class TrolleyManager {
         }
     }
 
-    public void stopUpdates(){
+    public void onPause(){
         if(mUpdateTask != null){
             mUpdateTask.cancel(false);
         }
@@ -144,6 +143,6 @@ public class TrolleyManager {
     public void saveInstanceState(Bundle savedInstanceState){
         savedInstanceState.putParcelableArray(Trolley.TROLLEY_KEY, lastTrolleyUpdate);
         savedInstanceState.putBoolean(NOTIFIED_EMPTY_KEY, notifiedEmpty);
-        savedInstanceState.putLong(TROLLEY_LAST_UPDATED_KEY, lastUpdatedAt);
+        savedInstanceState.putLong(Trolley.LAST_UPDATED_KEY, lastUpdatedAt);
     }
 }

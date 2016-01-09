@@ -11,7 +11,6 @@ import com.codeforgvl.trolleytrackerclient.fragments.MapFragment;
 import com.codeforgvl.trolleytrackerclient.models.json.LatLon;
 import com.codeforgvl.trolleytrackerclient.models.json.Route;
 import com.codeforgvl.trolleytrackerclient.models.json.RouteStop;
-import com.codeforgvl.trolleytrackerclient.models.json.Trolley;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -26,7 +25,6 @@ import java.util.HashMap;
  * Created by ahodges on 12/18/2015.
  */
 public class RouteManager {
-    private static final String ROUTE_LAST_UPDATED_KEY = "TROLLEY_LAST_UPDATED_KEY";
     private MapFragment mapFragment;
     private HashMap<Integer, Polyline> routePolylines = new HashMap<>();
     private HashMap<Integer, Marker> stopMarkers = new HashMap<>();
@@ -44,7 +42,7 @@ public class RouteManager {
         }
 
         if (b != null){
-            lastUpdatedAt = b.getLong(ROUTE_LAST_UPDATED_KEY);
+            lastUpdatedAt = b.getLong(Route.LAST_UPDATED_KEY);
             DateTime lastUpdate = new DateTime(lastUpdatedAt);
             if(lastUpdate.isBefore(DateTime.now().minusMinutes(30))){
                 new RouteUpdateTask().execute();
@@ -64,7 +62,7 @@ public class RouteManager {
         //}
     }
 
-    public void stopUpdates(){
+    public void onPause(){
         //if(mUpdateTask != null){
         //    mUpdateTask.cancel(false);
         //}
@@ -129,5 +127,6 @@ public class RouteManager {
 
     public void saveInstanceState(Bundle savedInstanceState){
         savedInstanceState.putParcelableArray(Route.ROUTE_KEY, lastRouteUpdate);
+        savedInstanceState.putLong(Route.LAST_UPDATED_KEY, lastUpdatedAt);
     }
 }

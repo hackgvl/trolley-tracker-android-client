@@ -8,6 +8,7 @@ import android.os.Parcelable;
  */
 public class Route implements Parcelable {
     public static final String ROUTE_KEY = "ROUTE_KEY";
+    public static final String LAST_UPDATED_KEY = "ROUTE_LAST_UPDATED_KEY";
     public String ShortName;
     public String Description;
     public int ID;

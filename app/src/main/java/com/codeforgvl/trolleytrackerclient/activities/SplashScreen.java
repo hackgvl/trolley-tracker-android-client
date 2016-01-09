@@ -16,6 +16,8 @@ import com.codeforgvl.trolleytrackerclient.models.json.RouteSchedule;
 import com.codeforgvl.trolleytrackerclient.models.json.Trolley;
 import com.codeforgvl.trolleytrackerclient.models.json.Route;
 
+import org.joda.time.DateTime;
+
 /**
  * Created by ahodges on 8/26/2015.
  */
@@ -154,7 +156,9 @@ public class SplashScreen extends Activity {
         if(trolleysLoaded && routesLoaded && scheduleLoaded){
             Intent intent = new Intent(SplashScreen.this, MainActivity.class);
             intent.putExtra(Trolley.TROLLEY_KEY, mTrolleys);
+            intent.putExtra(Trolley.LAST_UPDATED_KEY, DateTime.now().getMillis());
             intent.putExtra(Route.ROUTE_KEY, mRoutes);
+            intent.putExtra(Route.LAST_UPDATED_KEY, DateTime.now().getMillis());
             intent.putExtra(RouteSchedule.SCHEDULE_KEY, mSchedule);
             startActivity(intent);
         }

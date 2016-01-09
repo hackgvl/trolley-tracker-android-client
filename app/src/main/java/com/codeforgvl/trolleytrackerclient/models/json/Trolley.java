@@ -8,6 +8,7 @@ import android.os.Parcelable;
  */
 public class Trolley implements Parcelable {
     public static final String TROLLEY_KEY = "TROLLEY_KEY";
+    public static final String LAST_UPDATED_KEY = "TROLLEY_LAST_UPDATED_KEY";
     public double Lat;
     public double Lon;
     public int ID;

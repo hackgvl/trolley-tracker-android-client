@@ -90,7 +90,12 @@ public class MapFragment extends Fragment implements GoogleMap.OnMarkerClickList
 
         setUpMapIfNeeded();
 
-        processBundle(getArguments());
+        if (savedInstanceState != null){
+            processBundle(savedInstanceState);
+        } else {
+            processBundle(getArguments());
+        }
+
         routeMan.startUpdates();
         trolleyMan.startUpdates();
 
@@ -113,15 +118,6 @@ public class MapFragment extends Fragment implements GoogleMap.OnMarkerClickList
             trolleyMan = new TrolleyManager(this);
         }
         trolleyMan.processBundle(b);
-    }
-
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState){
-        super.onActivityCreated(savedInstanceState);
-
-        if (savedInstanceState != null){
-            processBundle(savedInstanceState);
-        }
     }
 
     @Override
@@ -217,7 +213,6 @@ public class MapFragment extends Fragment implements GoogleMap.OnMarkerClickList
                 Point size = new Point();
                 display.getSize(size);
 
-
                 int padding = ((getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)? size.x : size.y) / 4;
                 CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds.build(), padding);
 
@@ -271,8 +266,8 @@ public class MapFragment extends Fragment implements GoogleMap.OnMarkerClickList
     @Override
     public void onPause(){
         super.onPause();
-        trolleyMan.stopUpdates();
-        routeMan.stopUpdates();
+        trolleyMan.onPause();
+        routeMan.onPause();
     }
 
     @Override
