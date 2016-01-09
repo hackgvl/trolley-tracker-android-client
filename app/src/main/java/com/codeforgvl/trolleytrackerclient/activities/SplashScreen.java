@@ -160,6 +160,7 @@ public class SplashScreen extends Activity {
             intent.putExtra(Route.ROUTE_KEY, mRoutes);
             intent.putExtra(Route.LAST_UPDATED_KEY, DateTime.now().getMillis());
             intent.putExtra(RouteSchedule.SCHEDULE_KEY, mSchedule);
+            intent.putExtra(RouteSchedule.LAST_UPDATED_KEY, DateTime.now().getMillis());
             startActivity(intent);
         }
     }

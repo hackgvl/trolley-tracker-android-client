@@ -8,6 +8,7 @@ import android.os.Parcelable;
  */
 public class RouteSchedule implements Parcelable{
     public static final String SCHEDULE_KEY = "SCHEDULE_KEY";
+    public static final String LAST_UPDATED_KEY = "SCHEDULE_LAST_UPDATED_KEY";
     public int ID;
     public int RouteID;
     public String RouteLongName;

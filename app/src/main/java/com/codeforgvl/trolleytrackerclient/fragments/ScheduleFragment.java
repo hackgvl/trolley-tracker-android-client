@@ -1,17 +1,21 @@
 package com.codeforgvl.trolleytrackerclient.fragments;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.codeforgvl.trolleytrackerclient.Constants;
 import com.codeforgvl.trolleytrackerclient.R;
 import com.codeforgvl.trolleytrackerclient.adapters.ScheduleAdapter;
 import com.codeforgvl.trolleytrackerclient.adapters.SimpleSectionedRecyclerViewAdapter;
+import com.codeforgvl.trolleytrackerclient.data.TrolleyAPI;
 import com.codeforgvl.trolleytrackerclient.models.ScheduledRoute;
 import com.codeforgvl.trolleytrackerclient.models.json.RouteSchedule;
 import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
@@ -29,7 +33,8 @@ import java.util.List;
  */
 public class ScheduleFragment extends Fragment {
 
-    RouteSchedule[] routeSchedules;
+   private RouteSchedule[] lastScheduleUpdate;
+    private long lastUpdatedAt;
 
     public static ScheduleFragment newInstance(Bundle args) {
         ScheduleFragment fragment = new ScheduleFragment();
@@ -59,13 +64,61 @@ public class ScheduleFragment extends Fragment {
             return;
         }
         Parcelable[] sParcels = b.getParcelableArray(RouteSchedule.SCHEDULE_KEY);
-        routeSchedules = new RouteSchedule[sParcels.length];
-        System.arraycopy(sParcels, 0, routeSchedules, 0, sParcels.length);
+        lastScheduleUpdate = new RouteSchedule[sParcels.length];
+        System.arraycopy(sParcels, 0, lastScheduleUpdate, 0, sParcels.length);
 
         //Create list of ScheduledRoute objects, count them by day
-        List<ScheduledRoute> srList = new ArrayList<>(routeSchedules.length);
+        mSectionedAdapter = createScheduleViewAdapter(lastScheduleUpdate);
+
+        lastUpdatedAt = b.getLong(RouteSchedule.LAST_UPDATED_KEY);
+        DateTime lastUpdate = new DateTime(lastUpdatedAt);
+        if(lastUpdate.isBefore(DateTime.now().minusHours(4))){
+            new ScheduleUpdateTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        }
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState){
+        super.onActivityCreated(savedInstanceState);
+
+        processBundle(savedInstanceState);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState){
+        super.onSaveInstanceState(outState);
+        outState.putParcelableArray(RouteSchedule.SCHEDULE_KEY, lastScheduleUpdate);
+    }
+
+    @Override
+    public void onHiddenChanged(boolean hidden){
+        super.onHiddenChanged(hidden);
+        if (!hidden) {
+            getActivity().setTitle(R.string.title_fragment_schedule);
+        }
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_schedule, container, false);
+
+        RecyclerView listView = (RecyclerView)view.findViewById(R.id.scheduleList);
+        if(listView != null){
+            listView.setHasFixedSize(true);
+            listView.setAdapter(mSectionedAdapter);
+            listView.addItemDecoration(new HorizontalDividerItemDecoration.Builder(getContext()).build());
+            LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+            listView.setLayoutManager(layoutManager);
+        }
+
+        return view;
+    }
+
+    private SimpleSectionedRecyclerViewAdapter createScheduleViewAdapter(RouteSchedule[] schedule){
+        List<ScheduledRoute> srList = new ArrayList<>(schedule.length);
         HashMap<Integer,Integer> dayCount = new HashMap<>(7);
-        for(RouteSchedule rs : routeSchedules){
+        for(RouteSchedule rs : schedule){
             ScheduledRoute sr = new ScheduledRoute(rs);
 
             if(!dayCount.containsKey(sr.getDayOfWeek())){
@@ -97,45 +150,32 @@ public class ScheduleFragment extends Fragment {
         //Create adapters
         ScheduleAdapter mAdapter = new ScheduleAdapter(getContext(), srList);
         SimpleSectionedRecyclerViewAdapter.Section[] dummy = new SimpleSectionedRecyclerViewAdapter.Section[sections.size()];
-        mSectionedAdapter = new SimpleSectionedRecyclerViewAdapter(getContext(), R.layout.view_schedule_header, R.id.section_text, mAdapter);
-        mSectionedAdapter.setSections(sections.toArray(dummy));
+        SimpleSectionedRecyclerViewAdapter adapter = new SimpleSectionedRecyclerViewAdapter(getContext(), R.layout.view_schedule_header, R.id.section_text, mAdapter);
+        adapter.setSections(sections.toArray(dummy));
+        return adapter;
     }
 
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState){
-        super.onActivityCreated(savedInstanceState);
-
-        processBundle(savedInstanceState);
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState){
-        super.onSaveInstanceState(outState);
-        outState.putParcelableArray(RouteSchedule.SCHEDULE_KEY, routeSchedules);
-    }
-
-    @Override
-    public void onHiddenChanged(boolean hidden){
-        super.onHiddenChanged(hidden);
-        if (!hidden) {
-            getActivity().setTitle(R.string.title_fragment_schedule);
-        }
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_schedule, container, false);
-
-        RecyclerView listView = (RecyclerView)view.findViewById(R.id.scheduleList);
-        if(listView != null){
-            listView.setHasFixedSize(true);
-            listView.setAdapter(mSectionedAdapter);
-            listView.addItemDecoration(new HorizontalDividerItemDecoration.Builder(getContext()).build());
-            LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
-            listView.setLayoutManager(layoutManager);
+    private class ScheduleUpdateTask extends AsyncTask<Void, Void, RouteSchedule[]> {
+        @Override
+        protected RouteSchedule[] doInBackground(Void... params) {
+            Log.d(Constants.LOG_TAG, "requesting schedule update");
+            return TrolleyAPI.getRouteSchedule();
         }
 
-        return view;
+        @Override
+        protected void onPostExecute(RouteSchedule[] schedule) {
+            lastScheduleUpdate = schedule;
+            lastUpdatedAt = DateTime.now().getMillis();
+
+            RecyclerView listView = (RecyclerView)getActivity().findViewById(R.id.scheduleList);
+            if(listView != null){
+                listView.setHasFixedSize(true);
+                listView.setAdapter(mSectionedAdapter);
+                listView.addItemDecoration(new HorizontalDividerItemDecoration.Builder(getContext()).build());
+                LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+                listView.setLayoutManager(layoutManager);
+            }
+            createScheduleViewAdapter(schedule);
+        }
     }
 }

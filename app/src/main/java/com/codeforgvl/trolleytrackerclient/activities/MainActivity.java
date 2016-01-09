@@ -1,10 +1,16 @@
 package com.codeforgvl.trolleytrackerclient.activities;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+
 import com.codeforgvl.trolleytrackerclient.R;
 import com.codeforgvl.trolleytrackerclient.Utils;
 import com.codeforgvl.trolleytrackerclient.fragments.MapFragment;
@@ -17,7 +23,9 @@ import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
-public class MainActivity extends AppCompatActivity implements MapFragment.OnNavigateScheduleRequest, FragmentManager.OnBackStackChangedListener {
+import org.joda.time.DateTime;
+
+public class MainActivity extends AppCompatActivity implements MapFragment.MapFragmentListener, FragmentManager.OnBackStackChangedListener {
     public final static int MAP_FRAGMENT_ID = 1;
     public final static int SCHEDULE_FRAGMENT_ID = 2;
     public final static String MAP_FRAGMENT_TAG = "MAP_FRAGMENT";
@@ -96,6 +104,7 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnNav
                     }
                 })
                 .build();
+
     }
 
     private void showMap(){
@@ -110,6 +119,24 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnNav
                 .hide(mapFragment)
                 .show(scheduleFragment)
                 .commit();
+    }
+
+    @Override
+    public void onStop(){
+        super.onStop();
+        if(mTimeChangeReceiver != null){
+            unregisterReceiver(mTimeChangeReceiver);
+        }
+    }
+
+    @Override
+    public void onStart(){
+        super.onStart();
+        if(mTimeChangeReceiver == null){
+            mTimeChangeReceiver = new TimeChangeReceiver(new Handler());
+        }
+        //Respond to time ticks
+        registerReceiver(mTimeChangeReceiver, new IntentFilter(Intent.ACTION_TIME_TICK));
     }
 
     @Override
@@ -140,6 +167,25 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnNav
             }
         } else {
             menu.setSelection(MAP_FRAGMENT_ID, false);
+        }
+    }
+
+    private TimeChangeReceiver mTimeChangeReceiver;
+    private class TimeChangeReceiver extends BroadcastReceiver {
+        private final Handler handler;
+        public TimeChangeReceiver(Handler handler){
+            this.handler = handler;
+        }
+
+        @Override
+        public void onReceive(final Context context, Intent intent){
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    DateTime now = DateTime.now();
+                    mapFragment.tick(now);
+                }
+            });
         }
     }
 }

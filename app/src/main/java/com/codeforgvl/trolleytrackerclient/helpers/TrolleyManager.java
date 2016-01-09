@@ -69,11 +69,11 @@ public class TrolleyManager {
     public void startUpdates(){
         if (mUpdateTask == null || mUpdateTask.isCancelled()){
             mUpdateTask = new TrolleyUpdateTask();
-            mUpdateTask.execute();
+            mUpdateTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
     }
 
-    public void onPause(){
+    public void stopUpdates(){
         if(mUpdateTask != null){
             mUpdateTask.cancel(false);
         }

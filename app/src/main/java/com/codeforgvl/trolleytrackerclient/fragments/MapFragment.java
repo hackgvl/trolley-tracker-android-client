@@ -34,8 +34,10 @@ import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.fonts.MaterialIcons;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
+import org.joda.time.DateTime;
+
 public class MapFragment extends Fragment implements GoogleMap.OnMarkerClickListener, GoogleMap.OnMapClickListener, GoogleMap.OnMyLocationChangeListener  {
-    private OnNavigateScheduleRequest mListener;
+    private MapFragmentListener mListener;
 
     public GoogleMap mMap; // Might be null if Google Play services APK is not available.
 
@@ -96,7 +98,6 @@ public class MapFragment extends Fragment implements GoogleMap.OnMarkerClickList
             processBundle(getArguments());
         }
 
-        routeMan.startUpdates();
         trolleyMan.startUpdates();
 
         return view;
@@ -118,6 +119,13 @@ public class MapFragment extends Fragment implements GoogleMap.OnMarkerClickList
             trolleyMan = new TrolleyManager(this);
         }
         trolleyMan.processBundle(b);
+    }
+
+    public void tick(DateTime now){
+        int min = now.getMinuteOfHour();
+        if(min % 30 == 1){
+            routeMan.updateActiveRoutes();
+        }
     }
 
     @Override
@@ -253,6 +261,7 @@ public class MapFragment extends Fragment implements GoogleMap.OnMarkerClickList
     public void onResume() {
         super.onResume();
         setUpMapIfNeeded();
+        trolleyMan.startUpdates();
     }
 
     @Override
@@ -266,18 +275,17 @@ public class MapFragment extends Fragment implements GoogleMap.OnMarkerClickList
     @Override
     public void onPause(){
         super.onPause();
-        trolleyMan.onPause();
-        routeMan.onPause();
+        trolleyMan.stopUpdates();
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         try {
-            mListener = (OnNavigateScheduleRequest) context;
+            mListener = (MapFragmentListener) context;
         } catch (ClassCastException e) {
             throw new ClassCastException(context.toString()
-                    + " must implement OnNavigateScheduleRequest");
+                    + " must implement MapFragmentListener");
         }
     }
 
@@ -287,7 +295,7 @@ public class MapFragment extends Fragment implements GoogleMap.OnMarkerClickList
         mListener = null;
     }
 
-    public interface OnNavigateScheduleRequest {
+    public interface MapFragmentListener {
         void onNavigateSchedule();
     }
 
