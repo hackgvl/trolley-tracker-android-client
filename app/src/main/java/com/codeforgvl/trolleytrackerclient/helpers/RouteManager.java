@@ -43,10 +43,7 @@ public class RouteManager {
 
         if (b != null){
             lastUpdatedAt = b.getLong(Route.LAST_UPDATED_KEY);
-            DateTime lastUpdate = new DateTime(lastUpdatedAt);
-            if(lastUpdate.isBefore(DateTime.now().minusMinutes(30))){
-                new RouteUpdateTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-            } else {
+            if(!updateRoutesIfNeeded()){
                 Parcelable[] rParcels = b.getParcelableArray(Route.ROUTE_KEY);
                 lastRouteUpdate = new Route[rParcels.length];
                 System.arraycopy(rParcels, 0, lastRouteUpdate, 0, rParcels.length);
@@ -57,6 +54,16 @@ public class RouteManager {
 
     public void updateActiveRoutes(){
         new RouteUpdateTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    public boolean updateRoutesIfNeeded(){
+        DateTime lastUpdate = new DateTime(lastUpdatedAt);
+        if(lastUpdate.isBefore(DateTime.now().minusMinutes(30))){
+            updateActiveRoutes();
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public void updateRoutes(Route[] routes){

@@ -262,6 +262,7 @@ public class MapFragment extends Fragment implements GoogleMap.OnMarkerClickList
         super.onResume();
         setUpMapIfNeeded();
         trolleyMan.startUpdates();
+        routeMan.updateRoutesIfNeeded();
     }
 
     @Override
