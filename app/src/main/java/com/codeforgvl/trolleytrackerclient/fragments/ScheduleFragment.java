@@ -95,6 +95,7 @@ public class ScheduleFragment extends Fragment {
         super.onHiddenChanged(hidden);
         if (!hidden) {
             getActivity().setTitle(R.string.title_fragment_schedule);
+            mSectionedAdapter.notifyDataSetChanged();
         }
     }
 
