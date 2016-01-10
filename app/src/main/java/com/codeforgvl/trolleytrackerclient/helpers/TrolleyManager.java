@@ -79,7 +79,7 @@ public class TrolleyManager {
         }
     }
 
-    private void updateTrolleys(Trolley[] trolleys){
+    private synchronized void updateTrolleys(Trolley[] trolleys){
         Set<Integer> keySet = new HashSet<>(trolleyMarkers.keySet());
         for(int i=0; i < trolleys.length; i++){
             Trolley t = trolleys[i];

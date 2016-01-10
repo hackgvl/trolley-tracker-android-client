@@ -299,17 +299,20 @@ public class MapFragment extends Fragment implements GoogleMap.OnMarkerClickList
         void onNavigateSchedule();
     }
 
+    private MaterialDialog mNoTrolleysDialog;
     public void showNoTrolleysDialog(){
-        new MaterialDialog.Builder(getContext())
-                .title(R.string.no_trolleys_title)
-                .content(R.string.no_trolleys_message)
-                .positiveText(R.string.no_trolleys_button)
-                .onPositive(new MaterialDialog.SingleButtonCallback() {
-                    @Override
-                    public void onClick(MaterialDialog dialog, DialogAction which) {
-                        mListener.onNavigateSchedule();
-                    }
-                })
-                .show();
+        if(mNoTrolleysDialog == null || !mNoTrolleysDialog.isShowing()){
+            mNoTrolleysDialog = new MaterialDialog.Builder(getContext())
+                    .title(R.string.no_trolleys_title)
+                    .content(R.string.no_trolleys_message)
+                    .positiveText(R.string.no_trolleys_button)
+                    .onPositive(new MaterialDialog.SingleButtonCallback() {
+                        @Override
+                        public void onClick(MaterialDialog dialog, DialogAction which) {
+                            mListener.onNavigateSchedule();
+                        }
+                    })
+                    .show();
+        }
     }
 }
