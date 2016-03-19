@@ -1,14 +1,19 @@
 package com.codeforgvl.trolleytrackerclient.fragments;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Point;
 import android.location.Location;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,9 +23,12 @@ import android.widget.TextView;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.codeforgvl.trolleytrackerclient.R;
+import com.codeforgvl.trolleytrackerclient.Utils;
 import com.codeforgvl.trolleytrackerclient.adapters.MapWindowAdapter;
 import com.codeforgvl.trolleytrackerclient.helpers.RouteManager;
 import com.codeforgvl.trolleytrackerclient.helpers.TrolleyManager;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -36,10 +44,11 @@ import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import org.joda.time.DateTime;
 
-public class MapFragment extends Fragment implements GoogleMap.OnMarkerClickListener, GoogleMap.OnMapClickListener, GoogleMap.OnMyLocationChangeListener  {
+public class MapFragment extends Fragment implements GoogleMap.OnMarkerClickListener, GoogleMap.OnMapClickListener, GoogleApiClient.ConnectionCallbacks {
     private MapFragmentListener mListener;
 
     public GoogleMap mMap; // Might be null if Google Play services APK is not available.
+    private GoogleApiClient mGoogleApiClient;
 
     private SlidingUpPanelLayout drawer;
     private FloatingActionButton fab;
@@ -64,6 +73,13 @@ public class MapFragment extends Fragment implements GoogleMap.OnMarkerClickList
         super.onCreate(savedInstanceState);
 
         MapsInitializer.initialize(getContext());
+
+        if (mGoogleApiClient == null) {
+            mGoogleApiClient = new GoogleApiClient.Builder(getContext())
+                    .addConnectionCallbacks(this)
+                    .addApi(LocationServices.API)
+                    .build();
+        }
     }
 
     @Override
@@ -151,12 +167,31 @@ public class MapFragment extends Fragment implements GoogleMap.OnMarkerClickList
                 mMap.setInfoWindowAdapter(new MapWindowAdapter(getContext()));
 
                 //Show users current location
-                mMap.setMyLocationEnabled(true);
-                mMap.setOnMyLocationChangeListener(this);
+                enableMyLocation();
             }
         }
     }
 
+    /**
+     * Enables the My Location layer if the fine location permission has been granted.
+     */
+    private void enableMyLocation() {
+        if (Build.VERSION.SDK_INT > 22) {
+            if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)
+                    != PackageManager.PERMISSION_GRANTED) {
+                // Permission to access the location is missing.
+                Utils.requestPermission((AppCompatActivity)getActivity(), 1,
+                        Manifest.permission.ACCESS_FINE_LOCATION, true);
+            }
+            if (mMap != null) {
+                // Access to the location has been granted to the app.
+                mMap.setMyLocationEnabled(true);
+            }
+        } else if (mMap != null) {
+            // Access to the location has been granted to the app.
+            mMap.setMyLocationEnabled(true);
+        }
+    }
 
     @Override
     public boolean onMarkerClick(Marker marker) {
@@ -201,10 +236,11 @@ public class MapFragment extends Fragment implements GoogleMap.OnMarkerClickList
         }
     }
 
-    private boolean firstFix = true;
     @Override
-    public void onMyLocationChange(Location location) {
-        if(firstFix){
+    public void onConnected(Bundle bundle) {
+        Location location = LocationServices.FusedLocationApi.getLastLocation(
+                mGoogleApiClient);
+        if (location != null) {
             View mapView = getActivity().findViewById(R.id.map);
             if(mapView.getHeight() == 0 || mapView.getWidth() == 0){
                 return; //map layout not rendered yet
@@ -226,8 +262,12 @@ public class MapFragment extends Fragment implements GoogleMap.OnMarkerClickList
 
                 mMap.animateCamera(cu);
             }
-            firstFix = false;
         }
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
     }
 
     private class DrawerListener implements SlidingUpPanelLayout.PanelSlideListener {
@@ -294,6 +334,18 @@ public class MapFragment extends Fragment implements GoogleMap.OnMarkerClickList
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public void onStart() {
+        mGoogleApiClient.connect();
+        super.onStart();
+    }
+
+    @Override
+    public void onStop() {
+        mGoogleApiClient.disconnect();
+        super.onStop();
     }
 
     public interface MapFragmentListener {
