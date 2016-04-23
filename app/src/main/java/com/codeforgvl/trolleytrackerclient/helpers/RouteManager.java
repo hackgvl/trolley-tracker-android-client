@@ -7,7 +7,8 @@ import android.util.Log;
 
 import com.codeforgvl.trolleytrackerclient.Constants;
 import com.codeforgvl.trolleytrackerclient.data.TrolleyAPI;
-import com.codeforgvl.trolleytrackerclient.fragments.MapFragment;
+import com.codeforgvl.trolleytrackerclient.fragments.IMapFragment;
+import com.codeforgvl.trolleytrackerclient.fragments.TrackerFragment;
 import com.codeforgvl.trolleytrackerclient.models.json.LatLon;
 import com.codeforgvl.trolleytrackerclient.models.json.Route;
 import com.codeforgvl.trolleytrackerclient.models.json.RouteStop;
@@ -25,15 +26,15 @@ import java.util.HashMap;
  * Created by ahodges on 12/18/2015.
  */
 public class RouteManager {
-    private MapFragment mapFragment;
+    private IMapFragment trackerFragment;
     private HashMap<Integer, Polyline> routePolylines = new HashMap<>();
     private HashMap<Integer, Marker> stopMarkers = new HashMap<>();
 
     private Route[] lastRouteUpdate;
     private long lastUpdatedAt;
 
-    public RouteManager(MapFragment activity){
-        mapFragment = activity;
+    public RouteManager(IMapFragment activity){
+        trackerFragment = activity;
     }
 
     public void processBundle(Bundle b){
@@ -84,16 +85,16 @@ public class RouteManager {
             for(LatLon p : r.RouteShape){
                 routeLine.add(new LatLng(p.Lat,p.Lon));
             }
-            routeLine.color(Constants.getRouteColorForRouteNumber(mapFragment.getContext(), i));
-            routePolylines.put(r.ID, mapFragment.mMap.addPolyline(routeLine));
+            routeLine.color(Constants.getRouteColorForRouteNumber(trackerFragment.getContext(), i));
+            routePolylines.put(r.ID, trackerFragment.getMap().addPolyline(routeLine));
 
             //Add route stops
             for(RouteStop s : r.Stops) {
-                stopMarkers.put(s.ID, mapFragment.mMap.addMarker(new MarkerOptions()
+                stopMarkers.put(s.ID, trackerFragment.getMap().addMarker(new MarkerOptions()
                         .title(s.Name)
                         .snippet(s.Description)
                         .anchor(0.5f, 0.5f)
-                        .icon(IconFactory.getStopIcon(mapFragment.getContext(), Constants.getStopColorForRouteNumber(mapFragment.getContext(), i)))
+                        .icon(IconFactory.getStopIcon(trackerFragment.getContext(), Constants.getStopColorForRouteNumber(trackerFragment.getContext(), i)))
                         .position(new LatLng(s.Lat, s.Lon))));
             }
         }

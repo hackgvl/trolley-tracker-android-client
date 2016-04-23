@@ -22,15 +22,12 @@ public class SimpleSectionedRecyclerViewAdapter extends RecyclerView.Adapter<Rec
     private boolean mValid = true;
     private int mSectionResourceId;
     private int mTextResourceId;
-    private LayoutInflater mLayoutInflater;
     private RecyclerView.Adapter mBaseAdapter;
     private SparseArray<Section> mSections = new SparseArray<Section>();
 
 
     public SimpleSectionedRecyclerViewAdapter(Context context, int sectionResourceId, int textResourceId,
                                               RecyclerView.Adapter baseAdapter) {
-
-        mLayoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         mSectionResourceId = sectionResourceId;
         mTextResourceId = textResourceId;
         mBaseAdapter = baseAdapter;
@@ -65,7 +62,6 @@ public class SimpleSectionedRecyclerViewAdapter extends RecyclerView.Adapter<Rec
 
 
     public static class SectionViewHolder extends RecyclerView.ViewHolder {
-
         public TextView title;
 
         public SectionViewHolder(View view,int mTextResourceid) {
@@ -101,6 +97,9 @@ public class SimpleSectionedRecyclerViewAdapter extends RecyclerView.Adapter<Rec
                 : mBaseAdapter.getItemViewType(sectionedPositionToPosition(position)) +1 ;
     }
 
+    public RecyclerView.Adapter getBaseAdapter(){
+        return mBaseAdapter;
+    }
 
     public static class Section {
         int firstPosition;
@@ -175,7 +174,7 @@ public class SimpleSectionedRecyclerViewAdapter extends RecyclerView.Adapter<Rec
     public long getItemId(int position) {
         return isSectionHeaderPosition(position)
                 ? Integer.MAX_VALUE - mSections.indexOfKey(position)
-                : mBaseAdapter.getItemId(sectionedPositionToPosition(position));
+                : sectionedPositionToPosition(position);
     }
 
     @Override

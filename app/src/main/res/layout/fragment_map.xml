@@ -6,7 +6,7 @@ xmlns:map="http://schemas.android.com/apk/res-auto"
 xmlns:tools="http://schemas.android.com/tools"
 android:layout_width="match_parent"
 android:layout_height="match_parent"
-tools:context="com.codeforgvl.trolleytrackerclient.fragments.MapFragment">
+tools:context=".fragments.TrackerFragment">
 <com.sothree.slidinguppanel.SlidingUpPanelLayout
     android:id="@+id/sliding_layout"
     android:layout_width="match_parent"

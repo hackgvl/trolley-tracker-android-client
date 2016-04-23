@@ -2,23 +2,15 @@ package com.codeforgvl.trolleytrackerclient.fragments;
 
 import android.Manifest;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.res.Configuration;
-import android.graphics.Point;
-import android.location.Location;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -26,45 +18,32 @@ import com.codeforgvl.trolleytrackerclient.R;
 import com.codeforgvl.trolleytrackerclient.Utils;
 import com.codeforgvl.trolleytrackerclient.adapters.MapWindowAdapter;
 import com.codeforgvl.trolleytrackerclient.helpers.RouteManager;
-import com.codeforgvl.trolleytrackerclient.helpers.TrolleyManager;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.joanzapata.iconify.IconDrawable;
-import com.joanzapata.iconify.fonts.MaterialIcons;
-import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import org.joda.time.DateTime;
 
-public class MapFragment extends Fragment implements GoogleMap.OnMarkerClickListener, GoogleMap.OnMapClickListener, GoogleApiClient.ConnectionCallbacks {
+public class RoutePreviewFragment extends Fragment implements IMapFragment, GoogleMap.OnMarkerClickListener, GoogleMap.OnMapClickListener {
     private MapFragmentListener mListener;
 
     public GoogleMap mMap; // Might be null if Google Play services APK is not available.
-    private GoogleApiClient mGoogleApiClient;
-
-    private SlidingUpPanelLayout drawer;
-    private FloatingActionButton fab;
 
     private Marker selectedMarker;
 
-    private TrolleyManager trolleyMan;
     private RouteManager routeMan;
 
-    public static MapFragment newInstance(Bundle args) {
-        MapFragment fragment = new MapFragment();
+    public static RoutePreviewFragment newInstance(Bundle args) {
+        RoutePreviewFragment fragment = new RoutePreviewFragment();
         fragment.setArguments(args);
         return fragment;
     }
 
-    public MapFragment() {
+    public RoutePreviewFragment() {
         // Required empty public constructor
     }
 
@@ -73,13 +52,6 @@ public class MapFragment extends Fragment implements GoogleMap.OnMarkerClickList
         super.onCreate(savedInstanceState);
 
         MapsInitializer.initialize(getContext());
-
-        if (mGoogleApiClient == null) {
-            mGoogleApiClient = new GoogleApiClient.Builder(getContext())
-                    .addConnectionCallbacks(this)
-                    .addApi(LocationServices.API)
-                    .build();
-        }
     }
 
     @Override
@@ -88,24 +60,6 @@ public class MapFragment extends Fragment implements GoogleMap.OnMarkerClickList
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_map, container, false);
 
-        ((FloatingActionButton) view.findViewById(R.id.myFAB)).setImageDrawable(new IconDrawable(getContext(), MaterialIcons.md_directions_walk).colorRes(R.color.white));
-
-        drawer = (SlidingUpPanelLayout)view.findViewById(R.id.sliding_layout);
-        drawer.setPanelSlideListener(new DrawerListener());
-
-        fab = (FloatingActionButton)view.findViewById(R.id.myFAB);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (selectedMarker != null) {
-                    LatLng ll = selectedMarker.getPosition();
-                    Uri directionsUri = Uri.parse("google.navigation:q=" + ll.latitude + "," + ll.longitude + "&mode=w");
-                    Intent mapIntent = new Intent(Intent.ACTION_VIEW, directionsUri);
-                    startActivity(mapIntent);
-                }
-            }
-        });
-
         setUpMapIfNeeded();
 
         if (savedInstanceState != null){
@@ -113,8 +67,6 @@ public class MapFragment extends Fragment implements GoogleMap.OnMarkerClickList
         } else {
             processBundle(getArguments());
         }
-
-        trolleyMan.startUpdates();
 
         return view;
     }
@@ -129,12 +81,6 @@ public class MapFragment extends Fragment implements GoogleMap.OnMarkerClickList
             routeMan = new RouteManager(this);
         }
         routeMan.processBundle(b);
-
-        //Load current trolley position
-        if(trolleyMan == null){
-            trolleyMan = new TrolleyManager(this);
-        }
-        trolleyMan.processBundle(b);
     }
 
     public void tick(DateTime now){
@@ -147,7 +93,6 @@ public class MapFragment extends Fragment implements GoogleMap.OnMarkerClickList
     @Override
     public void onSaveInstanceState(Bundle outState){
         super.onSaveInstanceState(outState);
-        trolleyMan.saveInstanceState(outState);
         routeMan.saveInstanceState(outState);
     }
 
@@ -200,25 +145,9 @@ public class MapFragment extends Fragment implements GoogleMap.OnMarkerClickList
             return true;
         }
 
-        //Don't show 'selected' marker when user clicks on a trolley
-        if(!trolleyMan.getMarkers().contains(marker)){
-            if(fab.getVisibility() != View.VISIBLE){
-                fab.setVisibility(View.VISIBLE);
-            }
-
-            selectedMarker.setPosition(marker.getPosition());
-            selectedMarker.setVisible(true);
-            selectedMarker.showInfoWindow();
-        } else {
-            selectedMarker.setVisible(false);
-            fab.setVisibility(View.GONE);
-        }
-
-        if(drawer.getPanelState() == SlidingUpPanelLayout.PanelState.HIDDEN){
-            drawer.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
-        }
-
-        ((TextView)drawer.findViewById(R.id.drawer_title)).setText(marker.getTitle());
+        selectedMarker.setPosition(marker.getPosition());
+        selectedMarker.setVisible(true);
+        selectedMarker.showInfoWindow();
 
         //Animate to center
         mMap.animateCamera(CameraUpdateFactory.newLatLng(marker.getPosition()), 400, null);
@@ -228,81 +157,12 @@ public class MapFragment extends Fragment implements GoogleMap.OnMarkerClickList
     @Override
     public void onMapClick(LatLng latLng) {
         selectedMarker.setVisible(false);
-        if(drawer.getPanelState() != SlidingUpPanelLayout.PanelState.HIDDEN){
-            drawer.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
-        }
-        if(fab.getVisibility() == View.VISIBLE){
-            fab.setVisibility(View.GONE);
-        }
-    }
-
-    @Override
-    public void onConnected(Bundle bundle) {
-        Location location = LocationServices.FusedLocationApi.getLastLocation(
-                mGoogleApiClient);
-        if (location != null) {
-            View mapView = getActivity().findViewById(R.id.map);
-            if(mapView.getHeight() == 0 || mapView.getWidth() == 0){
-                return; //map layout not rendered yet
-            }
-
-            if(!trolleyMan.isEmpty()){
-                LatLngBounds.Builder bounds = new LatLngBounds.Builder();
-                for(Marker m : trolleyMan.getMarkers()){
-                    bounds.include(m.getPosition());
-                }
-                bounds.include(new LatLng(location.getLatitude(), location.getLongitude()));
-
-                Display display = getActivity().getWindowManager().getDefaultDisplay();
-                Point size = new Point();
-                display.getSize(size);
-
-                int padding = ((getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)? size.x : size.y) / 4;
-                CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds.build(), padding);
-
-                mMap.animateCamera(cu);
-            }
-        }
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-
-    }
-
-    private class DrawerListener implements SlidingUpPanelLayout.PanelSlideListener {
-        @Override
-        public void onPanelAnchored(View view) {
-
-        }
-
-        @Override
-        public void onPanelHidden(View view) {
-
-        }
-
-        @Override
-        public void onPanelSlide(View view, float v) {
-
-        }
-
-        @Override
-        public void onPanelCollapsed(View view) {
-
-        }
-
-        @Override
-        public void onPanelExpanded(View view) {
-
-        }
     }
 
     @Override
     public void onResume() {
         super.onResume();
         setUpMapIfNeeded();
-        trolleyMan.startUpdates();
-        routeMan.updateRoutesIfNeeded();
     }
 
     @Override
@@ -311,12 +171,6 @@ public class MapFragment extends Fragment implements GoogleMap.OnMarkerClickList
         if (!hidden) {
             getActivity().setTitle(R.string.title_fragment_maps);
         }
-    }
-
-    @Override
-    public void onPause(){
-        super.onPause();
-        trolleyMan.stopUpdates();
     }
 
     @Override
@@ -337,15 +191,8 @@ public class MapFragment extends Fragment implements GoogleMap.OnMarkerClickList
     }
 
     @Override
-    public void onStart() {
-        mGoogleApiClient.connect();
-        super.onStart();
-    }
-
-    @Override
-    public void onStop() {
-        mGoogleApiClient.disconnect();
-        super.onStop();
+    public GoogleMap getMap() {
+        return mMap;
     }
 
     public interface MapFragmentListener {

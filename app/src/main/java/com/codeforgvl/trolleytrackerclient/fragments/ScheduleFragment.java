@@ -10,12 +10,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.codeforgvl.trolleytrackerclient.Constants;
 import com.codeforgvl.trolleytrackerclient.R;
 import com.codeforgvl.trolleytrackerclient.adapters.ScheduleAdapter;
 import com.codeforgvl.trolleytrackerclient.adapters.SimpleSectionedRecyclerViewAdapter;
 import com.codeforgvl.trolleytrackerclient.data.TrolleyAPI;
+import com.codeforgvl.trolleytrackerclient.helpers.RecyclerItemClickListener;
 import com.codeforgvl.trolleytrackerclient.models.ScheduledRoute;
 import com.codeforgvl.trolleytrackerclient.models.json.RouteSchedule;
 import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
@@ -33,7 +35,7 @@ import java.util.List;
  */
 public class ScheduleFragment extends Fragment {
 
-   private RouteSchedule[] lastScheduleUpdate;
+    private RouteSchedule[] lastScheduleUpdate;
     private long lastUpdatedAt;
 
     public static ScheduleFragment newInstance(Bundle args) {
@@ -45,7 +47,6 @@ public class ScheduleFragment extends Fragment {
     public ScheduleFragment() {
         // Required empty public constructor
     }
-
 
     SimpleSectionedRecyclerViewAdapter mSectionedAdapter;
 
@@ -111,6 +112,7 @@ public class ScheduleFragment extends Fragment {
             listView.addItemDecoration(new HorizontalDividerItemDecoration.Builder(getContext()).build());
             LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
             listView.setLayoutManager(layoutManager);
+            listView.addOnItemTouchListener(new RecyclerItemClickListener(getContext(), new ScheduleItemClickListener()));
         }
 
         return view;
@@ -154,6 +156,18 @@ public class ScheduleFragment extends Fragment {
         SimpleSectionedRecyclerViewAdapter adapter = new SimpleSectionedRecyclerViewAdapter(getContext(), R.layout.view_schedule_header, R.id.section_text, mAdapter);
         adapter.setSections(sections.toArray(dummy));
         return adapter;
+    }
+
+    private class ScheduleItemClickListener implements RecyclerItemClickListener.OnItemClickListener {
+        @Override
+        public void onItemClick(View view, int position) {
+            //Show map preview if they clicked on a scheduled time
+            long itemPosition = mSectionedAdapter.getItemId(position);
+            if(itemPosition < Integer.MAX_VALUE / 2){
+                ScheduledRoute route = ((ScheduleAdapter) mSectionedAdapter.getBaseAdapter()).getItem((int)itemPosition);
+                Toast.makeText(getContext(), itemPosition+ " "+route.getRouteSchedule().RouteID+route.getRouteSchedule().RouteLongName, Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     private class ScheduleUpdateTask extends AsyncTask<Void, Void, RouteSchedule[]> {

@@ -8,7 +8,7 @@ import android.util.Log;
 import com.codeforgvl.trolleytrackerclient.Constants;
 import com.codeforgvl.trolleytrackerclient.R;
 import com.codeforgvl.trolleytrackerclient.data.TrolleyAPI;
-import com.codeforgvl.trolleytrackerclient.fragments.MapFragment;
+import com.codeforgvl.trolleytrackerclient.fragments.TrackerFragment;
 import com.codeforgvl.trolleytrackerclient.models.json.Trolley;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
@@ -27,7 +27,7 @@ import java.util.Set;
  */
 public class TrolleyManager {
     private static final String NOTIFIED_EMPTY_KEY = "NOTIFIED_EMPTY";
-    private MapFragment mapFragment;
+    private TrackerFragment trackerFragment;
     private HashMap<Integer, Marker> trolleyMarkers = new HashMap<>();
     private TrolleyUpdateTask mUpdateTask;
     private boolean notifiedEmpty = false;
@@ -35,8 +35,8 @@ public class TrolleyManager {
     private Trolley[] lastTrolleyUpdate;
     private Long lastUpdatedAt;
 
-    public TrolleyManager(MapFragment activity){
-        mapFragment = activity;
+    public TrolleyManager(TrackerFragment activity){
+        trackerFragment = activity;
     }
 
     public void processBundle(Bundle b){
@@ -87,7 +87,7 @@ public class TrolleyManager {
                 trolleyMarkers.get(t.ID).setPosition(new LatLng(t.Lat, t.Lon));
                 keySet.remove(t.ID);
             } else {
-                trolleyMarkers.put(t.ID, mapFragment.mMap.addMarker(new MarkerOptions()
+                trolleyMarkers.put(t.ID, trackerFragment.mMap.addMarker(new MarkerOptions()
                         .anchor(0.5f, 1.0f)
                         .title("Trolley " + t.ID)
                         .icon(BitmapDescriptorFactory.fromResource(((t.ID - 1) % 2 == 0) ? R.drawable.marker1 : R.drawable.marker2))
@@ -102,7 +102,7 @@ public class TrolleyManager {
 
         if(trolleyMarkers.isEmpty()){
             if(!notifiedEmpty){
-                mapFragment.showNoTrolleysDialog();
+                trackerFragment.showNoTrolleysDialog();
                 notifiedEmpty = true;
             }
         } else {

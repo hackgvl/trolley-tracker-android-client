@@ -80,4 +80,8 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
     public int getItemCount() {
         return mSchedules.size();
     }
+
+    public ScheduledRoute getItem(int position){
+        return mSchedules.get(position);
+    }
 }

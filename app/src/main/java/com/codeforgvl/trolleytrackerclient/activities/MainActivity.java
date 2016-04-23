@@ -13,7 +13,7 @@ import android.view.View;
 
 import com.codeforgvl.trolleytrackerclient.R;
 import com.codeforgvl.trolleytrackerclient.Utils;
-import com.codeforgvl.trolleytrackerclient.fragments.MapFragment;
+import com.codeforgvl.trolleytrackerclient.fragments.TrackerFragment;
 import com.codeforgvl.trolleytrackerclient.fragments.ScheduleFragment;
 import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.fonts.MaterialIcons;
@@ -25,14 +25,14 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 import org.joda.time.DateTime;
 
-public class MainActivity extends AppCompatActivity implements MapFragment.MapFragmentListener, FragmentManager.OnBackStackChangedListener {
+public class MainActivity extends AppCompatActivity implements TrackerFragment.MapFragmentListener, FragmentManager.OnBackStackChangedListener {
     public final static int MAP_FRAGMENT_ID = 1;
     public final static int SCHEDULE_FRAGMENT_ID = 2;
     public final static String MAP_FRAGMENT_TAG = "MAP_FRAGMENT";
     public final static String SCHEDULE_FRAGMENT_TAG = "SCHEDULE_FRAGMENT";
     public final static String ACTIVE_FRAGMENT_TAG = "ACTIVE_FRAGMENT";
 
-    private MapFragment mapFragment;
+    private TrackerFragment trackerFragment;
     private ScheduleFragment scheduleFragment;
     private Drawer menu;
 
@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity implements MapFragment.MapFr
         int selectedFragmentID = MAP_FRAGMENT_ID;
         if(findViewById(R.id.fragment_container) != null){
             if(savedInstanceState != null){
-                mapFragment = (MapFragment)getSupportFragmentManager().getFragment(savedInstanceState, MAP_FRAGMENT_TAG);
+                trackerFragment = (TrackerFragment)getSupportFragmentManager().getFragment(savedInstanceState, MAP_FRAGMENT_TAG);
                 scheduleFragment = (ScheduleFragment)getSupportFragmentManager().getFragment(savedInstanceState, SCHEDULE_FRAGMENT_TAG);
 
                 String activeFragment = savedInstanceState.getString(ACTIVE_FRAGMENT_TAG);
@@ -63,12 +63,12 @@ public class MainActivity extends AppCompatActivity implements MapFragment.MapFr
 
             } else {
 
-                mapFragment = MapFragment.newInstance(getIntent().getExtras());
+                trackerFragment = TrackerFragment.newInstance(getIntent().getExtras());
                 scheduleFragment = ScheduleFragment.newInstance(getIntent().getExtras());
 
                 getSupportFragmentManager().beginTransaction()
                         .add(R.id.fragment_container, scheduleFragment, SCHEDULE_FRAGMENT_TAG).hide(scheduleFragment)
-                        .add(R.id.fragment_container, mapFragment, MAP_FRAGMENT_TAG)
+                        .add(R.id.fragment_container, trackerFragment, MAP_FRAGMENT_TAG)
                         .commit();
                 getSupportFragmentManager().addOnBackStackChangedListener(this);
             }
@@ -109,14 +109,14 @@ public class MainActivity extends AppCompatActivity implements MapFragment.MapFr
 
     private void showMap(){
         getSupportFragmentManager().beginTransaction().addToBackStack(MAP_FRAGMENT_TAG)
-                .show(mapFragment)
+                .show(trackerFragment)
                 .hide(scheduleFragment)
                 .commit();
     }
 
     private void showSchedule(){
         getSupportFragmentManager().beginTransaction().addToBackStack(SCHEDULE_FRAGMENT_TAG)
-                .hide(mapFragment)
+                .hide(trackerFragment)
                 .show(scheduleFragment)
                 .commit();
     }
@@ -143,7 +143,7 @@ public class MainActivity extends AppCompatActivity implements MapFragment.MapFr
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        getSupportFragmentManager().putFragment(outState, MAP_FRAGMENT_TAG, mapFragment);
+        getSupportFragmentManager().putFragment(outState, MAP_FRAGMENT_TAG, trackerFragment);
         getSupportFragmentManager().putFragment(outState, SCHEDULE_FRAGMENT_TAG, scheduleFragment);
         outState.putString(ACTIVE_FRAGMENT_TAG, Utils.getActiveFragmentName(getSupportFragmentManager()));
     }
@@ -183,7 +183,7 @@ public class MainActivity extends AppCompatActivity implements MapFragment.MapFr
                 @Override
                 public void run() {
                     DateTime now = DateTime.now();
-                    mapFragment.tick(now);
+                    trackerFragment.tick(now);
                 }
             });
         }
