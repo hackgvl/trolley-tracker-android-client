@@ -14,11 +14,13 @@ import android.widget.Toast;
 
 import com.codeforgvl.trolleytrackerclient.Constants;
 import com.codeforgvl.trolleytrackerclient.R;
+import com.codeforgvl.trolleytrackerclient.activities.MainActivity;
 import com.codeforgvl.trolleytrackerclient.adapters.ScheduleAdapter;
 import com.codeforgvl.trolleytrackerclient.adapters.SimpleSectionedRecyclerViewAdapter;
 import com.codeforgvl.trolleytrackerclient.data.TrolleyAPI;
 import com.codeforgvl.trolleytrackerclient.helpers.RecyclerItemClickListener;
 import com.codeforgvl.trolleytrackerclient.models.ScheduledRoute;
+import com.codeforgvl.trolleytrackerclient.models.json.Route;
 import com.codeforgvl.trolleytrackerclient.models.json.RouteSchedule;
 import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
 
@@ -165,8 +167,25 @@ public class ScheduleFragment extends Fragment {
             long itemPosition = mSectionedAdapter.getItemId(position);
             if(itemPosition < Integer.MAX_VALUE / 2){
                 ScheduledRoute route = ((ScheduleAdapter) mSectionedAdapter.getBaseAdapter()).getItem((int)itemPosition);
-                Toast.makeText(getContext(), itemPosition+ " "+route.getRouteSchedule().RouteID+route.getRouteSchedule().RouteLongName, Toast.LENGTH_SHORT).show();
+                new RoutePreviewTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, route.getRouteSchedule().RouteID);
             }
+        }
+    }
+
+    private class RoutePreviewTask extends AsyncTask<Integer, Void, Route>{
+        @Override
+        protected Route doInBackground(Integer... integers) {
+            Log.d(Constants.LOG_TAG, "requesting route preview data");
+            return TrolleyAPI.getRouteDetails(integers[0]);
+        }
+
+        @Override
+        protected void onPostExecute(Route route){
+            Route[] routes = new Route[]{ route };
+            Bundle bundle = new Bundle();
+            bundle.putParcelableArray(Route.ROUTE_KEY, routes);
+            bundle.putLong(Route.LAST_UPDATED_KEY, DateTime.now().getMillis());
+            ((MainActivity) getActivity()).showRoutePreview(bundle);
         }
     }
 

@@ -13,6 +13,7 @@ import android.view.View;
 
 import com.codeforgvl.trolleytrackerclient.R;
 import com.codeforgvl.trolleytrackerclient.Utils;
+import com.codeforgvl.trolleytrackerclient.fragments.RoutePreviewFragment;
 import com.codeforgvl.trolleytrackerclient.fragments.TrackerFragment;
 import com.codeforgvl.trolleytrackerclient.fragments.ScheduleFragment;
 import com.joanzapata.iconify.IconDrawable;
@@ -28,12 +29,15 @@ import org.joda.time.DateTime;
 public class MainActivity extends AppCompatActivity implements TrackerFragment.MapFragmentListener, FragmentManager.OnBackStackChangedListener {
     public final static int MAP_FRAGMENT_ID = 1;
     public final static int SCHEDULE_FRAGMENT_ID = 2;
+    public final static int PREVIEW_FRAGMENT_ID = 3;
     public final static String MAP_FRAGMENT_TAG = "MAP_FRAGMENT";
     public final static String SCHEDULE_FRAGMENT_TAG = "SCHEDULE_FRAGMENT";
+    public final static String PREVIEW_FRAGMENT_TAG = "PREVIEW_FRAGMENT";
     public final static String ACTIVE_FRAGMENT_TAG = "ACTIVE_FRAGMENT";
 
     private TrackerFragment trackerFragment;
     private ScheduleFragment scheduleFragment;
+    private RoutePreviewFragment previewFragment;
     private Drawer menu;
 
     @Override
@@ -58,6 +62,10 @@ public class MainActivity extends AppCompatActivity implements TrackerFragment.M
                             showSchedule();
                             selectedFragmentID = SCHEDULE_FRAGMENT_ID;
                             break;
+                        case PREVIEW_FRAGMENT_TAG:
+                            showRoutePreview();
+                            selectedFragmentID = PREVIEW_FRAGMENT_ID;
+                            break;
                     }
                 }
 
@@ -65,8 +73,10 @@ public class MainActivity extends AppCompatActivity implements TrackerFragment.M
 
                 trackerFragment = TrackerFragment.newInstance(getIntent().getExtras());
                 scheduleFragment = ScheduleFragment.newInstance(getIntent().getExtras());
+                previewFragment = RoutePreviewFragment.newInstance(getIntent().getExtras());
 
                 getSupportFragmentManager().beginTransaction()
+                        .add(R.id.fragment_container, previewFragment, PREVIEW_FRAGMENT_TAG).hide(previewFragment)
                         .add(R.id.fragment_container, scheduleFragment, SCHEDULE_FRAGMENT_TAG).hide(scheduleFragment)
                         .add(R.id.fragment_container, trackerFragment, MAP_FRAGMENT_TAG)
                         .commit();
@@ -109,6 +119,7 @@ public class MainActivity extends AppCompatActivity implements TrackerFragment.M
 
     private void showMap(){
         getSupportFragmentManager().beginTransaction().addToBackStack(MAP_FRAGMENT_TAG)
+                .hide(previewFragment)
                 .show(trackerFragment)
                 .hide(scheduleFragment)
                 .commit();
@@ -116,8 +127,22 @@ public class MainActivity extends AppCompatActivity implements TrackerFragment.M
 
     private void showSchedule(){
         getSupportFragmentManager().beginTransaction().addToBackStack(SCHEDULE_FRAGMENT_TAG)
+                .hide(previewFragment)
                 .hide(trackerFragment)
                 .show(scheduleFragment)
+                .commit();
+    }
+
+    public void showRoutePreview(Bundle bundle) {
+        previewFragment.processBundle(bundle);
+        showRoutePreview();
+    }
+
+    private void showRoutePreview(){
+        getSupportFragmentManager().beginTransaction().addToBackStack(PREVIEW_FRAGMENT_TAG)
+                .hide(trackerFragment)
+                .hide(scheduleFragment)
+                .show(previewFragment)
                 .commit();
     }
 
@@ -145,6 +170,7 @@ public class MainActivity extends AppCompatActivity implements TrackerFragment.M
 
         getSupportFragmentManager().putFragment(outState, MAP_FRAGMENT_TAG, trackerFragment);
         getSupportFragmentManager().putFragment(outState, SCHEDULE_FRAGMENT_TAG, scheduleFragment);
+        getSupportFragmentManager().putFragment(outState, PREVIEW_FRAGMENT_TAG, previewFragment);
         outState.putString(ACTIVE_FRAGMENT_TAG, Utils.getActiveFragmentName(getSupportFragmentManager()));
     }
 

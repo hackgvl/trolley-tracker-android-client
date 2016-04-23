@@ -29,8 +29,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import org.joda.time.DateTime;
 
 public class RoutePreviewFragment extends Fragment implements IMapFragment, GoogleMap.OnMarkerClickListener, GoogleMap.OnMapClickListener {
-    private MapFragmentListener mListener;
-
     public GoogleMap mMap; // Might be null if Google Play services APK is not available.
 
     private Marker selectedMarker;
@@ -71,7 +69,7 @@ public class RoutePreviewFragment extends Fragment implements IMapFragment, Goog
         return view;
     }
 
-    private void processBundle(Bundle b){
+    public void processBundle(Bundle b){
         if(b == null){
             return;
         }
@@ -174,45 +172,7 @@ public class RoutePreviewFragment extends Fragment implements IMapFragment, Goog
     }
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        try {
-            mListener = (MapFragmentListener) context;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString()
-                    + " must implement MapFragmentListener");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
-
-    @Override
     public GoogleMap getMap() {
         return mMap;
-    }
-
-    public interface MapFragmentListener {
-        void onNavigateSchedule();
-    }
-
-    private MaterialDialog mNoTrolleysDialog;
-    public void showNoTrolleysDialog(){
-        if(mNoTrolleysDialog == null || !mNoTrolleysDialog.isShowing()){
-            mNoTrolleysDialog = new MaterialDialog.Builder(getContext())
-                    .title(R.string.no_trolleys_title)
-                    .content(R.string.no_trolleys_message)
-                    .positiveText(R.string.no_trolleys_button)
-                    .onPositive(new MaterialDialog.SingleButtonCallback() {
-                        @Override
-                        public void onClick(MaterialDialog dialog, DialogAction which) {
-                            mListener.onNavigateSchedule();
-                        }
-                    })
-                    .show();
-        }
     }
 }
