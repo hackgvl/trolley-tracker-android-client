@@ -12,8 +12,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.afollestad.materialdialogs.DialogAction;
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.codeforgvl.trolleytrackerclient.R;
 import com.codeforgvl.trolleytrackerclient.Utils;
 import com.codeforgvl.trolleytrackerclient.adapters.MapWindowAdapter;
@@ -167,7 +165,7 @@ public class RoutePreviewFragment extends Fragment implements IMapFragment, Goog
     public void onHiddenChanged(boolean hidden){
         super.onHiddenChanged(hidden);
         if (!hidden) {
-            getActivity().setTitle(R.string.title_fragment_maps);
+            getActivity().setTitle(R.string.title_fragment_preview);
         }
     }
 

@@ -1,5 +1,6 @@
 package com.codeforgvl.trolleytrackerclient.activities;
 
+import android.app.FragmentTransaction;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -118,19 +119,25 @@ public class MainActivity extends AppCompatActivity implements TrackerFragment.M
     }
 
     private void showMap(){
-        getSupportFragmentManager().beginTransaction().addToBackStack(MAP_FRAGMENT_TAG)
-                .hide(previewFragment)
-                .show(trackerFragment)
-                .hide(scheduleFragment)
-                .commit();
+        android.support.v4.app.FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.addToBackStack(MAP_FRAGMENT_TAG);
+        if(!previewFragment.isHidden())
+            ft.hide(previewFragment);
+        if(!scheduleFragment.isHidden())
+            ft.hide(scheduleFragment);
+        ft.show(trackerFragment);
+        ft.commit();
     }
 
     private void showSchedule(){
-        getSupportFragmentManager().beginTransaction().addToBackStack(SCHEDULE_FRAGMENT_TAG)
-                .hide(previewFragment)
-                .hide(trackerFragment)
-                .show(scheduleFragment)
-                .commit();
+        android.support.v4.app.FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.addToBackStack(SCHEDULE_FRAGMENT_TAG);
+        if(!previewFragment.isHidden())
+            ft.hide(previewFragment);
+        if(!trackerFragment.isHidden())
+            ft.hide(trackerFragment);
+        ft.show(scheduleFragment);
+        ft.commit();
     }
 
     public void showRoutePreview(Bundle bundle) {
@@ -139,11 +146,14 @@ public class MainActivity extends AppCompatActivity implements TrackerFragment.M
     }
 
     private void showRoutePreview(){
-        getSupportFragmentManager().beginTransaction().addToBackStack(PREVIEW_FRAGMENT_TAG)
-                .hide(trackerFragment)
-                .hide(scheduleFragment)
-                .show(previewFragment)
-                .commit();
+        android.support.v4.app.FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.addToBackStack(PREVIEW_FRAGMENT_TAG);
+        if(!trackerFragment.isHidden())
+            ft.hide(trackerFragment);
+        if(!scheduleFragment.isHidden())
+            ft.hide(scheduleFragment);
+        ft.show(previewFragment);
+        ft.commit();
     }
 
     @Override
@@ -187,6 +197,7 @@ public class MainActivity extends AppCompatActivity implements TrackerFragment.M
                 case MAP_FRAGMENT_TAG:
                     menu.setSelection(MAP_FRAGMENT_ID, false);
                     break;
+                case PREVIEW_FRAGMENT_TAG:
                 case SCHEDULE_FRAGMENT_TAG:
                     menu.setSelection(SCHEDULE_FRAGMENT_ID, false);
                     break;
