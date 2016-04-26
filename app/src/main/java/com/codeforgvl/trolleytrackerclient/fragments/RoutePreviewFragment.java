@@ -1,7 +1,6 @@
 package com.codeforgvl.trolleytrackerclient.fragments;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -11,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.codeforgvl.trolleytrackerclient.R;
 import com.codeforgvl.trolleytrackerclient.Utils;
@@ -23,11 +23,14 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import org.joda.time.DateTime;
 
 public class RoutePreviewFragment extends Fragment implements IMapFragment, GoogleMap.OnMarkerClickListener, GoogleMap.OnMapClickListener {
     public GoogleMap mMap; // Might be null if Google Play services APK is not available.
+
+    private SlidingUpPanelLayout drawer;
 
     private Marker selectedMarker;
 
@@ -56,6 +59,9 @@ public class RoutePreviewFragment extends Fragment implements IMapFragment, Goog
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_map, container, false);
 
+        drawer = (SlidingUpPanelLayout)view.findViewById(R.id.sliding_layout);
+        drawer.setPanelSlideListener(new DrawerListener());
+
         setUpMapIfNeeded();
 
         if (savedInstanceState != null){
@@ -77,13 +83,6 @@ public class RoutePreviewFragment extends Fragment implements IMapFragment, Goog
             routeMan = new RouteManager(this);
         }
         routeMan.processBundle(b);
-    }
-
-    public void tick(DateTime now){
-        int min = now.getMinuteOfHour();
-        if(min % 30 == 1){
-            routeMan.updateActiveRoutes();
-        }
     }
 
     @Override
@@ -145,6 +144,12 @@ public class RoutePreviewFragment extends Fragment implements IMapFragment, Goog
         selectedMarker.setVisible(true);
         selectedMarker.showInfoWindow();
 
+        if(drawer.getPanelState() == SlidingUpPanelLayout.PanelState.HIDDEN){
+            drawer.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+        }
+
+        ((TextView)drawer.findViewById(R.id.drawer_title)).setText(marker.getTitle());
+
         //Animate to center
         mMap.animateCamera(CameraUpdateFactory.newLatLng(marker.getPosition()), 400, null);
         return true;
@@ -153,6 +158,36 @@ public class RoutePreviewFragment extends Fragment implements IMapFragment, Goog
     @Override
     public void onMapClick(LatLng latLng) {
         selectedMarker.setVisible(false);
+        if(drawer.getPanelState() != SlidingUpPanelLayout.PanelState.HIDDEN){
+            drawer.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
+        }
+    }
+
+    private class DrawerListener implements SlidingUpPanelLayout.PanelSlideListener {
+        @Override
+        public void onPanelAnchored(View view) {
+
+        }
+
+        @Override
+        public void onPanelHidden(View view) {
+
+        }
+
+        @Override
+        public void onPanelSlide(View view, float v) {
+
+        }
+
+        @Override
+        public void onPanelCollapsed(View view) {
+
+        }
+
+        @Override
+        public void onPanelExpanded(View view) {
+
+        }
     }
 
     @Override
