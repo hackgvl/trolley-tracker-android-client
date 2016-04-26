@@ -4,6 +4,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -35,7 +36,7 @@ import java.util.List;
 /**
  * Created by ahodges on 12/21/2015.
  */
-public class ScheduleFragment extends Fragment {
+public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
 
     private RouteSchedule[] lastScheduleUpdate;
     private long lastUpdatedAt;
@@ -117,6 +118,11 @@ public class ScheduleFragment extends Fragment {
             listView.addOnItemTouchListener(new RecyclerItemClickListener(getContext(), new ScheduleItemClickListener()));
         }
 
+        SwipeRefreshLayout swipeRefresh = (SwipeRefreshLayout)view.findViewById(R.id.scheduleRefreshLayout);
+        if(swipeRefresh != null){
+            swipeRefresh.setOnRefreshListener(this);
+        }
+
         return view;
     }
 
@@ -160,6 +166,11 @@ public class ScheduleFragment extends Fragment {
         return adapter;
     }
 
+    @Override
+    public void onRefresh() {
+        new ScheduleUpdateTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
     private class ScheduleItemClickListener implements RecyclerItemClickListener.OnItemClickListener {
         @Override
         public void onItemClick(View view, int position) {
@@ -201,15 +212,13 @@ public class ScheduleFragment extends Fragment {
             lastScheduleUpdate = schedule;
             lastUpdatedAt = DateTime.now().getMillis();
 
+            mSectionedAdapter = createScheduleViewAdapter(schedule);
             RecyclerView listView = (RecyclerView)getActivity().findViewById(R.id.scheduleList);
-            if(listView != null){
-                listView.setHasFixedSize(true);
+            if (listView != null){
                 listView.setAdapter(mSectionedAdapter);
-                listView.addItemDecoration(new HorizontalDividerItemDecoration.Builder(getContext()).build());
-                LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
-                listView.setLayoutManager(layoutManager);
             }
-            createScheduleViewAdapter(schedule);
+
+            ((SwipeRefreshLayout)getActivity().findViewById(R.id.scheduleRefreshLayout)).setRefreshing(false);
         }
     }
 }
