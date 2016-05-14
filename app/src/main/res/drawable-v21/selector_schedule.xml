@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="?attr/colorControlHighlight">
+    <item>
+        <selector>
+            <item android:state_selected="true" android:state_enabled="true">
+                <color android:color="@color/light_green"></color>
+            </item>
+            <item android:state_selected="false" android:state_enabled="true">
+                <color android:color="@color/background_light"></color>
+            </item>
+            <item android:state_enabled="false">
+                <color android:color="@color/background_gray"></color>
+            </item>
+        </selector>
+    </item>
+</ripple>

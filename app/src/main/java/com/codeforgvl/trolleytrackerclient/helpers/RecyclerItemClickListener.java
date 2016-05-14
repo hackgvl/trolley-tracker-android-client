@@ -11,6 +11,7 @@ import android.view.View;
 
 
 public class RecyclerItemClickListener implements RecyclerView.OnItemTouchListener {
+    private boolean mLongClicked = false;
     private OnItemClickListener mListener;
 
     public interface OnItemClickListener {
@@ -23,8 +24,20 @@ public class RecyclerItemClickListener implements RecyclerView.OnItemTouchListen
         mListener = listener;
         mGestureDetector = new GestureDetector(context, new GestureDetector.SimpleOnGestureListener() {
             @Override
+            public boolean onDown(MotionEvent e) {
+                mLongClicked = false;
+                return false;
+            }
+
+            @Override
             public boolean onSingleTapUp(MotionEvent e) {
                 return true;
+            }
+
+            @Override
+            public void onLongPress(MotionEvent e) {
+                mLongClicked = true;
+                // long press down detected
             }
         });
     }
@@ -32,7 +45,7 @@ public class RecyclerItemClickListener implements RecyclerView.OnItemTouchListen
     @Override
     public boolean onInterceptTouchEvent(RecyclerView view, MotionEvent e) {
         View childView = view.findChildViewUnder(e.getX(), e.getY());
-        if (childView != null && mListener != null && mGestureDetector.onTouchEvent(e)) {
+        if (childView != null && mListener != null && (mGestureDetector.onTouchEvent(e) || mLongClicked)) {
             mListener.onItemClick(childView, view.getChildAdapterPosition(childView));
             return true;
         }
@@ -41,6 +54,7 @@ public class RecyclerItemClickListener implements RecyclerView.OnItemTouchListen
 
     @Override
     public void onTouchEvent(RecyclerView view, MotionEvent motionEvent) {
+
     }
 
     @Override

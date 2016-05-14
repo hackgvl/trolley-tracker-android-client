@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.codeforgvl.trolleytrackerclient.Constants;
 import com.codeforgvl.trolleytrackerclient.R;
 import com.codeforgvl.trolleytrackerclient.activities.MainActivity;
@@ -171,14 +172,25 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
         new ScheduleUpdateTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
+    private MaterialDialog previewLoadingDialog;
+    private MaterialDialog getPreviewLoadingDialog(){
+        if(previewLoadingDialog == null){
+            previewLoadingDialog = new MaterialDialog.Builder(getContext()).title(R.string.preview_loading_title).progress(true, 0).build();
+        }
+        return previewLoadingDialog;
+    }
     private class ScheduleItemClickListener implements RecyclerItemClickListener.OnItemClickListener {
         @Override
         public void onItemClick(View view, int position) {
             //Show map preview if they clicked on a scheduled time
-            long itemPosition = mSectionedAdapter.getItemId(position);
-            if(itemPosition < Integer.MAX_VALUE / 2){
-                ScheduledRoute route = ((ScheduleAdapter) mSectionedAdapter.getBaseAdapter()).getItem((int)itemPosition);
-                new RoutePreviewTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, route.getRouteSchedule().RouteID);
+            if(!getPreviewLoadingDialog().isShowing()){
+                long itemPosition = mSectionedAdapter.getItemId(position);
+                if(itemPosition < Integer.MAX_VALUE / 2){
+                    ScheduledRoute route = ((ScheduleAdapter) mSectionedAdapter.getBaseAdapter()).getItem((int)itemPosition);
+                    getPreviewLoadingDialog().setContent(String.format(getContext().getString(R.string.preview_loading_content), route.getRouteSchedule().RouteLongName));
+                    getPreviewLoadingDialog().show();
+                    new RoutePreviewTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, route.getRouteSchedule().RouteID);
+                }
             }
         }
     }
@@ -196,6 +208,7 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
             Bundle bundle = new Bundle();
             bundle.putParcelableArray(Route.ROUTE_KEY, routes);
             bundle.putLong(Route.LAST_UPDATED_KEY, DateTime.now().getMillis());
+            getPreviewLoadingDialog().dismiss();
             ((MainActivity) getActivity()).showRoutePreview(bundle);
         }
     }
