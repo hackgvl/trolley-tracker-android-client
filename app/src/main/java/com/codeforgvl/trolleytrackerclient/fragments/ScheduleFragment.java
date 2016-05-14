@@ -128,18 +128,20 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
     }
 
     private SimpleSectionedRecyclerViewAdapter createScheduleViewAdapter(RouteSchedule[] schedule){
-        List<ScheduledRoute> srList = new ArrayList<>(schedule.length);
+        List<ScheduledRoute> srList = new ArrayList<>(schedule != null ? schedule.length : 0);
         HashMap<Integer,Integer> dayCount = new HashMap<>(7);
-        for(RouteSchedule rs : schedule){
-            ScheduledRoute sr = new ScheduledRoute(rs);
+        if(schedule != null){
+            for(RouteSchedule rs : schedule){
+                ScheduledRoute sr = new ScheduledRoute(rs);
 
-            if(!dayCount.containsKey(sr.getDayOfWeek())){
-                dayCount.put(sr.getDayOfWeek(), 1);
-            } else {
-                dayCount.put(sr.getDayOfWeek(), dayCount.get(sr.getDayOfWeek()) + 1);
+                if(!dayCount.containsKey(sr.getDayOfWeek())){
+                    dayCount.put(sr.getDayOfWeek(), 1);
+                } else {
+                    dayCount.put(sr.getDayOfWeek(), dayCount.get(sr.getDayOfWeek()) + 1);
+                }
+
+                srList.add(sr);
             }
-
-            srList.add(sr);
         }
 
         //Insert section headers appropriately
