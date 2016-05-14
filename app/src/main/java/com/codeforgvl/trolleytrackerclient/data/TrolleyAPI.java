@@ -51,17 +51,20 @@ public class TrolleyAPI {
 
     public static Trolley[] getRunningTrolleys(){
         String json = httpGETRequest(Constants.RUNNING_TROLLEYS_ENDPOINT);
-        return new Gson().fromJson(json, Trolley[].class);
+        Trolley[] ret = new Gson().fromJson(json, Trolley[].class);
+        return ret != null? ret : new Trolley[0];
     }
 
     public static Route[] getActiveRoutes(){
         String json = httpGETRequest(Constants.ACTIVE_ROUTES_ENDPOINT);
-        return new Gson().fromJson(json, Route[].class);
+        Route[] ret = new Gson().fromJson(json, Route[].class);
+        return ret != null? ret : new Route[0];
     }
 
     public static RouteSchedule[] getRouteSchedule(){
         String json = httpGETRequest(Constants.ROUTE_SCHEDULE_ENDPOINT);
-        return new Gson().fromJson(json, RouteSchedule[].class);
+        RouteSchedule[] ret = new Gson().fromJson(json, RouteSchedule[].class);
+        return ret != null? ret : new RouteSchedule[0];
     }
 
     public static Route getRouteDetails(int routeId){
