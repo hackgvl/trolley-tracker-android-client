@@ -16,6 +16,8 @@ import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
+import com.codeforgvl.trolleytrackerclient.activities.MainActivity;
+
 
 /**
  * Created by Adam on 12/30/2015.
@@ -35,7 +37,7 @@ public class Utils {
             return m.getBackStackEntryAt(stackSize - 1).getName();
         }
         else{
-            return null;
+            return MainActivity.MAP_FRAGMENT_TAG;
         }
     }
 

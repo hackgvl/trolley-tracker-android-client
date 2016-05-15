@@ -51,20 +51,21 @@ public class MainActivity extends AppCompatActivity implements TrackerFragment.M
             if(savedInstanceState != null){
                 trackerFragment = (TrackerFragment)getSupportFragmentManager().getFragment(savedInstanceState, MAP_FRAGMENT_TAG);
                 scheduleFragment = (ScheduleFragment)getSupportFragmentManager().getFragment(savedInstanceState, SCHEDULE_FRAGMENT_TAG);
+                previewFragment = (RoutePreviewFragment)getSupportFragmentManager().getFragment(savedInstanceState, PREVIEW_FRAGMENT_TAG);
 
                 String activeFragment = savedInstanceState.getString(ACTIVE_FRAGMENT_TAG);
                 if(activeFragment != null){
                     switch (activeFragment){
                         case MAP_FRAGMENT_TAG:
-                            showMap();
+                            showMap(true);
                             selectedFragmentID = MAP_FRAGMENT_ID;
                             break;
                         case SCHEDULE_FRAGMENT_TAG:
-                            showSchedule();
+                            showSchedule(true);
                             selectedFragmentID = SCHEDULE_FRAGMENT_ID;
                             break;
                         case PREVIEW_FRAGMENT_TAG:
-                            showRoutePreview();
+                            showRoutePreview(true);
                             selectedFragmentID = PREVIEW_FRAGMENT_ID;
                             break;
                     }
@@ -81,8 +82,8 @@ public class MainActivity extends AppCompatActivity implements TrackerFragment.M
                         .add(R.id.fragment_container, scheduleFragment, SCHEDULE_FRAGMENT_TAG).hide(scheduleFragment)
                         .add(R.id.fragment_container, trackerFragment, MAP_FRAGMENT_TAG)
                         .commit();
-                getSupportFragmentManager().addOnBackStackChangedListener(this);
             }
+            getSupportFragmentManager().addOnBackStackChangedListener(this);
         }
 
         //Initialize UI
@@ -119,22 +120,28 @@ public class MainActivity extends AppCompatActivity implements TrackerFragment.M
     }
 
     private void showMap(){
+        showMap(false);
+    }
+    private void showMap(boolean forceHide){
         android.support.v4.app.FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.addToBackStack(MAP_FRAGMENT_TAG);
-        if(!previewFragment.isHidden())
+        if(forceHide || !previewFragment.isHidden())
             ft.hide(previewFragment);
-        if(!scheduleFragment.isHidden())
+        if(forceHide || !scheduleFragment.isHidden())
             ft.hide(scheduleFragment);
         ft.show(trackerFragment);
         ft.commit();
     }
 
     private void showSchedule(){
+        showSchedule(false);
+    }
+    private void showSchedule(boolean forceHide){
         android.support.v4.app.FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.addToBackStack(SCHEDULE_FRAGMENT_TAG);
-        if(!previewFragment.isHidden())
+        if(forceHide || !previewFragment.isHidden())
             ft.hide(previewFragment);
-        if(!trackerFragment.isHidden())
+        if(forceHide || !trackerFragment.isHidden())
             ft.hide(trackerFragment);
         ft.show(scheduleFragment);
         ft.commit();
@@ -144,13 +151,15 @@ public class MainActivity extends AppCompatActivity implements TrackerFragment.M
         previewFragment.processBundle(bundle);
         showRoutePreview();
     }
-
     private void showRoutePreview(){
+        showRoutePreview(false);
+    }
+    private void showRoutePreview(boolean forceHide){
         android.support.v4.app.FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.addToBackStack(PREVIEW_FRAGMENT_TAG);
-        if(!trackerFragment.isHidden())
+        if(forceHide || !trackerFragment.isHidden())
             ft.hide(trackerFragment);
-        if(!scheduleFragment.isHidden())
+        if(forceHide || !scheduleFragment.isHidden())
             ft.hide(scheduleFragment);
         ft.show(previewFragment);
         ft.commit();
