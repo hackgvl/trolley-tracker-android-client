@@ -1,1 +1,4 @@
 /build
+/src/release
+/src/debug
+fabric.properties
