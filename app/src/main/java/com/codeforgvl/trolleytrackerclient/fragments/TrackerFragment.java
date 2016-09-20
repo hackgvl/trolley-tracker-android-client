@@ -33,6 +33,7 @@ import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapsInitializer;
+import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -44,7 +45,7 @@ import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import org.joda.time.DateTime;
 
-public class TrackerFragment extends Fragment implements IMapFragment, GoogleMap.OnMarkerClickListener, GoogleMap.OnMapClickListener, GoogleApiClient.ConnectionCallbacks {
+public class TrackerFragment extends Fragment implements OnMapReadyCallback, IMapFragment, GoogleMap.OnMarkerClickListener, GoogleMap.OnMapClickListener, GoogleApiClient.ConnectionCallbacks {
     private MapFragmentListener mListener;
 
     public GoogleMap mMap; // Might be null if Google Play services APK is not available.
@@ -155,20 +156,25 @@ public class TrackerFragment extends Fragment implements IMapFragment, GoogleMap
         // Do a null check to confirm that we have not already instantiated the map.
         if (mMap == null) {
             // Try to obtain the map from the SupportMapFragment.
-            mMap = ((SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map))
-                    .getMap();
-            // Check if we were successful in obtaining the map.
-            if (mMap != null) {
-                //Capture marker clicks, show 'selected' marker
-                mMap.setOnMarkerClickListener(this);
-                mMap.setOnMapClickListener(this);
-                selectedMarker = mMap.addMarker(new MarkerOptions().position(new LatLng(0, 0)).visible(false));
+            ((SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map)).getMapAsync(this);
+        }
+    }
 
-                mMap.setInfoWindowAdapter(new MapWindowAdapter(getContext()));
+    @Override
+    public void onMapReady(final GoogleMap map) {
+        mMap = map;
 
-                //Show users current location
-                enableMyLocation();
-            }
+        // Check if we were successful in obtaining the map.
+        if (mMap != null) {
+            //Capture marker clicks, show 'selected' marker
+            mMap.setOnMarkerClickListener(this);
+            mMap.setOnMapClickListener(this);
+            selectedMarker = mMap.addMarker(new MarkerOptions().position(new LatLng(0, 0)).visible(false));
+
+            mMap.setInfoWindowAdapter(new MapWindowAdapter(getContext()));
+
+            //Show users current location
+            enableMyLocation();
         }
     }
 
@@ -238,8 +244,13 @@ public class TrackerFragment extends Fragment implements IMapFragment, GoogleMap
 
     @Override
     public void onConnected(Bundle bundle) {
-        Location location = LocationServices.FusedLocationApi.getLastLocation(
-                mGoogleApiClient);
+        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            // Permission to access the location is missing.
+            Utils.requestPermission((AppCompatActivity)getActivity(), 1,
+                    Manifest.permission.ACCESS_FINE_LOCATION, true);
+        }
+        Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
         if (location != null) {
             View mapView = getActivity().findViewById(R.id.map);
             if(mapView.getHeight() == 0 || mapView.getWidth() == 0){

@@ -19,6 +19,7 @@ import com.codeforgvl.trolleytrackerclient.helpers.RouteManager;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapsInitializer;
+import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -27,7 +28,7 @@ import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import org.joda.time.DateTime;
 
-public class RoutePreviewFragment extends Fragment implements IMapFragment, GoogleMap.OnMarkerClickListener, GoogleMap.OnMapClickListener {
+public class RoutePreviewFragment extends Fragment implements OnMapReadyCallback,IMapFragment, GoogleMap.OnMarkerClickListener, GoogleMap.OnMapClickListener {
     public GoogleMap mMap; // Might be null if Google Play services APK is not available.
 
     private SlidingUpPanelLayout drawer;
@@ -95,20 +96,24 @@ public class RoutePreviewFragment extends Fragment implements IMapFragment, Goog
         // Do a null check to confirm that we have not already instantiated the map.
         if (mMap == null) {
             // Try to obtain the map from the SupportMapFragment.
-            mMap = ((SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map))
-                    .getMap();
-            // Check if we were successful in obtaining the map.
-            if (mMap != null) {
-                //Capture marker clicks, show 'selected' marker
-                mMap.setOnMarkerClickListener(this);
-                mMap.setOnMapClickListener(this);
-                selectedMarker = mMap.addMarker(new MarkerOptions().position(new LatLng(0, 0)).visible(false));
+            ((SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map)).getMapAsync(this);
+        }
+    }
 
-                mMap.setInfoWindowAdapter(new MapWindowAdapter(getContext()));
+    @Override
+    public void onMapReady(final GoogleMap map) {
+        mMap = map;
+        // Check if we were successful in obtaining the map.
+        if (mMap != null) {
+            //Capture marker clicks, show 'selected' marker
+            mMap.setOnMarkerClickListener(this);
+            mMap.setOnMapClickListener(this);
+            selectedMarker = mMap.addMarker(new MarkerOptions().position(new LatLng(0, 0)).visible(false));
 
-                //Show users current location
-                enableMyLocation();
-            }
+            mMap.setInfoWindowAdapter(new MapWindowAdapter(getContext()));
+
+            //Show users current location
+            enableMyLocation();
         }
     }
 
