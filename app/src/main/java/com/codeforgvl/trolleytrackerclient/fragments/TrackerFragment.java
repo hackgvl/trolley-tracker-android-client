@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -22,6 +23,7 @@ import android.widget.TextView;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.codeforgvl.trolleytrackerclient.Constants;
 import com.codeforgvl.trolleytrackerclient.R;
 import com.codeforgvl.trolleytrackerclient.Utils;
 import com.codeforgvl.trolleytrackerclient.adapters.MapWindowAdapter;
@@ -45,7 +47,7 @@ import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import org.joda.time.DateTime;
 
-public class TrackerFragment extends Fragment implements OnMapReadyCallback, IMapFragment, GoogleMap.OnMarkerClickListener, GoogleMap.OnMapClickListener, GoogleApiClient.ConnectionCallbacks {
+public class TrackerFragment extends Fragment implements ActivityCompat.OnRequestPermissionsResultCallback, OnMapReadyCallback, IMapFragment, GoogleMap.OnMarkerClickListener, GoogleMap.OnMapClickListener, GoogleApiClient.ConnectionCallbacks {
     private MapFragmentListener mListener;
 
     public GoogleMap mMap; // Might be null if Google Play services APK is not available.
@@ -176,6 +178,9 @@ public class TrackerFragment extends Fragment implements OnMapReadyCallback, IMa
             //Show users current location
             enableMyLocation();
         }
+
+        routeMan.onMapReady();
+        trolleyMan.onMapReady();
     }
 
     /**
@@ -186,16 +191,29 @@ public class TrackerFragment extends Fragment implements OnMapReadyCallback, IMa
             if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)
                     != PackageManager.PERMISSION_GRANTED) {
                 // Permission to access the location is missing.
-                Utils.requestPermission((AppCompatActivity)getActivity(), 1,
+                Utils.requestPermission((AppCompatActivity)getActivity(), Constants.LOCATION_PERMISSION_REQUEST_ID,
                         Manifest.permission.ACCESS_FINE_LOCATION, true);
-            }
-            if (mMap != null) {
-                // Access to the location has been granted to the app.
-                mMap.setMyLocationEnabled(true);
             }
         } else if (mMap != null) {
             // Access to the location has been granted to the app.
             mMap.setMyLocationEnabled(true);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults){
+        switch (requestCode) {
+            case Constants.LOCATION_PERMISSION_REQUEST_ID: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION);
+                    mMap.setMyLocationEnabled(true);
+                } else {
+
+                }
+                return;
+            }
         }
     }
 

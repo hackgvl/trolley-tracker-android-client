@@ -21,6 +21,7 @@ public class Constants {
 
     public static final int SLEEP_INTERVAL = 5000;
 
+    public static final int LOCATION_PERMISSION_REQUEST_ID = 1;
 
     public static int getRouteColorForRouteNumber(Context context, int ndx){
 

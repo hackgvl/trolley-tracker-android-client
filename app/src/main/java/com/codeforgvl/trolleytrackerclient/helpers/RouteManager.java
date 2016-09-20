@@ -53,6 +53,12 @@ public class RouteManager {
         }
     }
 
+    public void onMapReady(){
+        if(lastRouteUpdate != null){
+            updateRoutes(lastRouteUpdate);
+        }
+    }
+
     public void updateActiveRoutes(){
         new RouteUpdateTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
@@ -68,6 +74,9 @@ public class RouteManager {
     }
 
     public void updateRoutes(Route[] routes){
+        if(trackerFragment.getMap() == null)
+            return;
+
         //Clear all current routes
         for(Marker m : stopMarkers.values()){
             m.remove();

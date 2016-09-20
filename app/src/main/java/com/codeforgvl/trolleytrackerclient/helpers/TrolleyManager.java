@@ -43,18 +43,23 @@ public class TrolleyManager {
         if(b == null){
             return;
         }
-        Trolley[] trolleys = null;
         if (b != null){
             lastUpdatedAt = b.getLong(Trolley.LAST_UPDATED_KEY);
             DateTime lastUpdate = new DateTime(lastUpdatedAt);
             if(!lastUpdate.isBefore(DateTime.now().minusMinutes(1))){
                 Parcelable[] tParcels = b.getParcelableArray(Trolley.TROLLEY_KEY);
-                trolleys = new Trolley[tParcels.length];
-                System.arraycopy(tParcels, 0, trolleys, 0, tParcels.length);
-                updateTrolleys(trolleys);
+                lastTrolleyUpdate = new Trolley[tParcels.length];
+                System.arraycopy(tParcels, 0, lastTrolleyUpdate, 0, tParcels.length);
+                updateTrolleys(lastTrolleyUpdate);
             }
 
             notifiedEmpty = b.getBoolean(TrolleyManager.NOTIFIED_EMPTY_KEY, false);
+        }
+    }
+
+    public void onMapReady(){
+        if(lastTrolleyUpdate != null){
+            updateTrolleys(lastTrolleyUpdate);
         }
     }
 
@@ -80,6 +85,9 @@ public class TrolleyManager {
     }
 
     private synchronized void updateTrolleys(Trolley[] trolleys){
+        if(trackerFragment.getMap() == null)
+            return;
+
         Set<Integer> keySet = new HashSet<>(trolleyMarkers.keySet());
         for(int i=0; i < trolleys.length; i++){
             Trolley t = trolleys[i];
