@@ -16,13 +16,13 @@ repositories {
 
 
 android {
-    compileSdkVersion 23
+    compileSdkVersion 24
     buildToolsVersion "22.0.1"
 
     defaultConfig {
         applicationId "com.codeforgvl.trolleytrackerclient"
         minSdkVersion 14
-        targetSdkVersion 23
+        targetSdkVersion 24
         versionCode 15
         versionName "1.21"
         vectorDrawables.useSupportLibrary = true
@@ -42,8 +42,8 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:23.2.1'
-    compile 'com.google.android.gms:play-services:7.3.0'
+    compile 'com.android.support:appcompat-v7:24.2.1'
+    compile 'com.google.android.gms:play-services:9.4.0'
     compile 'com.joanzapata.iconify:android-iconify:2.0.8'
     compile 'com.joanzapata.iconify:android-iconify-material:2.0.8'
     compile 'com.joanzapata.iconify:android-iconify-fontawesome:2.0.8'
@@ -52,7 +52,7 @@ dependencies {
         transitive = true
     }
     compile 'net.danlew:android.joda:2.9.1' // for joda
-    compile 'com.android.support:design:23.2.1'
+    compile 'com.android.support:design:24.2.1'
     compile 'com.yqritc:recyclerview-flexibledivider:1.2.6'
     compile('com.github.afollestad.material-dialogs:core:0.8.5.3@aar') {
         transitive = true
@@ -60,4 +60,6 @@ dependencies {
     compile('com.crashlytics.sdk.android:crashlytics:2.6.2@aar') {
         transitive = true;
     }
+    compile 'com.google.firebase:firebase-core:9.4.0'
 }
+apply plugin: 'com.google.gms.google-services'
