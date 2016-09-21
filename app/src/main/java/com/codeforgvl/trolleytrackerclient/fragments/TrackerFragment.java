@@ -47,7 +47,7 @@ import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import org.joda.time.DateTime;
 
-public class TrackerFragment extends Fragment implements ActivityCompat.OnRequestPermissionsResultCallback, OnMapReadyCallback, IMapFragment, GoogleMap.OnMarkerClickListener, GoogleMap.OnMapClickListener, GoogleApiClient.ConnectionCallbacks {
+public class TrackerFragment extends Fragment implements OnMapReadyCallback, IMapFragment, GoogleMap.OnMarkerClickListener, GoogleMap.OnMapClickListener, GoogleApiClient.ConnectionCallbacks {
     private MapFragmentListener mListener;
 
     public GoogleMap mMap; // Might be null if Google Play services APK is not available.
@@ -200,7 +200,6 @@ public class TrackerFragment extends Fragment implements ActivityCompat.OnReques
         }
     }
 
-    @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults){
         switch (requestCode) {
             case Constants.LOCATION_PERMISSION_REQUEST_ID: {

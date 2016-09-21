@@ -30,7 +30,7 @@ import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import org.joda.time.DateTime;
 
-public class RoutePreviewFragment extends Fragment implements ActivityCompat.OnRequestPermissionsResultCallback, OnMapReadyCallback,IMapFragment, GoogleMap.OnMarkerClickListener, GoogleMap.OnMapClickListener {
+public class RoutePreviewFragment extends Fragment implements OnMapReadyCallback,IMapFragment, GoogleMap.OnMarkerClickListener, GoogleMap.OnMapClickListener {
     public GoogleMap mMap; // Might be null if Google Play services APK is not available.
 
     private SlidingUpPanelLayout drawer;
@@ -138,7 +138,6 @@ public class RoutePreviewFragment extends Fragment implements ActivityCompat.OnR
         }
     }
 
-    @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults){
         switch (requestCode) {
             case Constants.LOCATION_PERMISSION_REQUEST_ID: {

@@ -1,17 +1,21 @@
 package com.codeforgvl.trolleytrackerclient.activities;
 
-import android.app.FragmentTransaction;
+import android.Manifest;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 
+import com.codeforgvl.trolleytrackerclient.Constants;
 import com.codeforgvl.trolleytrackerclient.R;
 import com.codeforgvl.trolleytrackerclient.Utils;
 import com.codeforgvl.trolleytrackerclient.fragments.RoutePreviewFragment;
@@ -27,7 +31,7 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 import org.joda.time.DateTime;
 
-public class MainActivity extends AppCompatActivity implements TrackerFragment.MapFragmentListener, FragmentManager.OnBackStackChangedListener {
+public class MainActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback, TrackerFragment.MapFragmentListener, FragmentManager.OnBackStackChangedListener {
     public final static int MAP_FRAGMENT_ID = 1;
     public final static int SCHEDULE_FRAGMENT_ID = 2;
     public final static int PREVIEW_FRAGMENT_ID = 3;
@@ -213,6 +217,15 @@ public class MainActivity extends AppCompatActivity implements TrackerFragment.M
             }
         } else {
             menu.setSelection(MAP_FRAGMENT_ID, false);
+        }
+    }
+
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults){
+        if(trackerFragment != null){
+            trackerFragment.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+        if(previewFragment != null){
+            previewFragment.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
     }
 
