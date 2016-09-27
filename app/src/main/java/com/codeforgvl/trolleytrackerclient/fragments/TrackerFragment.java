@@ -193,6 +193,8 @@ public class TrackerFragment extends Fragment implements OnMapReadyCallback, IMa
                 // Permission to access the location is missing.
                 Utils.requestPermission((AppCompatActivity)getActivity(), Constants.LOCATION_PERMISSION_REQUEST_ID,
                         Manifest.permission.ACCESS_FINE_LOCATION, true);
+            } else {
+                mMap.setMyLocationEnabled(true);
             }
         } else if (mMap != null) {
             // Access to the location has been granted to the app.
@@ -207,9 +209,9 @@ public class TrackerFragment extends Fragment implements OnMapReadyCallback, IMa
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION);
-                    mMap.setMyLocationEnabled(true);
-                } else {
-
+                    if(mMap!= null){
+                        mMap.setMyLocationEnabled(true);
+                    }
                 }
                 return;
             }
