@@ -5,6 +5,7 @@ import com.codeforgvl.trolleytrackerclient.models.json.RouteSchedule;
 import com.codeforgvl.trolleytrackerclient.models.json.Trolley;
 import com.codeforgvl.trolleytrackerclient.models.json.Route;
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -51,24 +52,45 @@ public class TrolleyAPI {
 
     public static Trolley[] getRunningTrolleys(){
         String json = httpGETRequest(Constants.RUNNING_TROLLEYS_ENDPOINT);
-        Trolley[] ret = new Gson().fromJson(json, Trolley[].class);
+        Trolley[] ret = null;
+        try{
+            ret = new Gson().fromJson(json, Trolley[].class);
+        } catch (JsonSyntaxException ex){
+            //Catch exception re: malformed json from API
+        }
         return ret != null? ret : new Trolley[0];
     }
 
     public static Route[] getActiveRoutes(){
         String json = httpGETRequest(Constants.ACTIVE_ROUTES_ENDPOINT);
-        Route[] ret = new Gson().fromJson(json, Route[].class);
+        Route[] ret = null;
+        try{
+            ret = new Gson().fromJson(json, Route[].class);
+        } catch (JsonSyntaxException ex){
+            //Catch exception re: malformed json from API
+        }
         return ret != null? ret : new Route[0];
     }
 
     public static RouteSchedule[] getRouteSchedule(){
         String json = httpGETRequest(Constants.ROUTE_SCHEDULE_ENDPOINT);
-        RouteSchedule[] ret = new Gson().fromJson(json, RouteSchedule[].class);
+        RouteSchedule[] ret = null;
+        try{
+            ret = new Gson().fromJson(json, RouteSchedule[].class);
+        } catch (JsonSyntaxException ex){
+            //Catch exception re: malformed json from API
+        }
         return ret != null? ret : new RouteSchedule[0];
     }
 
     public static Route getRouteDetails(int routeId){
         String json = httpGETRequest(Constants.GetRouteDetailsEndpoint(routeId));
-        return new Gson().fromJson(json, Route.class);
+        Route ret = null;
+        try{
+            ret = new Gson().fromJson(json, Route.class);
+        } catch (JsonSyntaxException ex){
+            //Catch exception re: malformed json from API
+        }
+        return ret != null? ret : new Route();
     }
 }

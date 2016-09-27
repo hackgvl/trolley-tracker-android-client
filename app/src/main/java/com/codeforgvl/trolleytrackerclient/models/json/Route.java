@@ -34,6 +34,8 @@ public class Route implements Parcelable {
         dest.writeParcelableArray(RouteShape, 0);
     }
 
+    public Route(){ }
+
     public Route(Parcel in){
         ShortName = in.readString();
         Description = in.readString();
