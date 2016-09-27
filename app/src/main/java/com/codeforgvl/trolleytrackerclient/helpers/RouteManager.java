@@ -3,6 +3,7 @@ package com.codeforgvl.trolleytrackerclient.helpers;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 
 import com.codeforgvl.trolleytrackerclient.Constants;
@@ -128,6 +129,9 @@ public class RouteManager {
 
         @Override
         protected void onPostExecute(Route[] routes) {
+            if(!trackerFragment.fragmentIsAdded()){
+                return;
+            }
             lastRouteUpdate = routes;
             lastUpdatedAt = DateTime.now().getMillis();
             updateRoutes(routes);

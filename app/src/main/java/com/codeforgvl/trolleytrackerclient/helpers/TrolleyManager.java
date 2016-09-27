@@ -85,7 +85,7 @@ public class TrolleyManager {
     }
 
     private synchronized void updateTrolleys(Trolley[] trolleys){
-        if(trackerFragment.getMap() == null)
+        if(trackerFragment.getMap() == null || !trackerFragment.fragmentIsAdded())
             return;
 
         Set<Integer> keySet = new HashSet<>(trolleyMarkers.keySet());

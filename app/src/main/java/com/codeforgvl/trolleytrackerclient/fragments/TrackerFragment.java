@@ -401,4 +401,9 @@ public class TrackerFragment extends Fragment implements OnMapReadyCallback, IMa
                     .show();
         }
     }
+
+    @Override
+    public boolean fragmentIsAdded(){
+        return isAdded();
+    }
 }

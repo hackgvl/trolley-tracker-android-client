@@ -206,10 +206,14 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
 
         @Override
         protected void onPostExecute(Route route){
+            if(!isAdded()){
+                return;
+            }
             Route[] routes = new Route[]{ route };
             Bundle bundle = new Bundle();
             bundle.putParcelableArray(Route.ROUTE_KEY, routes);
             bundle.putLong(Route.LAST_UPDATED_KEY, DateTime.now().getMillis());
+
             getPreviewLoadingDialog().dismiss();
             ((MainActivity) getActivity()).showRoutePreview(bundle);
         }

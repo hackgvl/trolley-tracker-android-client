@@ -229,4 +229,9 @@ public class RoutePreviewFragment extends Fragment implements OnMapReadyCallback
     public GoogleMap getMap() {
         return mMap;
     }
+
+    @Override
+    public boolean fragmentIsAdded(){
+        return isAdded();
+    }
 }
