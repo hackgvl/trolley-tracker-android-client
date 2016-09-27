@@ -224,6 +224,9 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
 
         @Override
         protected void onPostExecute(RouteSchedule[] schedule) {
+            if(!isAdded()){
+                return;
+            }
             lastScheduleUpdate = schedule;
             lastUpdatedAt = DateTime.now().getMillis();
 
