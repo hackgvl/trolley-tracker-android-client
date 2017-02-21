@@ -19,6 +19,8 @@ public class Constants {
         return ROUTE_DETAILS_ENDPOINT + routeId;
     }
 
+    public static final int ROUTE_UPDATE_INTERVAL = 15;
+
     public static final int SLEEP_INTERVAL = 5000;
 
     public static final int LOCATION_PERMISSION_REQUEST_ID = 1;

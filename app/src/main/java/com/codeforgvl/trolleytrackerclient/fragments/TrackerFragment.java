@@ -47,6 +47,8 @@ import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import org.joda.time.DateTime;
 
+import static com.codeforgvl.trolleytrackerclient.Constants.ROUTE_UPDATE_INTERVAL;
+
 public class TrackerFragment extends Fragment implements OnMapReadyCallback, IMapFragment, GoogleMap.OnMarkerClickListener, GoogleMap.OnMapClickListener, GoogleApiClient.ConnectionCallbacks {
     private MapFragmentListener mListener;
 
@@ -142,7 +144,7 @@ public class TrackerFragment extends Fragment implements OnMapReadyCallback, IMa
 
     public void tick(DateTime now){
         int min = now.getMinuteOfHour();
-        if(min % 30 == 1){
+        if(min % ROUTE_UPDATE_INTERVAL == 1){
             routeMan.updateActiveRoutes();
         }
     }

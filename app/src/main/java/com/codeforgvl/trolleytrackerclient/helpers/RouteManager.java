@@ -23,6 +23,8 @@ import org.joda.time.DateTime;
 
 import java.util.HashMap;
 
+import static com.codeforgvl.trolleytrackerclient.Constants.ROUTE_UPDATE_INTERVAL;
+
 /**
  * Created by ahodges on 12/18/2015.
  */
@@ -66,7 +68,11 @@ public class RouteManager {
 
     public boolean updateRoutesIfNeeded(){
         DateTime lastUpdate = new DateTime(lastUpdatedAt);
-        if(lastUpdate.isBefore(DateTime.now().minusMinutes(30))){
+        DateTime now = DateTime.now();
+
+        boolean intervalElapsed = lastUpdate.isBefore(now.minusMinutes(ROUTE_UPDATE_INTERVAL));
+        boolean periodCrossed = lastUpdate.minuteOfHour().get() % ROUTE_UPDATE_INTERVAL != now.minuteOfHour().get() % ROUTE_UPDATE_INTERVAL;
+        if(intervalElapsed || periodCrossed){
             updateActiveRoutes();
             return true;
         } else {
