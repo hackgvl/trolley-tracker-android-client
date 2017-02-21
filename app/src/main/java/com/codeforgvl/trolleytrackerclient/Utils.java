@@ -1,5 +1,6 @@
 package com.codeforgvl.trolleytrackerclient;
 
+import android.app.Activity;
 import android.support.v4.app.FragmentManager;
 
 import org.joda.time.DateTime;
@@ -16,6 +17,8 @@ import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.codeforgvl.trolleytrackerclient.activities.MainActivity;
 
 
@@ -101,11 +104,13 @@ public class Utils {
             final int requestCode = arguments.getInt(ARGUMENT_PERMISSION_REQUEST_CODE);
             mFinishActivity = arguments.getBoolean(ARGUMENT_FINISH_ACTIVITY);
 
-            return new AlertDialog.Builder(getActivity())
-                    .setMessage(R.string.permission_rationale_location)
-                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+            return new MaterialDialog.Builder(getContext())
+                    .content(R.string.permission_rationale_location)
+                    .positiveText(android.R.string.ok)
+                    .negativeText(android.R.string.cancel)
+                    .onPositive(new MaterialDialog.SingleButtonCallback() {
                         @Override
-                        public void onClick(DialogInterface dialog, int which) {
+                        public void onClick(MaterialDialog dialog, DialogAction which) {
                             // After click on Ok, request the permission.
                             ActivityCompat.requestPermissions(getActivity(),
                                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
@@ -113,20 +118,19 @@ public class Utils {
                             // Do not finish the Activity while requesting permission.
                             mFinishActivity = false;
                         }
-                    })
-                    .setNegativeButton(android.R.string.cancel, null)
-                    .create();
+                    }).build();
         }
 
         @Override
         public void onDismiss(DialogInterface dialog) {
             super.onDismiss(dialog);
-            if (mFinishActivity) {
-                Toast.makeText(getActivity(),
+            Activity mActivity = getActivity();
+            if (mActivity != null && mFinishActivity) {
+                Toast.makeText(mActivity,
                         R.string.permission_required_toast,
                         Toast.LENGTH_SHORT)
                         .show();
-                getActivity().finish();
+                mActivity.finish();
             }
         }
     }
