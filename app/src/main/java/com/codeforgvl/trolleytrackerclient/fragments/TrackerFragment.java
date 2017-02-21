@@ -274,7 +274,7 @@ public class TrackerFragment extends Fragment implements OnMapReadyCallback, IMa
         Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
         if (location != null) {
             View mapView = getActivity().findViewById(R.id.map);
-            if(mapView.getHeight() == 0 || mapView.getWidth() == 0){
+            if(!isAdded() || mapView.getHeight() == 0 || mapView.getWidth() == 0){
                 return; //map layout not rendered yet
             }
 
@@ -285,12 +285,11 @@ public class TrackerFragment extends Fragment implements OnMapReadyCallback, IMa
                 }
                 bounds.include(new LatLng(location.getLatitude(), location.getLongitude()));
 
-                Display display = getActivity().getWindowManager().getDefaultDisplay();
-                Point size = new Point();
-                display.getSize(size);
+                int width = getResources().getDisplayMetrics().widthPixels;
+                int height = getResources().getDisplayMetrics().heightPixels;
 
-                int padding = ((getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)? size.x : size.y) / 4;
-                CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds.build(), padding);
+                int padding = ((getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)? width : height) / 4;
+                CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds.build(), width, height, padding);
 
                 mMap.animateCamera(cu);
             }
