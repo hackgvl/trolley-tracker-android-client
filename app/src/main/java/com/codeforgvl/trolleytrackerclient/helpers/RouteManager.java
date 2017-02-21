@@ -81,7 +81,7 @@ public class RouteManager {
     }
 
     public void updateRoutes(Route[] routes){
-        if(trackerFragment.getMap() == null)
+        if(trackerFragment.getMap() == null || !trackerFragment.fragmentIsAdded())
             return;
 
         //Clear all current routes
