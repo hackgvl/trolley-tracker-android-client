@@ -11,11 +11,13 @@ import org.joda.time.Partial;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+import java.util.Locale;
+
 /**
  * Created by ahodges on 12/29/2015.
  */
 public class ScheduledRoute implements Comparable {
-    private static final DateTimeFormatter INPUT_DATE_FORMAT = DateTimeFormat.forPattern("EEEE h:m a");
+    private static final DateTimeFormatter INPUT_DATE_FORMAT = DateTimeFormat.forPattern("EEEE h:m a").withLocale(Locale.ENGLISH);
 
     private Interval interval;
     private RouteSchedule schedule;

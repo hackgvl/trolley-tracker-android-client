@@ -51,7 +51,7 @@ dependencies {
     compile('com.mikepenz:materialdrawer:4.5.9@aar') {
         transitive = true
     }
-    compile 'net.danlew:android.joda:2.9.1' // for joda
+    compile 'net.danlew:android.joda:2.9.5.1' // for joda
     compile 'com.android.support:design:25.2.0'
     compile 'com.yqritc:recyclerview-flexibledivider:1.2.6'
     compile('com.github.afollestad.material-dialogs:core:0.8.5.3@aar') {
