@@ -23,8 +23,8 @@ android {
         applicationId "com.codeforgvl.trolleytrackerclient"
         minSdkVersion 14
         targetSdkVersion 25
-        versionCode 17
-        versionName "1.31"
+        versionCode 18
+        versionName "1.32"
         vectorDrawables.useSupportLibrary = true
     }
     buildTypes {
