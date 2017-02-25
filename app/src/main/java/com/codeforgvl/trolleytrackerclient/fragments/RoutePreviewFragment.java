@@ -4,7 +4,6 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -27,8 +26,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
-
-import org.joda.time.DateTime;
 
 public class RoutePreviewFragment extends Fragment implements OnMapReadyCallback,IMapFragment, GoogleMap.OnMarkerClickListener, GoogleMap.OnMapClickListener {
     public GoogleMap mMap; // Might be null if Google Play services APK is not available.

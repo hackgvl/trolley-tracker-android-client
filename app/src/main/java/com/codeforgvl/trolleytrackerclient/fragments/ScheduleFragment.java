@@ -11,7 +11,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.codeforgvl.trolleytrackerclient.Constants;
@@ -38,7 +37,6 @@ import java.util.List;
  * Created by ahodges on 12/21/2015.
  */
 public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
-
     private RouteSchedule[] lastScheduleUpdate;
     private long lastUpdatedAt;
 
@@ -80,13 +78,6 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
         if(lastUpdate.isBefore(DateTime.now().minusHours(4))){
             new ScheduleUpdateTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
-    }
-
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState){
-        super.onActivityCreated(savedInstanceState);
-
-        processBundle(savedInstanceState);
     }
 
     @Override
