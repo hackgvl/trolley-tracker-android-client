@@ -1,6 +1,7 @@
 package com.codeforgvl.trolleytrackerclient;
 
 import android.app.Activity;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 
 import org.joda.time.DateTime;
@@ -133,5 +134,27 @@ public class Utils {
                 mActivity.finish();
             }
         }
+    }
+
+    /**
+     * When inside a nested fragment and Activity gets recreated due to reasons like orientation
+     * change, {@link android.support.v4.app.Fragment#getActivity()} returns old Activity but the top
+     * level parent fragment's {@link android.support.v4.app.Fragment#getActivity()} returns current,
+     * recreated Activity. Hence use this method in nested fragments instead of
+     * android.support.v4.app.Fragment#getActivity()
+     *
+     * @param fragment
+     *  The current nested Fragment
+     *
+     * @return current Activity that fragment is hosted in
+     */
+    public static Activity getActivity(Fragment fragment) {
+        if (fragment == null) {
+            return null;
+        }
+        while (fragment.getParentFragment() != null) {
+            fragment = fragment.getParentFragment();
+        }
+        return fragment.getActivity();
     }
 }

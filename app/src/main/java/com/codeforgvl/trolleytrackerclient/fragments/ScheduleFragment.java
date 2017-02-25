@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.codeforgvl.trolleytrackerclient.Constants;
 import com.codeforgvl.trolleytrackerclient.R;
+import com.codeforgvl.trolleytrackerclient.Utils;
 import com.codeforgvl.trolleytrackerclient.activities.MainActivity;
 import com.codeforgvl.trolleytrackerclient.adapters.ScheduleAdapter;
 import com.codeforgvl.trolleytrackerclient.adapters.SimpleSectionedRecyclerViewAdapter;
@@ -66,6 +67,9 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
         if(b == null){
             return;
         }
+        if(!isHidden()){
+            Utils.getActivity(this).setTitle(R.string.title_fragment_schedule);
+        }
         Parcelable[] sParcels = b.getParcelableArray(RouteSchedule.SCHEDULE_KEY);
         lastScheduleUpdate = new RouteSchedule[sParcels.length];
         System.arraycopy(sParcels, 0, lastScheduleUpdate, 0, sParcels.length);
@@ -90,7 +94,7 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
     public void onHiddenChanged(boolean hidden){
         super.onHiddenChanged(hidden);
         if (!hidden) {
-            getActivity().setTitle(R.string.title_fragment_schedule);
+            Utils.getActivity(this).setTitle(R.string.title_fragment_schedule);
             mSectionedAdapter.notifyDataSetChanged();
         }
     }

@@ -129,6 +129,10 @@ public class TrackerFragment extends Fragment implements OnMapReadyCallback, IMa
             return;
         }
 
+        if(!isHidden()){
+            Utils.getActivity(this).setTitle(R.string.title_fragment_maps);
+        }
+
         //Load stop/route data
         if(routeMan == null){
             routeMan = new RouteManager(this);
@@ -345,7 +349,7 @@ public class TrackerFragment extends Fragment implements OnMapReadyCallback, IMa
     public void onHiddenChanged(boolean hidden){
         super.onHiddenChanged(hidden);
         if (!hidden) {
-            getActivity().setTitle(R.string.title_fragment_maps);
+            Utils.getActivity(this).setTitle(R.string.title_fragment_maps);
         }
     }
 

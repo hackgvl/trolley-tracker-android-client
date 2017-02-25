@@ -78,6 +78,10 @@ public class RoutePreviewFragment extends Fragment implements OnMapReadyCallback
             return;
         }
 
+        if(!isHidden()){
+            Utils.getActivity(this).setTitle(R.string.title_fragment_preview);
+        }
+
         //Load stop/route data
         if(routeMan == null){
             routeMan = new RouteManager(this);
@@ -218,7 +222,7 @@ public class RoutePreviewFragment extends Fragment implements OnMapReadyCallback
     public void onHiddenChanged(boolean hidden){
         super.onHiddenChanged(hidden);
         if (!hidden) {
-            getActivity().setTitle(R.string.title_fragment_preview);
+            Utils.getActivity(this).setTitle(R.string.title_fragment_preview);
         }
     }
 
