@@ -47,4 +47,32 @@ public class IconFactory {
         stopIcons.put(color, stopIcon);
         return stopIcon;
     }
+
+    private static HashMap<Integer, BitmapDescriptor> trolleyIcons = new HashMap<>();
+    public static BitmapDescriptor getTrolleyIcon(Context context, int color){
+        if(trolleyIcons.containsKey(color)){
+            return trolleyIcons.get(color);
+        }
+
+        Drawable d = ContextCompat.getDrawable(context, R.drawable.marker_border);
+        Drawable m = ContextCompat.getDrawable(context, R.drawable.marker_mask);
+
+        m.setColorFilter(color, PorterDuff.Mode.SRC_IN);
+
+        int width = d.getIntrinsicWidth();
+        width = width > 0 ? width : 1;
+        int height = d.getIntrinsicHeight();
+        height = height > 0 ? height : 1;
+
+        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        d.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        d.draw(canvas);
+        m.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        m.draw(canvas);
+
+        BitmapDescriptor trolleyIcon = BitmapDescriptorFactory.fromBitmap(bitmap);
+        trolleyIcons.put(color, trolleyIcon);
+        return trolleyIcon;
+    }
 }

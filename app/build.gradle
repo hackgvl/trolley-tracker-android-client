@@ -26,6 +26,7 @@ android {
         versionCode 18
         versionName "1.32"
         vectorDrawables.useSupportLibrary = true
+        multiDexEnabled true
     }
     buildTypes {
         release {
@@ -36,6 +37,9 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_7
         targetCompatibility JavaVersion.VERSION_1_7
+    }
+    dexOptions {
+        javaMaxHeapSize "4g"
     }
     useLibrary 'org.apache.http.legacy'
 }
@@ -62,5 +66,6 @@ dependencies {
     }
     compile 'com.google.firebase:firebase-core:9.4.0'
     compile 'com.google.android.gms:play-services-tagmanager:10.2.0'
+    compile 'com.android.support:multidex:1.0.1'
 }
 apply plugin: 'com.google.gms.google-services'

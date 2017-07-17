@@ -14,6 +14,7 @@ public class Trolley implements Parcelable {
     public int ID;
     public int Number;
     public String TrolleyName;
+    public String IconColorRGB = "#acb71d";
 
     @Override
     public int describeContents() {
@@ -27,6 +28,7 @@ public class Trolley implements Parcelable {
         dest.writeInt(ID);
         dest.writeInt(Number);
         dest.writeString(TrolleyName);
+        dest.writeString(IconColorRGB);
     }
 
     public Trolley(Parcel in){
@@ -35,6 +37,14 @@ public class Trolley implements Parcelable {
         ID = in.readInt();
         Number = in.readInt();
         TrolleyName = in.readString();
+        IconColorRGB = in.readString();
+    }
+
+    public String getIconColorRGB(){
+        if(IconColorRGB == null || IconColorRGB == ""){
+            IconColorRGB = "#acb71d"; //Default value
+        }
+        return IconColorRGB;
     }
 
     public static final Parcelable.Creator<Trolley> CREATOR

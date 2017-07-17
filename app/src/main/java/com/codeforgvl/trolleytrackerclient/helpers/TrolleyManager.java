@@ -1,5 +1,6 @@
 package com.codeforgvl.trolleytrackerclient.helpers;
 
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -98,7 +99,7 @@ public class TrolleyManager {
                 trolleyMarkers.put(t.ID, trackerFragment.mMap.addMarker(new MarkerOptions()
                         .anchor(0.5f, 1.0f)
                         .title("Trolley " + t.ID)
-                        .icon(BitmapDescriptorFactory.fromResource(((t.ID - 1) % 2 == 0) ? R.drawable.marker1 : R.drawable.marker2))
+                        .icon(IconFactory.getTrolleyIcon(trackerFragment.getContext(), Color.parseColor(t.getIconColorRGB())))
                         .position(new LatLng(t.Lat, t.Lon))));
             }
         }
