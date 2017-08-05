@@ -1,5 +1,9 @@
 buildscript {
     repositories {
+        jcenter()
+        maven {
+            url "https://maven.google.com"
+        }
         maven { url 'https://maven.fabric.io/public' }
     }
 
@@ -11,18 +15,22 @@ apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
 
 repositories {
+    jcenter()
+    maven {
+        url "https://maven.google.com"
+    }
     maven { url 'https://maven.fabric.io/public' }
 }
 
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    compileSdkVersion 26
+    buildToolsVersion "26.0.1"
 
     defaultConfig {
         applicationId "com.codeforgvl.trolleytrackerclient"
         minSdkVersion 14
-        targetSdkVersion 25
+        targetSdkVersion 26
         versionCode 18
         versionName "1.32"
         vectorDrawables.useSupportLibrary = true
@@ -46,8 +54,11 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:25.2.0'
-    compile 'com.google.android.gms:play-services:10.2.0'
+    compile 'com.android.support:appcompat-v7:26.0.0'
+    compile 'com.google.android.gms:play-services-base:11.0.4'
+    compile 'com.google.android.gms:play-services-maps:11.0.4'
+    compile 'com.google.android.gms:play-services-location:11.0.4'
+
     compile 'com.joanzapata.iconify:android-iconify:2.0.8'
     compile 'com.joanzapata.iconify:android-iconify-material:2.0.8'
     compile 'com.joanzapata.iconify:android-iconify-fontawesome:2.0.8'
@@ -56,7 +67,7 @@ dependencies {
         transitive = true
     }
     compile 'net.danlew:android.joda:2.9.5.1' // for joda
-    compile 'com.android.support:design:25.2.0'
+    compile 'com.android.support:design:26.0.0'
     compile 'com.yqritc:recyclerview-flexibledivider:1.2.6'
     compile('com.github.afollestad.material-dialogs:core:0.8.5.3@aar') {
         transitive = true
@@ -64,8 +75,5 @@ dependencies {
     compile('com.crashlytics.sdk.android:crashlytics:2.6.2@aar') {
         transitive = true;
     }
-    compile 'com.google.firebase:firebase-core:9.4.0'
-    compile 'com.google.android.gms:play-services-tagmanager:10.2.0'
     compile 'com.android.support:multidex:1.0.1'
 }
-apply plugin: 'com.google.gms.google-services'
