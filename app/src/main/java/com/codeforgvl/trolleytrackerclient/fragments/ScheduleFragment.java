@@ -1,5 +1,6 @@
 package com.codeforgvl.trolleytrackerclient.fragments;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -24,6 +25,7 @@ import com.codeforgvl.trolleytrackerclient.helpers.RecyclerItemClickListener;
 import com.codeforgvl.trolleytrackerclient.models.ScheduledRoute;
 import com.codeforgvl.trolleytrackerclient.models.json.Route;
 import com.codeforgvl.trolleytrackerclient.models.json.RouteSchedule;
+import com.livefront.bridge.Bridge;
 import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
 
 import org.joda.time.DateTime;
@@ -34,12 +36,16 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
+import icepick.State;
+
 /**
  * Created by ahodges on 12/21/2015.
  */
 public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
-    private RouteSchedule[] lastScheduleUpdate;
-    private long lastUpdatedAt;
+    @State
+    RouteSchedule[] lastScheduleUpdate;
+    @State
+    long lastUpdatedAt;
 
     public static ScheduleFragment newInstance(Bundle args) {
         ScheduleFragment fragment = new ScheduleFragment();
@@ -56,10 +62,12 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Bundle extras = getArguments();
 
-        if(extras != null){
-            processBundle(extras);
+        Bridge.restoreInstanceState(this, savedInstanceState);
+        if (savedInstanceState != null){
+            processBundle(savedInstanceState);
+        } else {
+            processBundle(getArguments());
         }
     }
 
@@ -85,9 +93,25 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
     }
 
     @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        try {
+        } catch (ClassCastException e) {
+            throw new ClassCastException(context.toString()
+                    + " must implement MapFragmentListener");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+    }
+
+    @Override
     public void onSaveInstanceState(Bundle outState){
         super.onSaveInstanceState(outState);
-        outState.putParcelableArray(RouteSchedule.SCHEDULE_KEY, lastScheduleUpdate);
+
+        Bridge.saveInstanceState(this, outState);
     }
 
     @Override

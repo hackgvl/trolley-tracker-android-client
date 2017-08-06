@@ -20,6 +20,8 @@ repositories {
         url "https://maven.google.com"
     }
     maven { url 'https://maven.fabric.io/public' }
+    maven { url "https://jitpack.io" }
+    maven { url "https://clojars.org/repo/" }
 }
 
 
@@ -76,4 +78,7 @@ dependencies {
         transitive = true;
     }
     compile 'com.android.support:multidex:1.0.1'
+    compile 'com.github.livefront:bridge:v1.0.0'
+    compile "frankiesardo:icepick:3.2.0"
+    provided 'frankiesardo:icepick-processor:3.2.0'
 }

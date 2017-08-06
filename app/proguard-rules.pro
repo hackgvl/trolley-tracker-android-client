@@ -38,3 +38,11 @@
 
 #Don't obfuscate member names for json classes - these are used for deserializing
 -dontobfuscate
+
+-dontwarn icepick.**
+-keep class icepick.** { *; }
+-keep class **$$Icepick { *; }
+-keepclasseswithmembernames class * {
+    @icepick.* <fields>;
+}
+-keepnames class * { @icepick.State *;}

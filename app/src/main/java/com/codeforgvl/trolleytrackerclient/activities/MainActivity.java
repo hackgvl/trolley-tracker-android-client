@@ -1,21 +1,17 @@
 package com.codeforgvl.trolleytrackerclient.activities;
 
-import android.Manifest;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 
-import com.codeforgvl.trolleytrackerclient.Constants;
 import com.codeforgvl.trolleytrackerclient.R;
 import com.codeforgvl.trolleytrackerclient.Utils;
 import com.codeforgvl.trolleytrackerclient.fragments.RoutePreviewFragment;
@@ -23,6 +19,7 @@ import com.codeforgvl.trolleytrackerclient.fragments.TrackerFragment;
 import com.codeforgvl.trolleytrackerclient.fragments.ScheduleFragment;
 import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.fonts.MaterialIcons;
+import com.livefront.bridge.Bridge;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
@@ -31,6 +28,8 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 import org.joda.time.DateTime;
 
+import icepick.State;
+
 public class MainActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback, TrackerFragment.MapFragmentListener, FragmentManager.OnBackStackChangedListener {
     public final static int MAP_FRAGMENT_ID = 1;
     public final static int SCHEDULE_FRAGMENT_ID = 2;
@@ -38,11 +37,13 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     public final static String MAP_FRAGMENT_TAG = "MAP_FRAGMENT";
     public final static String SCHEDULE_FRAGMENT_TAG = "SCHEDULE_FRAGMENT";
     public final static String PREVIEW_FRAGMENT_TAG = "PREVIEW_FRAGMENT";
-    public final static String ACTIVE_FRAGMENT_TAG = "ACTIVE_FRAGMENT";
 
-    private TrackerFragment trackerFragment;
-    private ScheduleFragment scheduleFragment;
-    private RoutePreviewFragment previewFragment;
+    TrackerFragment trackerFragment;
+    ScheduleFragment scheduleFragment;
+    RoutePreviewFragment previewFragment;
+    @State
+    String activeFragment;
+
     private Drawer menu;
 
     @Override
@@ -50,14 +51,14 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        Bridge.restoreInstanceState(this, savedInstanceState);
+
         int selectedFragmentID = MAP_FRAGMENT_ID;
         if(findViewById(R.id.fragment_container) != null){
             if(savedInstanceState != null){
                 trackerFragment = (TrackerFragment)getSupportFragmentManager().getFragment(savedInstanceState, MAP_FRAGMENT_TAG);
                 scheduleFragment = (ScheduleFragment)getSupportFragmentManager().getFragment(savedInstanceState, SCHEDULE_FRAGMENT_TAG);
                 previewFragment = (RoutePreviewFragment)getSupportFragmentManager().getFragment(savedInstanceState, PREVIEW_FRAGMENT_TAG);
-
-                String activeFragment = savedInstanceState.getString(ACTIVE_FRAGMENT_TAG);
                 if(activeFragment != null){
                     switch (activeFragment){
                         case MAP_FRAGMENT_TAG:
@@ -76,7 +77,6 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                 }
 
             } else {
-
                 trackerFragment = TrackerFragment.newInstance(getIntent().getExtras());
                 scheduleFragment = ScheduleFragment.newInstance(getIntent().getExtras());
                 previewFragment = RoutePreviewFragment.newInstance(getIntent().getExtras());
@@ -190,11 +190,12 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-
         getSupportFragmentManager().putFragment(outState, MAP_FRAGMENT_TAG, trackerFragment);
         getSupportFragmentManager().putFragment(outState, SCHEDULE_FRAGMENT_TAG, scheduleFragment);
         getSupportFragmentManager().putFragment(outState, PREVIEW_FRAGMENT_TAG, previewFragment);
-        outState.putString(ACTIVE_FRAGMENT_TAG, Utils.getActiveFragmentName(getSupportFragmentManager()));
+
+        activeFragment = Utils.getActiveFragmentName(getSupportFragmentManager());
+        Bridge.saveInstanceState(this, outState);
     }
 
     @Override

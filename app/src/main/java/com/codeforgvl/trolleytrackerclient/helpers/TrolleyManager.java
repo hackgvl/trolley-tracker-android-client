@@ -15,6 +15,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.livefront.bridge.Bridge;
 
 import org.joda.time.DateTime;
 
@@ -22,6 +23,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
+
+import icepick.State;
 
 /**
  * Created by ahodges on 12/18/2015.
@@ -31,10 +34,13 @@ public class TrolleyManager {
     private TrackerFragment trackerFragment;
     private HashMap<Integer, Marker> trolleyMarkers = new HashMap<>();
     private TrolleyUpdateTask mUpdateTask;
-    private boolean notifiedEmpty = false;
+    @State
+    boolean notifiedEmpty = false;
 
-    private Trolley[] lastTrolleyUpdate;
-    private Long lastUpdatedAt;
+    @State
+    Trolley[] lastTrolleyUpdate;
+    @State
+    Long lastUpdatedAt;
 
     public TrolleyManager(TrackerFragment activity){
         trackerFragment = activity;
@@ -45,12 +51,9 @@ public class TrolleyManager {
             return;
         }
         if (b != null){
-            lastUpdatedAt = b.getLong(Trolley.LAST_UPDATED_KEY);
+            Bridge.restoreInstanceState(trackerFragment, b);
             DateTime lastUpdate = new DateTime(lastUpdatedAt);
             if(!lastUpdate.isBefore(DateTime.now().minusMinutes(1))){
-                Parcelable[] tParcels = b.getParcelableArray(Trolley.TROLLEY_KEY);
-                lastTrolleyUpdate = new Trolley[tParcels.length];
-                System.arraycopy(tParcels, 0, lastTrolleyUpdate, 0, tParcels.length);
                 updateTrolleys(lastTrolleyUpdate);
             }
 
@@ -150,8 +153,6 @@ public class TrolleyManager {
     }
 
     public void saveInstanceState(Bundle savedInstanceState){
-        savedInstanceState.putParcelableArray(Trolley.TROLLEY_KEY, lastTrolleyUpdate);
-        savedInstanceState.putBoolean(NOTIFIED_EMPTY_KEY, notifiedEmpty);
-        savedInstanceState.putLong(Trolley.LAST_UPDATED_KEY, lastUpdatedAt);
+        Bridge.saveInstanceState(trackerFragment, savedInstanceState);
     }
 }

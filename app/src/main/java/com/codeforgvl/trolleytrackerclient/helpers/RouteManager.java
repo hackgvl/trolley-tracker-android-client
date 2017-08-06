@@ -18,10 +18,13 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.livefront.bridge.Bridge;
 
 import org.joda.time.DateTime;
 
 import java.util.HashMap;
+
+import icepick.State;
 
 import static com.codeforgvl.trolleytrackerclient.Constants.ROUTE_UPDATE_INTERVAL;
 
@@ -33,8 +36,10 @@ public class RouteManager {
     private HashMap<Integer, Polyline> routePolylines = new HashMap<>();
     private HashMap<Integer, Marker> stopMarkers = new HashMap<>();
 
-    private Route[] lastRouteUpdate;
-    private long lastUpdatedAt;
+    @State
+    Route[] lastRouteUpdate;
+    @State
+    long lastUpdatedAt;
 
     public RouteManager(IMapFragment activity){
         trackerFragment = activity;
@@ -46,11 +51,8 @@ public class RouteManager {
         }
 
         if (b != null){
-            lastUpdatedAt = b.getLong(Route.LAST_UPDATED_KEY);
+            Bridge.restoreInstanceState(trackerFragment, b);
             if(!updateRoutesIfNeeded()){
-                Parcelable[] rParcels = b.getParcelableArray(Route.ROUTE_KEY);
-                lastRouteUpdate = new Route[rParcels.length];
-                System.arraycopy(rParcels, 0, lastRouteUpdate, 0, rParcels.length);
                 updateRoutes(lastRouteUpdate);
             }
         }
@@ -145,7 +147,6 @@ public class RouteManager {
     }
 
     public void saveInstanceState(Bundle savedInstanceState){
-        savedInstanceState.putParcelableArray(Route.ROUTE_KEY, lastRouteUpdate);
-        savedInstanceState.putLong(Route.LAST_UPDATED_KEY, lastUpdatedAt);
+        Bridge.saveInstanceState(trackerFragment, savedInstanceState);
     }
 }
