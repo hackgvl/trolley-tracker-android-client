@@ -14,6 +14,7 @@ import com.codeforgvl.trolleytrackerclient.fragments.TrackerFragment;
 import com.codeforgvl.trolleytrackerclient.models.json.LatLon;
 import com.codeforgvl.trolleytrackerclient.models.json.Route;
 import com.codeforgvl.trolleytrackerclient.models.json.RouteStop;
+import com.codeforgvl.trolleytrackerclient.models.json.Trolley;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -136,6 +137,12 @@ public class RouteManager {
                     route.Stops = details.Stops;
                 }
             }
+
+            // Recheck all trolleys in case trolley color has changed: when trolley
+            // switches to a different route
+            Log.d(Constants.LOG_TAG, "requesting full trolley update");
+            Trolley[] trolleys = TrolleyAPI.getAllTrolleys();
+            TrolleyData.getInstance().setTrolleys(trolleys);
 
             return activeRoutes;
         }

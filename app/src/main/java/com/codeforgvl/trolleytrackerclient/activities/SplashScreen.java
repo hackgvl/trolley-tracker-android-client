@@ -12,6 +12,7 @@ import android.widget.ProgressBar;
 
 import com.codeforgvl.trolleytrackerclient.R;
 import com.codeforgvl.trolleytrackerclient.data.TrolleyAPI;
+import com.codeforgvl.trolleytrackerclient.data.TrolleyData;
 import com.codeforgvl.trolleytrackerclient.models.json.RouteSchedule;
 import com.codeforgvl.trolleytrackerclient.models.json.Trolley;
 import com.codeforgvl.trolleytrackerclient.models.json.Route;
@@ -106,7 +107,7 @@ public class SplashScreen extends Activity {
             protected Trolley[] doInBackground(Void... params) {
                 publishProgress(5);
                 //HTTP get running trolleys
-                Trolley[] trolleys = TrolleyAPI.getRunningTrolleys();
+                Trolley[] trolleys = TrolleyAPI.getAllTrolleys();
                 publishProgress(15);
                 return trolleys;
             }
@@ -154,6 +155,8 @@ public class SplashScreen extends Activity {
 
     public void changeActivitiesIfComplete(){
         if(trolleysLoaded && routesLoaded && scheduleLoaded){
+
+            TrolleyData.getInstance().setTrolleyData(mTrolleys, mRoutes, mSchedule);
             Intent intent = new Intent(SplashScreen.this, MainActivity.class);
             // Other activities expect at least one argument.  Changing those activities
             // might allow the following line to be eliminated

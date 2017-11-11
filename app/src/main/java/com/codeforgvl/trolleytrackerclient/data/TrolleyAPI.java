@@ -50,8 +50,22 @@ public class TrolleyAPI {
         return builder.toString();
     }
 
+    // Location only for the trolleys that are running
     public static Trolley[] getRunningTrolleys(){
         String json = httpGETRequest(Constants.RUNNING_TROLLEYS_ENDPOINT);
+        Trolley[] ret = null;
+        try{
+            ret = new Gson().fromJson(json, Trolley[].class);
+        } catch (JsonSyntaxException ex){
+            //Catch exception re: malformed json from API
+        }
+        return ret != null? ret : new Trolley[0];
+    }
+
+
+    // Get full record for all trolleys
+    public static Trolley[] getAllTrolleys(){
+        String json = httpGETRequest(Constants.ALL_TROLLEYS_ENDPOINT);
         Trolley[] ret = null;
         try{
             ret = new Gson().fromJson(json, Trolley[].class);

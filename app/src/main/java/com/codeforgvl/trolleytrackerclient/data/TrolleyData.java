@@ -16,12 +16,13 @@ import org.joda.time.DateTime;
 
 public class TrolleyData {
 
-    private Trolley[] trolleys;
+    private Trolley[] trolleys; // Full trolley record definition, including running attributes
     private Route[] routes;
     private RouteSchedule[] schedules;
     private DateTime lastTrolleyUpdateTime;
     private DateTime lastRouteUpdateTime;
     private DateTime lastScheduleUpdateTime;
+    private boolean trolleyColorsUpdated;  // Full trolley update; trolley color may have changed
 
     private static TrolleyData instance;
 
@@ -41,8 +42,16 @@ public class TrolleyData {
         return TrolleyData.instance;
     }
 
+    // Return if trolley colors have changed
+    //  NOTE: Side effect - clears flag upon call
+    public boolean TrolleyColorUpdated() {
+        boolean wasUpdated = trolleyColorsUpdated;
+        trolleyColorsUpdated = false;
+        return wasUpdated;
+    }
+
     public synchronized void setTrolleyData(
-            Trolley[] newTrolleys,
+            Trolley[] newTrolleys,  // Full data record
             Route[] newRoutes,
             RouteSchedule[] newSchedules
     ) {
@@ -52,14 +61,62 @@ public class TrolleyData {
         lastTrolleyUpdateTime = DateTime.now();
         lastRouteUpdateTime = DateTime.now();
         lastScheduleUpdateTime = DateTime.now();
+        trolleyColorsUpdated = true;
     }
 
     public synchronized Trolley[] getTrolleys() {
         return trolleys;
     }
+
+    // Replace trolley array with new full trolley array
+    // and reapply running definitions
     public synchronized void setTrolleys(Trolley[] newTrolleys) {
+        trolleyColorsUpdated = false;
+        if (trolleys != null) {
+            if (trolleys.length != newTrolleys.length)
+                trolleyColorsUpdated = true;
+            else {
+                // Trolley order is always same from server if nothing added or removed
+                for (int i=0; i<trolleys.length; i++) {
+                    newTrolleys[i].Running = trolleys[i].Running;
+                    if (!trolleys[i].IconColorRGB.equals(newTrolleys[i].IconColorRGB)) {
+                        trolleyColorsUpdated = true;
+                    }
+                }
+
+            }
+        }
         trolleys = newTrolleys;
         lastTrolleyUpdateTime = DateTime.now();
+
+    }
+    // Update location only and running status for running trolleys
+    public synchronized void setRunningTrolleyLocations(Trolley[] newTrolleyLocations) {
+
+        if (trolleys == null) return;  // No data downloaded yet
+
+        // Keep track of running trolleys so that non-running trolleys can be marked as not running
+        boolean[] wasRunning = new boolean[trolleys.length];
+
+        for (int i=0; i<newTrolleyLocations.length; i++) {
+            for (int j=0; j < trolleys.length; j++) {
+                if (newTrolleyLocations[i].ID == trolleys[j].ID) {
+                    trolleys[j].Lat = newTrolleyLocations[i].Lat;
+                    trolleys[j].Lon = newTrolleyLocations[i].Lon;
+                    trolleys[j].Running = true;
+                    wasRunning[j] = true;
+                    break;
+                }
+            }
+        }
+
+        // Ensure that inactive trolleys are not marked as running
+        for (int i=0; i< wasRunning.length; i++) {
+            if (!wasRunning[i]) {
+                trolleys[i].Running = false;
+            }
+        }
+
     }
 
     public synchronized Route[] getRoutes() {

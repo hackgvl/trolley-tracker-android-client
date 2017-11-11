@@ -10,6 +10,7 @@ public class Constants {
     public static final String LOG_TAG = "TROLLEYTRACKER";
     public static final String HOST = BuildConfig.DEBUG ? "yeahthattrolley.azurewebsites.net" : "api.yeahthattrolley.com";
     public static final String API_PATH = "/api/v1/";
+    public static final String ALL_TROLLEYS_ENDPOINT = "http://" + HOST + API_PATH + "Trolleys";  // Complete trolley record - all trolleys
     public static final String RUNNING_TROLLEYS_ENDPOINT = "http://" + HOST + API_PATH + "Trolleys/Running";
     public static final String ACTIVE_ROUTES_ENDPOINT = "http://" + HOST + API_PATH + "Routes/Active";
     public static final String ROUTE_SCHEDULE_ENDPOINT = "http://" + HOST + API_PATH + "RouteSchedules";

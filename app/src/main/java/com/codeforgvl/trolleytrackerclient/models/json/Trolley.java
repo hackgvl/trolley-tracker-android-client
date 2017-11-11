@@ -15,6 +15,7 @@ public class Trolley implements Parcelable {
     public int Number;
     public String TrolleyName;
     public String IconColorRGB = "#acb71d";
+    public boolean Running = false;
 
     @Override
     public int describeContents() {

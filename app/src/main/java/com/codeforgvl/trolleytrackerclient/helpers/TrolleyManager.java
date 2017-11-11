@@ -52,14 +52,13 @@ public class TrolleyManager {
         if (b != null){
             Bridge.restoreInstanceState(trackerFragment, b);
 
-            if(lastTrolleyUpdate == null){
-                lastTrolleyUpdate = TrolleyData.getInstance().getTrolleys();
+            if(lastTrolleyUpdate != null){
+                DateTime lastUpdate =  TrolleyData.getInstance().getLastTrolleyUpdateTime();
+                if(!lastUpdate.isBefore(DateTime.now().minusMinutes(1))){
+                    updateTrolleys(lastTrolleyUpdate);
+                }
             }
 
-            DateTime lastUpdate =  TrolleyData.getInstance().getLastTrolleyUpdateTime();
-            if(!lastUpdate.isBefore(DateTime.now().minusMinutes(1))){
-                updateTrolleys(lastTrolleyUpdate);
-            }
 
             notifiedEmpty = b.getBoolean(TrolleyManager.NOTIFIED_EMPTY_KEY, false);
         }
@@ -97,17 +96,29 @@ public class TrolleyManager {
             return;
 
         Set<Integer> keySet = new HashSet<>(trolleyMarkers.keySet());
+
+        if (TrolleyData.getInstance().TrolleyColorUpdated()) {
+            // Trolley colors changed: redraw markers
+            for(Integer deadTrolleyID : keySet){
+                trolleyMarkers.get(deadTrolleyID).remove();
+                trolleyMarkers.remove(deadTrolleyID);
+            }
+            keySet.clear(); // All items removed
+        }
+
         for(int i=0; i < trolleys.length; i++){
             Trolley t = trolleys[i];
-            if(trolleyMarkers.containsKey(t.ID)){
-                trolleyMarkers.get(t.ID).setPosition(new LatLng(t.Lat, t.Lon));
-                keySet.remove(t.ID);
-            } else {
-                trolleyMarkers.put(t.ID, trackerFragment.mMap.addMarker(new MarkerOptions()
-                        .anchor(0.5f, 1.0f)
-                        .title("Trolley " + t.ID)
-                        .icon(IconFactory.getTrolleyIcon(trackerFragment.getContext(), Color.parseColor(t.getIconColorRGB())))
-                        .position(new LatLng(t.Lat, t.Lon))));
+            if (t.Running) {
+                if (trolleyMarkers.containsKey(t.ID)) {
+                    trolleyMarkers.get(t.ID).setPosition(new LatLng(t.Lat, t.Lon));
+                    keySet.remove(t.ID);
+                } else {
+                    trolleyMarkers.put(t.ID, trackerFragment.mMap.addMarker(new MarkerOptions()
+                            .anchor(0.5f, 1.0f)
+                            .title("Trolley " + t.ID)
+                            .icon(IconFactory.getTrolleyIcon(trackerFragment.getContext(), Color.parseColor(t.getIconColorRGB())))
+                            .position(new LatLng(t.Lat, t.Lon))));
+                }
             }
         }
 
@@ -125,8 +136,6 @@ public class TrolleyManager {
             notifiedEmpty = false;
         }
 
-        lastTrolleyUpdate = trolleys;
-        TrolleyData.getInstance().setTrolleys(trolleys);
     }
 
     private class TrolleyUpdateTask extends AsyncTask<Void, Trolley[], Void> {
@@ -152,7 +161,13 @@ public class TrolleyManager {
         protected void onProgressUpdate(Trolley[]... trolleyUpdate){
             Log.d(Constants.LOG_TAG, "processing trolley updates");
 
-            updateTrolleys(trolleyUpdate[0]);
+            TrolleyData.getInstance().setRunningTrolleyLocations(trolleyUpdate[0]);
+            lastTrolleyUpdate = TrolleyData.getInstance().getTrolleys();
+
+            if (lastTrolleyUpdate != null) {
+                // Update after first full data available
+                updateTrolleys(lastTrolleyUpdate);
+            }
         }
     }
 

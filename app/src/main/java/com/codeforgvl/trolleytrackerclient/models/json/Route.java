@@ -14,6 +14,7 @@ public class Route implements Parcelable {
     public int ID;
     public boolean FlagStopsOnly;
     public String LongName;
+    public String RouteColorRGB = "#acb71d";
 
     public RouteStop[] Stops;
     public LatLon[] RouteShape;
@@ -32,6 +33,7 @@ public class Route implements Parcelable {
         dest.writeString(LongName);
         dest.writeParcelableArray(Stops, 0);
         dest.writeParcelableArray(RouteShape, 0);
+        dest.writeString(RouteColorRGB);
     }
 
     public Route(){ }
@@ -48,6 +50,7 @@ public class Route implements Parcelable {
         Parcelable[] rParcelable = in.readParcelableArray(LatLon.class.getClassLoader());
         RouteShape = new LatLon[rParcelable.length];
         System.arraycopy(rParcelable, 0, RouteShape, 0, rParcelable.length);
+        RouteColorRGB = in.readString();
     }
 
     public static final Parcelable.Creator<Route> CREATOR
