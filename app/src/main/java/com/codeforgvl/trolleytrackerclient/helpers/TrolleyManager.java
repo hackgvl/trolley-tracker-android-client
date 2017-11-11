@@ -91,6 +91,15 @@ public class TrolleyManager {
         }
     }
 
+    private String TrolleyTitle(Trolley t) {
+        String title = "Trolley " + t.ID;
+        if ( t.TrolleyName != null && !t.TrolleyName.isEmpty()) {
+            title = t.TrolleyName;
+        }
+
+        return title;
+    }
+
     private synchronized void updateTrolleys(Trolley[] trolleys){
         if(trackerFragment.getMap() == null || !trackerFragment.fragmentIsAdded())
             return;
@@ -115,7 +124,7 @@ public class TrolleyManager {
                 } else {
                     trolleyMarkers.put(t.ID, trackerFragment.mMap.addMarker(new MarkerOptions()
                             .anchor(0.5f, 1.0f)
-                            .title("Trolley " + t.ID)
+                            .title(TrolleyTitle(t))
                             .icon(IconFactory.getTrolleyIcon(trackerFragment.getContext(), Color.parseColor(t.getIconColorRGB())))
                             .position(new LatLng(t.Lat, t.Lon))));
                 }
