@@ -8,6 +8,7 @@ import android.util.Log;
 
 import com.codeforgvl.trolleytrackerclient.Constants;
 import com.codeforgvl.trolleytrackerclient.data.TrolleyAPI;
+import com.codeforgvl.trolleytrackerclient.data.TrolleyData;
 import com.codeforgvl.trolleytrackerclient.fragments.IMapFragment;
 import com.codeforgvl.trolleytrackerclient.fragments.TrackerFragment;
 import com.codeforgvl.trolleytrackerclient.models.json.LatLon;
@@ -36,10 +37,8 @@ public class RouteManager {
     private HashMap<Integer, Polyline> routePolylines = new HashMap<>();
     private HashMap<Integer, Marker> stopMarkers = new HashMap<>();
 
-    @State
     Route[] lastRouteUpdate;
-    @State
-    long lastUpdatedAt;
+    //long lastUpdatedAt;
 
     public RouteManager(IMapFragment activity){
         trackerFragment = activity;
@@ -69,7 +68,13 @@ public class RouteManager {
     }
 
     public boolean updateRoutesIfNeeded(){
-        DateTime lastUpdate = new DateTime(lastUpdatedAt);
+
+        if (lastRouteUpdate == null) {
+            lastRouteUpdate = TrolleyData.getInstance().getRoutes();
+        }
+
+
+        DateTime lastUpdate =  TrolleyData.getInstance().getLastRouteUpdateTime();
         DateTime now = DateTime.now();
 
         boolean intervalElapsed = lastUpdate.isBefore(now.minusMinutes(ROUTE_UPDATE_INTERVAL));
@@ -141,7 +146,8 @@ public class RouteManager {
                 return;
             }
             lastRouteUpdate = routes;
-            lastUpdatedAt = DateTime.now().getMillis();
+            TrolleyData.getInstance().setRoutes(lastRouteUpdate);
+
             updateRoutes(routes);
         }
     }

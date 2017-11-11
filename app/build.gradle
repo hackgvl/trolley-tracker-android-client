@@ -27,7 +27,6 @@ repositories {
 
 android {
     compileSdkVersion 26
-    buildToolsVersion "26.0.1"
 
     defaultConfig {
         applicationId "com.codeforgvl.trolleytrackerclient"
@@ -81,4 +80,6 @@ dependencies {
     compile 'com.github.livefront:bridge:v1.0.0'
     compile "frankiesardo:icepick:3.2.0"
     provided 'frankiesardo:icepick-processor:3.2.0'
+    annotationProcessor 'frankiesardo:icepick-processor:3.2.0'
+
 }

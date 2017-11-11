@@ -9,6 +9,7 @@ import android.util.Log;
 import com.codeforgvl.trolleytrackerclient.Constants;
 import com.codeforgvl.trolleytrackerclient.R;
 import com.codeforgvl.trolleytrackerclient.data.TrolleyAPI;
+import com.codeforgvl.trolleytrackerclient.data.TrolleyData;
 import com.codeforgvl.trolleytrackerclient.fragments.TrackerFragment;
 import com.codeforgvl.trolleytrackerclient.models.json.Trolley;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -37,10 +38,8 @@ public class TrolleyManager {
     @State
     boolean notifiedEmpty = false;
 
-    @State
-    Trolley[] lastTrolleyUpdate;
-    @State
-    Long lastUpdatedAt;
+    private Trolley[] lastTrolleyUpdate;
+    //DateTime lastUpdatedAt;
 
     public TrolleyManager(TrackerFragment activity){
         trackerFragment = activity;
@@ -52,7 +51,12 @@ public class TrolleyManager {
         }
         if (b != null){
             Bridge.restoreInstanceState(trackerFragment, b);
-            DateTime lastUpdate = new DateTime(lastUpdatedAt);
+
+            if(lastTrolleyUpdate == null){
+                lastTrolleyUpdate = TrolleyData.getInstance().getTrolleys();
+            }
+
+            DateTime lastUpdate =  TrolleyData.getInstance().getLastTrolleyUpdateTime();
             if(!lastUpdate.isBefore(DateTime.now().minusMinutes(1))){
                 updateTrolleys(lastTrolleyUpdate);
             }
@@ -122,7 +126,7 @@ public class TrolleyManager {
         }
 
         lastTrolleyUpdate = trolleys;
-        lastUpdatedAt = DateTime.now().getMillis();
+        TrolleyData.getInstance().setTrolleys(trolleys);
     }
 
     private class TrolleyUpdateTask extends AsyncTask<Void, Trolley[], Void> {

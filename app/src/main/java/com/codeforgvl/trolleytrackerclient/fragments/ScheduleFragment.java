@@ -21,6 +21,7 @@ import com.codeforgvl.trolleytrackerclient.activities.MainActivity;
 import com.codeforgvl.trolleytrackerclient.adapters.ScheduleAdapter;
 import com.codeforgvl.trolleytrackerclient.adapters.SimpleSectionedRecyclerViewAdapter;
 import com.codeforgvl.trolleytrackerclient.data.TrolleyAPI;
+import com.codeforgvl.trolleytrackerclient.data.TrolleyData;
 import com.codeforgvl.trolleytrackerclient.helpers.RecyclerItemClickListener;
 import com.codeforgvl.trolleytrackerclient.models.ScheduledRoute;
 import com.codeforgvl.trolleytrackerclient.models.json.Route;
@@ -42,10 +43,8 @@ import icepick.State;
  * Created by ahodges on 12/21/2015.
  */
 public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
-    @State
     RouteSchedule[] lastScheduleUpdate;
-    @State
-    long lastUpdatedAt;
+    //long lastUpdatedAt;
 
     public static ScheduleFragment newInstance(Bundle args) {
         ScheduleFragment fragment = new ScheduleFragment();
@@ -78,15 +77,15 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
         if(!isHidden()){
             Utils.getActivity(this).setTitle(R.string.title_fragment_schedule);
         }
-        Parcelable[] sParcels = b.getParcelableArray(RouteSchedule.SCHEDULE_KEY);
-        lastScheduleUpdate = new RouteSchedule[sParcels.length];
-        System.arraycopy(sParcels, 0, lastScheduleUpdate, 0, sParcels.length);
+
+        if (lastScheduleUpdate == null) {
+            lastScheduleUpdate = TrolleyData.getInstance().getSchedules();
+        }
 
         //Create list of ScheduledRoute objects, count them by day
         mSectionedAdapter = createScheduleViewAdapter(lastScheduleUpdate);
 
-        lastUpdatedAt = b.getLong(RouteSchedule.LAST_UPDATED_KEY);
-        DateTime lastUpdate = new DateTime(lastUpdatedAt);
+        DateTime lastUpdate = TrolleyData.getInstance().getLastScheduleUpdateTime();
         if(lastUpdate.isBefore(DateTime.now().minusHours(4))){
             new ScheduleUpdateTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
@@ -251,7 +250,7 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
                 return;
             }
             lastScheduleUpdate = schedule;
-            lastUpdatedAt = DateTime.now().getMillis();
+            TrolleyData.getInstance().setSchedules(lastScheduleUpdate);
 
             mSectionedAdapter = createScheduleViewAdapter(schedule);
             RecyclerView listView = (RecyclerView)getActivity().findViewById(R.id.scheduleList);

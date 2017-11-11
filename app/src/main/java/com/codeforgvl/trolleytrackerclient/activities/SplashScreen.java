@@ -155,12 +155,20 @@ public class SplashScreen extends Activity {
     public void changeActivitiesIfComplete(){
         if(trolleysLoaded && routesLoaded && scheduleLoaded){
             Intent intent = new Intent(SplashScreen.this, MainActivity.class);
+            // Other activities expect at least one argument.  Changing those activities
+            // might allow the following line to be eliminated
+            intent.putExtra("Filler", 0);
+            /*
+            ** Note: passing too many data structures in the intent parcel results in memory
+            * overflow - the serialization is inefficient and there is a limited
+            * transaction memory avaialable shared between all apps
             intent.putExtra(Trolley.TROLLEY_KEY, mTrolleys);
             intent.putExtra(Trolley.LAST_UPDATED_KEY, DateTime.now().getMillis());
             intent.putExtra(Route.ROUTE_KEY, mRoutes);
             intent.putExtra(Route.LAST_UPDATED_KEY, DateTime.now().getMillis());
             intent.putExtra(RouteSchedule.SCHEDULE_KEY, mSchedule);
             intent.putExtra(RouteSchedule.LAST_UPDATED_KEY, DateTime.now().getMillis());
+            */
             startActivity(intent);
         }
     }
