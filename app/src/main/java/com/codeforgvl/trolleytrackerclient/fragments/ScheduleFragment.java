@@ -43,7 +43,7 @@ import icepick.State;
  * Created by ahodges on 12/21/2015.
  */
 public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
-    RouteSchedule[] lastScheduleUpdate;
+    private RouteSchedule[] lastScheduleUpdate;
     //long lastUpdatedAt;
 
     public static ScheduleFragment newInstance(Bundle args) {
@@ -229,8 +229,7 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
             }
             Route[] routes = new Route[]{ route };
             Bundle bundle = new Bundle();
-            bundle.putParcelableArray(Route.ROUTE_KEY, routes);
-            bundle.putLong(Route.LAST_UPDATED_KEY, DateTime.now().getMillis());
+            TrolleyData.getInstance().setRoutes(routes);
 
             getPreviewLoadingDialog().dismiss();
             ((MainActivity) getActivity()).showRoutePreview(bundle);

@@ -57,11 +57,13 @@ public class Route implements Parcelable {
     }
 
     public String getRouteColorRGB(){
-        if(RouteColorRGB == null || RouteColorRGB.isEmpty()){
+        String routeColor = "#acb71d";
+        if(RouteColorRGB != null && !RouteColorRGB.isEmpty()){
 
-            RouteColorRGB = "#acb71d";
+            // Add some transparency to standard color
+            routeColor = "#CC" + RouteColorRGB.substring(1);
         }
-        return RouteColorRGB;
+        return routeColor;
     }
 
     public static final Parcelable.Creator<Route> CREATOR

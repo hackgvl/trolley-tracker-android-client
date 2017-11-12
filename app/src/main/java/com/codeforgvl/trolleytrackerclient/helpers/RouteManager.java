@@ -71,11 +71,7 @@ public class RouteManager {
 
     public boolean updateRoutesIfNeeded(){
 
-        if (lastRouteUpdate == null) {
-            lastRouteUpdate = TrolleyData.getInstance().getRoutes();
-        }
-
-
+        lastRouteUpdate = TrolleyData.getInstance().getRoutes();
         DateTime lastUpdate =  TrolleyData.getInstance().getLastRouteUpdateTime();
         DateTime now = DateTime.now();
 
