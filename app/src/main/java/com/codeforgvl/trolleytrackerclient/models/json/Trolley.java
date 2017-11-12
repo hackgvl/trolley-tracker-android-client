@@ -42,7 +42,7 @@ public class Trolley implements Parcelable {
     }
 
     public String getIconColorRGB(){
-        if(IconColorRGB == null || IconColorRGB == ""){
+        if(IconColorRGB == null || IconColorRGB.isEmpty()){
             IconColorRGB = "#acb71d"; //Default value
         }
         return IconColorRGB;

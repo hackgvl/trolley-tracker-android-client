@@ -1,5 +1,6 @@
 package com.codeforgvl.trolleytrackerclient.helpers;
 
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -109,7 +110,7 @@ public class RouteManager {
             for(LatLon p : r.RouteShape){
                 routeLine.add(new LatLng(p.Lat,p.Lon));
             }
-            routeLine.color(Constants.getRouteColorForRouteNumber(trackerFragment.getContext(), i));
+            routeLine.color(Color.parseColor(r.getRouteColorRGB()));
             routePolylines.put(r.ID, trackerFragment.getMap().addPolyline(routeLine));
 
             //Add route stops

@@ -1,7 +1,10 @@
 package com.codeforgvl.trolleytrackerclient.models.json;
 
+import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
+
+import com.codeforgvl.trolleytrackerclient.Constants;
 
 /**
  * Created by Adam Hodges on 8/23/2015.
@@ -51,6 +54,14 @@ public class Route implements Parcelable {
         RouteShape = new LatLon[rParcelable.length];
         System.arraycopy(rParcelable, 0, RouteShape, 0, rParcelable.length);
         RouteColorRGB = in.readString();
+    }
+
+    public String getRouteColorRGB(){
+        if(RouteColorRGB == null || RouteColorRGB.isEmpty()){
+
+            RouteColorRGB = "#acb71d";
+        }
+        return RouteColorRGB;
     }
 
     public static final Parcelable.Creator<Route> CREATOR
