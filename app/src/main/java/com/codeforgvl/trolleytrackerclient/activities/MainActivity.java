@@ -19,7 +19,6 @@ import com.codeforgvl.trolleytrackerclient.fragments.TrackerFragment;
 import com.codeforgvl.trolleytrackerclient.fragments.ScheduleFragment;
 import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.fonts.MaterialIcons;
-import com.livefront.bridge.Bridge;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
@@ -28,6 +27,7 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 import org.joda.time.DateTime;
 
+import icepick.Icepick;
 import icepick.State;
 
 public class MainActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback, TrackerFragment.MapFragmentListener, FragmentManager.OnBackStackChangedListener {
@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Bridge.restoreInstanceState(this, savedInstanceState);
+        Icepick.restoreInstanceState(this, savedInstanceState);
 
         int selectedFragmentID = MAP_FRAGMENT_ID;
         if(findViewById(R.id.fragment_container) != null){
@@ -195,7 +195,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         getSupportFragmentManager().putFragment(outState, PREVIEW_FRAGMENT_TAG, previewFragment);
 
         activeFragment = Utils.getActiveFragmentName(getSupportFragmentManager());
-        Bridge.saveInstanceState(this, outState);
+        Icepick.saveInstanceState(this, outState);
     }
 
     @Override

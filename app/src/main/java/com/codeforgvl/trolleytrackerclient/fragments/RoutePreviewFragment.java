@@ -1,7 +1,6 @@
 package com.codeforgvl.trolleytrackerclient.fragments;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -26,10 +25,8 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.livefront.bridge.Bridge;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
-import icepick.State;
 
 public class RoutePreviewFragment extends Fragment implements OnMapReadyCallback,IMapFragment, GoogleMap.OnMarkerClickListener, GoogleMap.OnMapClickListener {
     public GoogleMap mMap; // Might be null if Google Play services APK is not available.

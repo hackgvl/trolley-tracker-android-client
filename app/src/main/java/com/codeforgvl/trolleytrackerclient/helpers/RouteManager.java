@@ -3,15 +3,12 @@ package com.codeforgvl.trolleytrackerclient.helpers;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Parcelable;
-import android.support.v4.app.Fragment;
 import android.util.Log;
 
 import com.codeforgvl.trolleytrackerclient.Constants;
 import com.codeforgvl.trolleytrackerclient.data.TrolleyAPI;
 import com.codeforgvl.trolleytrackerclient.data.TrolleyData;
 import com.codeforgvl.trolleytrackerclient.fragments.IMapFragment;
-import com.codeforgvl.trolleytrackerclient.fragments.TrackerFragment;
 import com.codeforgvl.trolleytrackerclient.models.json.LatLon;
 import com.codeforgvl.trolleytrackerclient.models.json.Route;
 import com.codeforgvl.trolleytrackerclient.models.json.RouteStop;
@@ -21,13 +18,13 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
-import com.livefront.bridge.Bridge;
 
 import org.joda.time.DateTime;
 
 import java.util.HashMap;
 
-import icepick.State;
+
+import icepick.Icepick;
 
 import static com.codeforgvl.trolleytrackerclient.Constants.ROUTE_UPDATE_INTERVAL;
 
@@ -52,7 +49,7 @@ public class RouteManager {
         }
 
         if (b != null){
-            Bridge.restoreInstanceState(trackerFragment, b);
+            Icepick.restoreInstanceState(trackerFragment, b);
             if(!updateRoutesIfNeeded()){
                 updateRoutes(lastRouteUpdate);
             }
@@ -158,6 +155,6 @@ public class RouteManager {
     }
 
     public void saveInstanceState(Bundle savedInstanceState){
-        Bridge.saveInstanceState(trackerFragment, savedInstanceState);
+        Icepick.saveInstanceState(trackerFragment, savedInstanceState);
     }
 }

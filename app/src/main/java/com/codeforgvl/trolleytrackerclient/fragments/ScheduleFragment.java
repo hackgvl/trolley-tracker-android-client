@@ -3,7 +3,6 @@ package com.codeforgvl.trolleytrackerclient.fragments;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -26,7 +25,6 @@ import com.codeforgvl.trolleytrackerclient.helpers.RecyclerItemClickListener;
 import com.codeforgvl.trolleytrackerclient.models.ScheduledRoute;
 import com.codeforgvl.trolleytrackerclient.models.json.Route;
 import com.codeforgvl.trolleytrackerclient.models.json.RouteSchedule;
-import com.livefront.bridge.Bridge;
 import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
 
 import org.joda.time.DateTime;
@@ -37,13 +35,16 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
+import icepick.Icepick;
 import icepick.State;
+
 
 /**
  * Created by ahodges on 12/21/2015.
  */
 public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
-    private RouteSchedule[] lastScheduleUpdate;
+    @State
+    RouteSchedule[] lastScheduleUpdate;
     //long lastUpdatedAt;
 
     public static ScheduleFragment newInstance(Bundle args) {
@@ -62,7 +63,7 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Bridge.restoreInstanceState(this, savedInstanceState);
+        Icepick.restoreInstanceState(this, savedInstanceState);
         if (savedInstanceState != null){
             processBundle(savedInstanceState);
         } else {
@@ -110,7 +111,7 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
     public void onSaveInstanceState(Bundle outState){
         super.onSaveInstanceState(outState);
 
-        Bridge.saveInstanceState(this, outState);
+        Icepick.saveInstanceState(this, outState);
     }
 
     @Override

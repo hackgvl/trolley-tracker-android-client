@@ -16,7 +16,6 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.livefront.bridge.Bridge;
 
 import org.joda.time.DateTime;
 
@@ -25,6 +24,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
+import icepick.Icepick;
 import icepick.State;
 
 /**
@@ -50,7 +50,7 @@ public class TrolleyManager {
             return;
         }
         if (b != null){
-            Bridge.restoreInstanceState(trackerFragment, b);
+            Icepick.restoreInstanceState(trackerFragment, b);
 
             if(lastTrolleyUpdate != null){
                 DateTime lastUpdate =  TrolleyData.getInstance().getLastTrolleyUpdateTime();
@@ -181,6 +181,6 @@ public class TrolleyManager {
     }
 
     public void saveInstanceState(Bundle savedInstanceState){
-        Bridge.saveInstanceState(trackerFragment, savedInstanceState);
+        Icepick.saveInstanceState(trackerFragment, savedInstanceState);
     }
 }
