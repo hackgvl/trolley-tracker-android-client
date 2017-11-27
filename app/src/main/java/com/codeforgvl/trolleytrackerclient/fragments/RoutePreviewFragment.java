@@ -240,4 +240,9 @@ public class RoutePreviewFragment extends Fragment implements OnMapReadyCallback
     public boolean fragmentIsAdded(){
         return isAdded();
     }
+
+    @Override
+    public boolean fragmentIsVisible(){
+        return isVisible();
+    }
 }

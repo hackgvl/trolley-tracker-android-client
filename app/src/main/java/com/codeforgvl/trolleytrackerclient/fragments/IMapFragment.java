@@ -8,4 +8,5 @@ public interface IMapFragment {
     GoogleMap getMap();
     Context getContext();
     boolean fragmentIsAdded();
+    boolean fragmentIsVisible();
 }

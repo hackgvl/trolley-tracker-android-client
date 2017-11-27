@@ -146,11 +146,12 @@ public class RouteManager {
 
         @Override
         protected void onPostExecute(Route[] routes) {
-            if(!trackerFragment.fragmentIsAdded()){
+            if(!trackerFragment.fragmentIsAdded() || !trackerFragment.fragmentIsVisible()){
                 return;
             }
             lastRouteUpdate = routes;
             TrolleyData.getInstance().setRoutes(lastRouteUpdate);
+
 
             updateRoutes(routes);
         }

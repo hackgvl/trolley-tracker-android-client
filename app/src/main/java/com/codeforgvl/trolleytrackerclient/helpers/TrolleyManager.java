@@ -173,7 +173,7 @@ public class TrolleyManager {
             TrolleyData.getInstance().setRunningTrolleyLocations(trolleyUpdate[0]);
             lastTrolleyUpdate = TrolleyData.getInstance().getTrolleys();
 
-            if (lastTrolleyUpdate != null) {
+            if (lastTrolleyUpdate != null && trackerFragment.fragmentIsVisible()) {
                 // Update after first full data available
                 updateTrolleys(lastTrolleyUpdate);
             }
