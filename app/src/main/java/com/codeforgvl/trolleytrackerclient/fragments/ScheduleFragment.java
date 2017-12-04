@@ -36,14 +36,12 @@ import java.util.HashMap;
 import java.util.List;
 
 import icepick.Icepick;
-import icepick.State;
 
 
 /**
  * Created by ahodges on 12/21/2015.
  */
 public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
-    @State
     RouteSchedule[] lastScheduleUpdate;
     //long lastUpdatedAt;
 
