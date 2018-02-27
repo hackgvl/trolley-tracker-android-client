@@ -15,4 +15,4 @@ This is the Android Client Application for the Trolley Tracker which tracks the 
 </resources>
 ```
 * You should now be able to run the build as expected. 
-(NOTE: By default in the development environment we run the app in DEBUG mode, in the Constants file we define the DEBUG mode URL, which is pointing to our Development API which is loading test data, not a live Trolley)
+(NOTE: By default in the development environment we run the app in DEBUG mode, in the `Constants` file we define the DEBUG mode URL, which is pointing to our Development API which is loading test data, not a live Trolley)
