@@ -54,31 +54,31 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:26.0.0'
-    compile 'com.google.android.gms:play-services-base:11.0.4'
-    compile 'com.google.android.gms:play-services-maps:11.0.4'
-    compile 'com.google.android.gms:play-services-location:11.0.4'
+    api fileTree(dir: 'libs', include: ['*.jar'])
+    api 'com.android.support:appcompat-v7:26.0.0'
+    api 'com.google.android.gms:play-services-base:11.0.4'
+    api 'com.google.android.gms:play-services-maps:11.0.4'
+    api 'com.google.android.gms:play-services-location:11.0.4'
 
-    compile 'com.joanzapata.iconify:android-iconify:2.0.8'
-    compile 'com.joanzapata.iconify:android-iconify-material:2.0.8'
-    compile 'com.joanzapata.iconify:android-iconify-fontawesome:2.0.8'
-    compile 'com.sothree.slidinguppanel:library:3.2.0'
-    compile('com.mikepenz:materialdrawer:4.5.9@aar') {
+    api 'com.joanzapata.iconify:android-iconify:2.0.8'
+    api 'com.joanzapata.iconify:android-iconify-material:2.0.8'
+    api 'com.joanzapata.iconify:android-iconify-fontawesome:2.0.8'
+    api 'com.sothree.slidinguppanel:library:3.2.0'
+    api('com.mikepenz:materialdrawer:4.5.9@aar') {
         transitive = true
     }
-    compile 'net.danlew:android.joda:2.9.5.1' // for joda
-    compile 'com.android.support:design:26.0.0'
-    compile 'com.yqritc:recyclerview-flexibledivider:1.2.6'
-    compile('com.github.afollestad.material-dialogs:core:0.8.5.3@aar') {
+    api 'net.danlew:android.joda:2.9.5.1' // for joda
+    api 'com.android.support:design:26.0.0'
+    api 'com.yqritc:recyclerview-flexibledivider:1.2.6'
+    api('com.github.afollestad.material-dialogs:core:0.8.5.3@aar') {
         transitive = true
     }
-    compile('com.crashlytics.sdk.android:crashlytics:2.6.2@aar') {
+    api('com.crashlytics.sdk.android:crashlytics:2.6.2@aar') {
         transitive = true;
     }
-    compile 'com.android.support:multidex:1.0.1'
-    compile "frankiesardo:icepick:3.2.0"
-    provided 'frankiesardo:icepick-processor:3.2.0'
+    api 'com.android.support:multidex:1.0.1'
+    api "frankiesardo:icepick:3.2.0"
+    compileOnly 'frankiesardo:icepick-processor:3.2.0'
     annotationProcessor 'frankiesardo:icepick-processor:3.2.0'
 
 }
