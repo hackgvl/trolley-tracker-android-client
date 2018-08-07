@@ -1,6 +1,8 @@
 package com.codeforgvl.trolleytrackerclient.fragments;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -11,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.codeforgvl.trolleytrackerclient.Constants;
@@ -36,6 +39,8 @@ import java.util.HashMap;
 import java.util.List;
 
 import icepick.Icepick;
+
+import static android.content.Context.CONNECTIVITY_SERVICE;
 
 
 /**
@@ -198,11 +203,13 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
         }
         return previewLoadingDialog;
     }
+
     private class ScheduleItemClickListener implements RecyclerItemClickListener.OnItemClickListener {
         @Override
         public void onItemClick(View view, int position) {
             //Show map preview if they clicked on a scheduled time
-            if(!getPreviewLoadingDialog().isShowing()){
+             if(isConnected()){
+                     if(!getPreviewLoadingDialog().isShowing()){
                 long itemPosition = mSectionedAdapter.getItemId(position);
                 if(itemPosition < Integer.MAX_VALUE / 2){
                     ScheduledRoute route = ((ScheduleAdapter) mSectionedAdapter.getBaseAdapter()).getItem((int)itemPosition);
@@ -212,7 +219,13 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
                 }
             }
         }
+        else{
+                 Toast.makeText(getActivity(),"Please check your intenet connection ",Toast.LENGTH_SHORT).show();
+             }
+
+        }
     }
+
 
     private class RoutePreviewTask extends AsyncTask<Integer, Void, Route>{
         @Override
@@ -238,25 +251,44 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
     private class ScheduleUpdateTask extends AsyncTask<Void, Void, RouteSchedule[]> {
         @Override
         protected RouteSchedule[] doInBackground(Void... params) {
+
+
             Log.d(Constants.LOG_TAG, "requesting schedule update");
-            return TrolleyAPI.getRouteSchedule();
-        }
+                   return TrolleyAPI.getRouteSchedule();
+               }
+
+
+
 
         @Override
         protected void onPostExecute(RouteSchedule[] schedule) {
             if(!isAdded()){
                 return;
             }
+
             lastScheduleUpdate = schedule;
-            TrolleyData.getInstance().setSchedules(lastScheduleUpdate);
+                TrolleyData.getInstance().setSchedules(lastScheduleUpdate);
+
 
             mSectionedAdapter = createScheduleViewAdapter(schedule);
-            RecyclerView listView = (RecyclerView)getActivity().findViewById(R.id.scheduleList);
+            RecyclerView listView = getActivity().findViewById(R.id.scheduleList);
+
             if (listView != null){
                 listView.setAdapter(mSectionedAdapter);
             }
 
+
             ((SwipeRefreshLayout)getActivity().findViewById(R.id.scheduleRefreshLayout)).setRefreshing(false);
+        }
+    }
+    public boolean isConnected() {
+        ConnectivityManager manager = (ConnectivityManager)getActivity().getSystemService(CONNECTIVITY_SERVICE);
+        NetworkInfo info = manager.getActiveNetworkInfo();
+        if (info != null && info.isConnected()) {
+            return true;
+        } else {
+            return false;
+
         }
     }
 }

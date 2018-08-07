@@ -123,7 +123,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                             case FEEDBACK_ID:
                                 Intent email_intent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts(
                                         "mailto","yeahthatrolley+@gmail.com", null));
-                                email_intent.putExtra(Intent.EXTRA_SUBJECT, "Feedback for the Trolley Tracker Android app");
+                                email_intent.putExtra(Intent.EXTRA_SUBJECT, "Feedback on the Trolley Tracker Android Application");
                                 startActivity(Intent.createChooser(email_intent, "Send email via...."));
                         }
                         return false;
@@ -176,8 +176,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         if(forceHide || !scheduleFragment.isHidden())
             ft.hide(scheduleFragment);
         ft.show(previewFragment);
-        ft.commit();
-    }
+        ft.commit();    }
 
     @Override
     public void onStop(){
