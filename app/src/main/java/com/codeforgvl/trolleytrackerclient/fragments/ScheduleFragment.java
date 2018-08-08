@@ -220,7 +220,7 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
             }
         }
         else{
-                 Toast.makeText(getActivity(),"Please check your intenet connection ",Toast.LENGTH_SHORT).show();
+                 Toast.makeText(getActivity(),"Please check your internet connection ",Toast.LENGTH_SHORT).show();
              }
 
         }
