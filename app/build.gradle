@@ -77,7 +77,8 @@ dependencies {
     api('com.crashlytics.sdk.android:crashlytics:2.6.2@aar') {
         transitive = true;
     }
-    api 'com.android.support:multidex:1.0.1'
+    api 'com.android.support:multidex:1.0.3'
+    api 'com.android.support:multidex-instrumentation:1.0.3'
     api "frankiesardo:icepick:3.2.0"
     compileOnly 'frankiesardo:icepick-processor:3.2.0'
     annotationProcessor 'frankiesardo:icepick-processor:3.2.0'

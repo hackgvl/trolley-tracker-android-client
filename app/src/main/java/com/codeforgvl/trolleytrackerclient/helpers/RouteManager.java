@@ -20,8 +20,11 @@ import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import org.joda.time.DateTime;
+import org.joda.time.Interval;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 
 import icepick.Icepick;
@@ -35,6 +38,7 @@ public class RouteManager {
     private IMapFragment trackerFragment;
     private HashMap<Integer, Polyline> routePolylines = new HashMap<>();
     private HashMap<Integer, Marker> stopMarkers = new HashMap<>();
+    private ArrayList<RouteStop> orderedStops = new ArrayList<>();
 
     Route[] lastRouteUpdate;
     //long lastUpdatedAt;
@@ -64,6 +68,41 @@ public class RouteManager {
 
     public void updateActiveRoutes(){
         new RouteUpdateTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    public void updateETAs(){
+        //Find current location of trolley
+        HashMap<Integer, RouteStop> trolleyLastStops = new HashMap<>();
+        HashMap<Integer, DateTime> prevStopTrolleyVisits = new HashMap<>();
+        RouteStop prevStop = null;
+        for(RouteStop stop : orderedStops){
+            for(Integer trolleyID : stop.LastTrolleyArrivalTimes.keySet()){
+                if (prevStopTrolleyVisits.containsKey(trolleyID)){
+                    DateTime prev = prevStopTrolleyVisits.get(trolleyID);
+                    if (prev.isAfter(stop.LastTrolleyArrivalTimes.get(trolleyID))){
+                        //This trolley was last at the previous stop.
+                        trolleyLastStops.put(trolleyID, prevStop);
+                    }
+                } else {
+                    prevStopTrolleyVisits.put(trolleyID, stop.LastTrolleyArrivalTimes.get(trolleyID);
+                }
+
+                prevStop = stop;
+            }
+        }
+
+        for(RouteStop stop : orderedStops){
+            Integer stopIndex = orderedStops.indexOf(stop); //TODO: optimize
+            for(Integer trolleyID : trolleyLastStops.keySet()){
+                Integer lastSeenIndex = orderedStops.indexOf(trolleyLastStops.get(trolleyID));
+
+                Interval eta = null;
+                //Loop backwards through stops, accumulating interval time
+                //Use lastRouteUpdate to adjust ETA
+            }
+        }
+
+
     }
 
     public boolean updateRoutesIfNeeded(){
@@ -108,12 +147,13 @@ public class RouteManager {
 
             //Add route stops
             for(RouteStop s : r.Stops) {
-                stopMarkers.put(s.ID, trackerFragment.getMap().addMarker(new MarkerOptions()
+                Marker stop = trackerFragment.getMap().addMarker(new MarkerOptions()
                         .title(s.Name)
                         .snippet(s.Description)
                         .anchor(0.5f, 0.5f)
                         .icon(IconFactory.getStopIcon(trackerFragment.getContext(), Constants.getStopColorForRouteNumber(trackerFragment.getContext(), i)))
-                        .position(new LatLng(s.Lat, s.Lon))));
+                        .position(new LatLng(s.Lat, s.Lon)));
+                stopMarkers.put(s.ID, stop);
             }
         }
     }
