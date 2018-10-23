@@ -7,12 +7,14 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.location.Location;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,8 +26,11 @@ import com.codeforgvl.trolleytrackerclient.Constants;
 import com.codeforgvl.trolleytrackerclient.R;
 import com.codeforgvl.trolleytrackerclient.Utils;
 import com.codeforgvl.trolleytrackerclient.adapters.MapWindowAdapter;
+import com.codeforgvl.trolleytrackerclient.data.TrolleyAPI;
+import com.codeforgvl.trolleytrackerclient.data.TrolleyData;
 import com.codeforgvl.trolleytrackerclient.helpers.RouteManager;
 import com.codeforgvl.trolleytrackerclient.helpers.TrolleyManager;
+import com.codeforgvl.trolleytrackerclient.models.json.Trolley;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdate;
@@ -240,6 +245,11 @@ public class TrackerFragment extends Fragment implements OnMapReadyCallback, IMa
         } else {
             selectedMarker.setVisible(false);
             fab.setVisibility(View.GONE);
+
+            //Set loading indicator
+            //Refresh trolley details
+            new TrolleyUpdateTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, trolleyMan.getTrolleyByMarker(selectedMarker));
+            //Update drawer on load
         }
 
         if(drawer.getPanelState() == SlidingUpPanelLayout.PanelState.HIDDEN){
@@ -251,6 +261,39 @@ public class TrackerFragment extends Fragment implements OnMapReadyCallback, IMa
         //Animate to center
         mMap.animateCamera(CameraUpdateFactory.newLatLng(marker.getPosition()), 400, null);
         return true;
+    }
+
+    private class TrolleyUpdateTask extends AsyncTask<Integer, Void, Trolley> {
+        @Override
+        protected Trolley doInBackground(Integer... params) {
+            Log.d(Constants.LOG_TAG, "requesting trolley update");
+            int trolleyID = params[0];
+
+            Trolley trolley = TrolleyAPI.getTrolley(trolleyID);
+
+            /*Trolley[] existingTrolleys = TrolleyData.getInstance().getTrolleys();
+            for (Trolley t : existingTrolleys){
+                if (t.ID == trolley.ID) {
+                    t.TrolleyName = trolley.TrolleyName;
+                    t.Number = trolley.Number;
+                    t.Lat = trolley.Lat;
+                    t.Lon = trolley.Lon;
+                    t.LastBeaconTime = trolley.LastBeaconTime;
+                    t.IconColorRGB = trolley.IconColorRGB;
+                    t.SyncromaticsNumber = trolley.SyncromaticsNumber;
+                    t.Capacity = trolley.Capacity;
+                    t.PassengerLoad = trolley.PassengerLoad;
+                }
+            }*/
+
+            return trolley;
+        }
+
+        @Override
+        protected void onPostExecute(Trolley trolleys) {
+            Log.d(Constants.LOG_TAG, "processing trolley updates");
+            ((TextView)drawer.findViewById(R.id.drawer_details)).setText(trolleys.PassengerLoad + "/" + trolleys.Capacity);
+        }
     }
 
     @Override

@@ -68,6 +68,7 @@ dependencies {
         transitive = true
     }
     api 'net.danlew:android.joda:2.9.5.1' // for joda
+    api group: 'com.google.guava', name: 'guava', version: '23.5-android'
     api 'com.android.support:design:26.0.0'
     api 'com.yqritc:recyclerview-flexibledivider:1.2.6'
     api('com.github.afollestad.material-dialogs:core:0.8.5.3@aar') {

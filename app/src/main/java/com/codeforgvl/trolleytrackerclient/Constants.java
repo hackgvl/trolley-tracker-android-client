@@ -12,6 +12,7 @@ public class Constants {
     public static final String API_PATH = "/api/v1/";
     public static final String ALL_TROLLEYS_ENDPOINT = "http://" + HOST + API_PATH + "Trolleys";  // Complete trolley record - all trolleys
     public static final String RUNNING_TROLLEYS_ENDPOINT = "http://" + HOST + API_PATH + "Trolleys/Running";
+    public static final String TROLLEY_DETAILS_ENDPOINT = "http://" + HOST + API_PATH + "Trolleys/%d";
     public static final String ACTIVE_ROUTES_ENDPOINT = "http://" + HOST + API_PATH + "Routes/Active";
     public static final String ROUTE_SCHEDULE_ENDPOINT = "http://" + HOST + API_PATH + "RouteSchedules";
 
@@ -25,23 +26,6 @@ public class Constants {
     public static final int SLEEP_INTERVAL = 5000;
 
     public static final int LOCATION_PERMISSION_REQUEST_ID = 1;
-
-    public static int getRouteColorForRouteNumber(Context context, int ndx){
-
-        int routeNo = (ndx % 5) + 1;
-        switch (routeNo){
-            case 1:
-                return ContextCompat.getColor(context, R.color.route1);
-            case 2:
-                return ContextCompat.getColor(context, R.color.route2);
-            case 3:
-                return ContextCompat.getColor(context, R.color.route3);
-            case 4:
-                return ContextCompat.getColor(context, R.color.route4);
-            default:
-                return ContextCompat.getColor(context, R.color.route5);
-        }
-    }
 
     public static int getStopColorForRouteNumber(Context context, int ndx){
         int routeNo = (ndx % 5) + 1;

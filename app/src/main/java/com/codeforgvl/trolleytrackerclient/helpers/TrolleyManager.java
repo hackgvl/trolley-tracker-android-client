@@ -3,19 +3,18 @@ package com.codeforgvl.trolleytrackerclient.helpers;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.util.Log;
 
 import com.codeforgvl.trolleytrackerclient.Constants;
-import com.codeforgvl.trolleytrackerclient.R;
 import com.codeforgvl.trolleytrackerclient.data.TrolleyAPI;
 import com.codeforgvl.trolleytrackerclient.data.TrolleyData;
 import com.codeforgvl.trolleytrackerclient.fragments.TrackerFragment;
 import com.codeforgvl.trolleytrackerclient.models.json.Trolley;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 
 import org.joda.time.DateTime;
 
@@ -33,8 +32,8 @@ import icepick.State;
 public class TrolleyManager {
     private static final String NOTIFIED_EMPTY_KEY = "NOTIFIED_EMPTY";
     private TrackerFragment trackerFragment;
-    private HashMap<Integer, Marker> trolleyMarkers = new HashMap<>();
-    private TrolleyUpdateTask mUpdateTask;
+    private HashBiMap<Integer, Marker> trolleyMarkers = HashBiMap.create();
+    private TrolleysUpdateTask mUpdateTask;
     @State
     boolean notifiedEmpty = false;
 
@@ -74,13 +73,17 @@ public class TrolleyManager {
         return trolleyMarkers.values();
     }
 
+    public int getTrolleyByMarker(Marker marker){
+        return trolleyMarkers.inverse().get(marker);
+    }
+
     public boolean isEmpty(){
         return trolleyMarkers.isEmpty();
     }
 
     public void startUpdates(){
         if (mUpdateTask == null || mUpdateTask.isCancelled()){
-            mUpdateTask = new TrolleyUpdateTask();
+            mUpdateTask = new TrolleysUpdateTask();
             mUpdateTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
     }
@@ -147,11 +150,11 @@ public class TrolleyManager {
 
     }
 
-    private class TrolleyUpdateTask extends AsyncTask<Void, Trolley[], Void> {
+    private class TrolleysUpdateTask extends AsyncTask<Void, Trolley[], Void> {
         @Override
         protected Void doInBackground(Void... params) {
             while (!isCancelled()) {
-                Log.d(Constants.LOG_TAG, "requesting trolley update");
+                Log.d(Constants.LOG_TAG, "requesting trolleys update");
 
                 Trolley[] trolleyList = TrolleyAPI.getRunningTrolleys();
 
@@ -168,7 +171,7 @@ public class TrolleyManager {
 
         @Override
         protected void onProgressUpdate(Trolley[]... trolleyUpdate){
-            Log.d(Constants.LOG_TAG, "processing trolley updates");
+            Log.d(Constants.LOG_TAG, "processing trolleys updates");
 
             TrolleyData.getInstance().setRunningTrolleyLocations(trolleyUpdate[0]);
             lastTrolleyUpdate = TrolleyData.getInstance().getTrolleys();

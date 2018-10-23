@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Locale;
 
 /**
  * Created by Adam Hodges on 8/23/2015.
@@ -73,6 +74,18 @@ public class TrolleyAPI {
             //Catch exception re: malformed json from API
         }
         return ret != null? ret : new Trolley[0];
+    }
+
+    // Get details for a single trolley
+    public static Trolley getTrolley(int trolleyId){
+        String json = httpGETRequest(String.format(Locale.ENGLISH, Constants.TROLLEY_DETAILS_ENDPOINT, trolleyId));
+        Trolley ret = null;
+        try{
+            ret = new Gson().fromJson(json, Trolley.class);
+        } catch (JsonSyntaxException ex){
+            //Catch exception re: malformed json from API
+        }
+        return ret != null? ret : new Trolley();
     }
 
     public static Route[] getActiveRoutes(){

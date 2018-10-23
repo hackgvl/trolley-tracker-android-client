@@ -3,6 +3,8 @@ package com.codeforgvl.trolleytrackerclient.models.json;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.Date;
+
 /**
  * Created by Adam Hodges on 8/23/2015.
  */
@@ -15,6 +17,10 @@ public class Trolley implements Parcelable {
     public int Number;
     public String TrolleyName;
     public String IconColorRGB = "#acb71d";
+    public String LastBeaconTime;
+    public int SyncromaticsNumber;
+    public int Capacity;
+    public int PassengerLoad;
     public boolean Running = false;
 
     @Override
@@ -30,7 +36,13 @@ public class Trolley implements Parcelable {
         dest.writeInt(Number);
         dest.writeString(TrolleyName);
         dest.writeString(IconColorRGB);
+        dest.writeString(LastBeaconTime);
+        dest.writeInt(SyncromaticsNumber);
+        dest.writeInt(Capacity);
+        dest.writeInt(PassengerLoad);
     }
+
+    public Trolley() {}
 
     public Trolley(Parcel in){
         Lat = in.readDouble();
@@ -39,6 +51,10 @@ public class Trolley implements Parcelable {
         Number = in.readInt();
         TrolleyName = in.readString();
         IconColorRGB = in.readString();
+        LastBeaconTime = in.readString();
+        SyncromaticsNumber = in.readInt();
+        Capacity = in.readInt();
+        PassengerLoad = in.readInt();
     }
 
     public String getIconColorRGB(){
