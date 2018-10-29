@@ -28,6 +28,7 @@ import icepick.Icepick;
 
 import static com.codeforgvl.trolleytrackerclient.Constants.ROUTE_UPDATE_INTERVAL;
 
+
 /**
  * Created by ahodges on 12/18/2015.
  */
@@ -36,7 +37,7 @@ public class RouteManager {
     private HashMap<Integer, Polyline> routePolylines = new HashMap<>();
     private HashMap<Integer, Marker> stopMarkers = new HashMap<>();
 
-    Route[] lastRouteUpdate;
+    private Route[] lastRouteUpdate;
     //long lastUpdatedAt;
 
     public RouteManager(IMapFragment activity){
@@ -46,9 +47,7 @@ public class RouteManager {
     public void processBundle(Bundle b){
         if(b == null){
             return;
-        }
-
-        if (b != null){
+        } else if (b != null) {
             Icepick.restoreInstanceState(trackerFragment, b);
             if(!updateRoutesIfNeeded()){
                 updateRoutes(lastRouteUpdate);
@@ -82,7 +81,7 @@ public class RouteManager {
         }
     }
 
-    public void updateRoutes(Route[] routes){
+    private void updateRoutes(Route[] routes){
         if(trackerFragment.getMap() == null || !trackerFragment.fragmentIsAdded())
             return;
 
@@ -112,7 +111,7 @@ public class RouteManager {
                         .title(s.Name)
                         .snippet(s.Description)
                         .anchor(0.5f, 0.5f)
-                        .icon(IconFactory.getStopIcon(trackerFragment.getContext(), Constants.getStopColorForRouteNumber(trackerFragment.getContext(), i)))
+                        .icon(IconFactory.getStopIcon(trackerFragment.getContext(), Constants.Companion.getStopColorForRouteNumber(trackerFragment.getContext(), i)))
                         .position(new LatLng(s.Lat, s.Lon))));
             }
         }

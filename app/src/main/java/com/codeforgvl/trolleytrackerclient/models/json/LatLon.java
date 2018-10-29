@@ -21,7 +21,7 @@ public class LatLon implements Parcelable {
         dest.writeDouble(Lon);
     }
 
-    public LatLon(Parcel in){
+    public LatLon(Parcel in) {
         Lat = in.readDouble();
         Lon = in.readDouble();
     }

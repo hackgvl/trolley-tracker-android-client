@@ -52,7 +52,7 @@ public class TrolleyAPI {
 
     // Location only for the trolleys that are running
     public static Trolley[] getRunningTrolleys(){
-        String json = httpGETRequest(Constants.RUNNING_TROLLEYS_ENDPOINT);
+        String json = httpGETRequest(Constants.Companion.getRunningTrolleysEndpoint());
         Trolley[] ret = null;
         try{
             ret = new Gson().fromJson(json, Trolley[].class);
@@ -65,7 +65,7 @@ public class TrolleyAPI {
 
     // Get full record for all trolleys
     public static Trolley[] getAllTrolleys(){
-        String json = httpGETRequest(Constants.ALL_TROLLEYS_ENDPOINT);
+        String json = httpGETRequest(Constants.Companion.getAllTrolleysEndpoint());
         Trolley[] ret = null;
         try{
             ret = new Gson().fromJson(json, Trolley[].class);
@@ -76,7 +76,7 @@ public class TrolleyAPI {
     }
 
     public static Route[] getActiveRoutes(){
-        String json = httpGETRequest(Constants.ACTIVE_ROUTES_ENDPOINT);
+        String json = httpGETRequest(Constants.Companion.getActiveRoutesEndpoint());
         Route[] ret = null;
         try{
             ret = new Gson().fromJson(json, Route[].class);
@@ -87,7 +87,7 @@ public class TrolleyAPI {
     }
 
     public static RouteSchedule[] getRouteSchedule(){
-        String json = httpGETRequest(Constants.ROUTE_SCHEDULE_ENDPOINT);
+        String json = httpGETRequest(Constants.Companion.getRouteScheduleEndpoint());
         RouteSchedule[] ret = null;
         try{
             ret = new Gson().fromJson(json, RouteSchedule[].class);
@@ -98,7 +98,7 @@ public class TrolleyAPI {
     }
 
     public static Route getRouteDetails(int routeId){
-        String json = httpGETRequest(Constants.GetRouteDetailsEndpoint(routeId));
+        String json = httpGETRequest(Constants.Companion.getRouteDetailsEndpoint(routeId));
         Route ret = null;
         try{
             ret = new Gson().fromJson(json, Route.class);

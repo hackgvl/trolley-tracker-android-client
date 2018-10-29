@@ -141,7 +141,7 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
             listView.addOnItemTouchListener(new RecyclerItemClickListener(getContext(), new ScheduleItemClickListener()));
         }
 
-        SwipeRefreshLayout swipeRefresh = (SwipeRefreshLayout)view.findViewById(R.id.scheduleRefreshLayout);
+        SwipeRefreshLayout swipeRefresh = view.findViewById(R.id.scheduleRefreshLayout);
         if(swipeRefresh != null){
             swipeRefresh.setOnRefreshListener(this);
         }

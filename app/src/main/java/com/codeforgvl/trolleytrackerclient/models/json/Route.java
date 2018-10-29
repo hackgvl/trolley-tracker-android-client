@@ -1,10 +1,7 @@
 package com.codeforgvl.trolleytrackerclient.models.json;
 
-import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
-
-import com.codeforgvl.trolleytrackerclient.Constants;
 
 /**
  * Created by Adam Hodges on 8/23/2015.
@@ -12,12 +9,13 @@ import com.codeforgvl.trolleytrackerclient.Constants;
 public class Route implements Parcelable {
     public static final String ROUTE_KEY = "ROUTE_KEY";
     public static final String LAST_UPDATED_KEY = "ROUTE_LAST_UPDATED_KEY";
-    public String ShortName;
     public String Description;
     public int ID;
-    public boolean FlagStopsOnly;
-    public String LongName;
-    public String RouteColorRGB = "#acb71d";
+
+    private String ShortName;
+    private boolean FlagStopsOnly;
+    private String LongName;
+    private String RouteColorRGB = "#acb71d";
 
     public RouteStop[] Stops;
     public LatLon[] RouteShape;

@@ -33,17 +33,18 @@ import icepick.Icepick;
 import icepick.State;
 
 public class MainActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback, TrackerFragment.MapFragmentListener, FragmentManager.OnBackStackChangedListener {
-    public final static int MAP_FRAGMENT_ID = 1;
-    public final static int SCHEDULE_FRAGMENT_ID = 2;
-    public final static int PREVIEW_FRAGMENT_ID = 3;
-    public final static int FEEDBACK_ID = 4;
-    public final static String MAP_FRAGMENT_TAG = "MAP_FRAGMENT";
-    public final static String SCHEDULE_FRAGMENT_TAG = "SCHEDULE_FRAGMENT";
-    public final static String PREVIEW_FRAGMENT_TAG = "PREVIEW_FRAGMENT";
 
-    TrackerFragment trackerFragment;
-    ScheduleFragment scheduleFragment;
-    RoutePreviewFragment previewFragment;
+    private final static int MAP_FRAGMENT_ID = 1;
+    private final static int SCHEDULE_FRAGMENT_ID = 2;
+    private final static int PREVIEW_FRAGMENT_ID = 3;
+    private final static int FEEDBACK_ID = 4;
+    private final static String SCHEDULE_FRAGMENT_TAG = "SCHEDULE_FRAGMENT";
+    private final static String PREVIEW_FRAGMENT_TAG = "PREVIEW_FRAGMENT";
+    public final static String MAP_FRAGMENT_TAG = "MAP_FRAGMENT";
+
+    private TrackerFragment trackerFragment;
+    private ScheduleFragment scheduleFragment;
+    private RoutePreviewFragment previewFragment;
     @State
     String activeFragment;
 
