@@ -121,7 +121,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                                 break;
                             case FEEDBACK_ID:
                                 Intent email_intent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts(
-                                        "mailto","yeahthatrolley@gmail.com", null));
+                                        "mailto","yeahthatrolley+android@gmail.com", null));
 
                                 email_intent.putExtra(Intent.EXTRA_SUBJECT, "Feedback on the Trolley Tracker Android Application");
                                 startActivity(Intent.createChooser(email_intent, "Send email via...."));
