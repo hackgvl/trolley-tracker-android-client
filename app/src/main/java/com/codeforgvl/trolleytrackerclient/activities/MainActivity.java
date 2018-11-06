@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
@@ -23,6 +24,7 @@ import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
+import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 import org.joda.time.DateTime;
@@ -34,6 +36,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     public final static int MAP_FRAGMENT_ID = 1;
     public final static int SCHEDULE_FRAGMENT_ID = 2;
     public final static int PREVIEW_FRAGMENT_ID = 3;
+    public final static int FEEDBACK_ID = 4;
     public final static String MAP_FRAGMENT_TAG = "MAP_FRAGMENT";
     public final static String SCHEDULE_FRAGMENT_TAG = "SCHEDULE_FRAGMENT";
     public final static String PREVIEW_FRAGMENT_TAG = "PREVIEW_FRAGMENT";
@@ -91,7 +94,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         }
 
         //Initialize UI
-        Toolbar myToolbar = (Toolbar)findViewById(R.id.my_toolbar);
+        Toolbar myToolbar = findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolbar);
 
         menu = new DrawerBuilder()
@@ -102,7 +105,8 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                 .addDrawerItems(
                         new PrimaryDrawerItem().withIdentifier(MAP_FRAGMENT_ID).withName(R.string.menu_map).withIcon(new IconDrawable(this, MaterialIcons.md_map)),
                         new PrimaryDrawerItem().withIdentifier(SCHEDULE_FRAGMENT_ID).withName(R.string.menu_schedule).withIcon(new IconDrawable(this, MaterialIcons.md_schedule)),
-                        new DividerDrawerItem()//,
+                        new DividerDrawerItem(),
+                        new PrimaryDrawerItem().withIdentifier(FEEDBACK_ID).withName("Feedback").withSelectable(false).withIcon(new IconDrawable(this, MaterialIcons.md_feedback))
                         //new SecondaryDrawerItem().withName(R.string.menu_settings).withIcon(new IconDrawable(this, MaterialIcons.md_settings))
                 )
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
@@ -115,6 +119,12 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                             case SCHEDULE_FRAGMENT_ID:
                                 showSchedule();
                                 break;
+                            case FEEDBACK_ID:
+                                Intent email_intent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts(
+                                        "mailto","yeahthatrolley+android@gmail.com", null));
+
+                                email_intent.putExtra(Intent.EXTRA_SUBJECT, "Feedback on the Trolley Tracker Android Application");
+                                startActivity(Intent.createChooser(email_intent, "Send email via...."));
                         }
                         return false;
                     }
@@ -166,8 +176,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         if(forceHide || !scheduleFragment.isHidden())
             ft.hide(scheduleFragment);
         ft.show(previewFragment);
-        ft.commit();
-    }
+        ft.commit();    }
 
     @Override
     public void onStop(){
