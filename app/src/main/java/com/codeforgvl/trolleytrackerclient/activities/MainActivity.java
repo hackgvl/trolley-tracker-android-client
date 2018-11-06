@@ -94,7 +94,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         }
 
         //Initialize UI
-        Toolbar myToolbar = (Toolbar)findViewById(R.id.my_toolbar);
+        Toolbar myToolbar = findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolbar);
 
         menu = new DrawerBuilder()
@@ -106,8 +106,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                         new PrimaryDrawerItem().withIdentifier(MAP_FRAGMENT_ID).withName(R.string.menu_map).withIcon(new IconDrawable(this, MaterialIcons.md_map)),
                         new PrimaryDrawerItem().withIdentifier(SCHEDULE_FRAGMENT_ID).withName(R.string.menu_schedule).withIcon(new IconDrawable(this, MaterialIcons.md_schedule)),
                         new DividerDrawerItem(),
-                        new SecondaryDrawerItem().withIdentifier(FEEDBACK_ID).withName("Feedback").withIcon(new IconDrawable(this, MaterialIcons.md_feedback))
-                        //,
+                        new PrimaryDrawerItem().withIdentifier(FEEDBACK_ID).withName("Feedback").withSelectable(false).withIcon(new IconDrawable(this, MaterialIcons.md_feedback))
                         //new SecondaryDrawerItem().withName(R.string.menu_settings).withIcon(new IconDrawable(this, MaterialIcons.md_settings))
                 )
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
@@ -122,7 +121,8 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                                 break;
                             case FEEDBACK_ID:
                                 Intent email_intent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts(
-                                        "mailto","yeahthatrolley+@gmail.com", null));
+                                        "mailto","yeahthatrolley@gmail.com", null));
+
                                 email_intent.putExtra(Intent.EXTRA_SUBJECT, "Feedback on the Trolley Tracker Android Application");
                                 startActivity(Intent.createChooser(email_intent, "Send email via...."));
                         }
