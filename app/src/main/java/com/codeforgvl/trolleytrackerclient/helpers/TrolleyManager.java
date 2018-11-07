@@ -3,16 +3,13 @@ package com.codeforgvl.trolleytrackerclient.helpers;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.util.Log;
 
 import com.codeforgvl.trolleytrackerclient.Constants;
-import com.codeforgvl.trolleytrackerclient.R;
 import com.codeforgvl.trolleytrackerclient.data.TrolleyAPI;
 import com.codeforgvl.trolleytrackerclient.data.TrolleyData;
 import com.codeforgvl.trolleytrackerclient.fragments.TrackerFragment;
 import com.codeforgvl.trolleytrackerclient.models.json.Trolley;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;

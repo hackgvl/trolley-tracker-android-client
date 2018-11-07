@@ -91,10 +91,10 @@ public class TrackerFragment extends Fragment implements OnMapReadyCallback, IMa
 
         ((FloatingActionButton) view.findViewById(R.id.myFAB)).setImageDrawable(new IconDrawable(getContext(), MaterialIcons.md_directions_walk).colorRes(R.color.white));
 
-        drawer = (SlidingUpPanelLayout)view.findViewById(R.id.sliding_layout);
+        drawer = view.findViewById(R.id.sliding_layout);
         drawer.setPanelSlideListener(new DrawerListener());
 
-        fab = (FloatingActionButton)view.findViewById(R.id.myFAB);
+        fab = view.findViewById(R.id.myFAB);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
