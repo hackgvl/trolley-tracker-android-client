@@ -82,7 +82,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 
             } else {
                 trackerFragment = TrackerFragment.newInstance(getIntent().getExtras());
-                scheduleFragment = ScheduleFragment.newInstance(getIntent().getExtras());
+                scheduleFragment = ScheduleFragment.Companion.newInstance(getIntent().getExtras());
                 previewFragment = RoutePreviewFragment.newInstance(getIntent().getExtras());
 
                 getSupportFragmentManager().beginTransaction()

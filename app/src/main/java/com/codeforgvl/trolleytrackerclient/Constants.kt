@@ -13,10 +13,6 @@ class Constants {
         val HOST =
             if (BuildConfig.DEBUG) "yeahthattrolley.azurewebsites.net" else "api.yeahthattrolley.com"
         val API_PATH = "/api/v1/"
-//        var ALL_TROLLEYS_ENDPOINT =
-//        var RUNNING_TROLLEYS_ENDPOINT =
-//        var ACTIVE_ROUTES_ENDPOINT =
-//        var ROUTE_SCHEDULE_ENDPOINT =
 
         private val ROUTE_DETAILS_ENDPOINT = "http://" + HOST + API_PATH + "Routes/"
 
