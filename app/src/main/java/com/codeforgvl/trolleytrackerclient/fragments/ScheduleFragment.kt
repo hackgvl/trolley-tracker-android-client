@@ -2,7 +2,6 @@ package com.codeforgvl.trolleytrackerclient.fragments
 
 import android.content.Context
 import android.net.ConnectivityManager
-import android.net.NetworkInfo
 import android.os.AsyncTask
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -26,7 +25,6 @@ import com.codeforgvl.trolleytrackerclient.data.TrolleyAPI
 import com.codeforgvl.trolleytrackerclient.data.TrolleyData
 import com.codeforgvl.trolleytrackerclient.helpers.RecyclerItemClickListener
 import com.codeforgvl.trolleytrackerclient.models.ScheduledRoute
-import com.codeforgvl.trolleytrackerclient.models.json.Route
 import com.codeforgvl.trolleytrackerclient.models.json.RouteSchedule
 import com.codeforgvl.trolleytrackerclient.network.ApiClient
 import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration
@@ -65,11 +63,7 @@ class ScheduleFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
         get() {
             val manager = activity.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
             val info = manager.activeNetworkInfo
-            return if (info != null && info.isConnected) {
-                true
-            } else {
-                false
-            }
+            return info != null && info.isConnected
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -195,7 +189,6 @@ class ScheduleFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
 
         //Create adapters
         val mAdapter = ScheduleAdapter(context, srList)
-        val dummy = arrayOfNulls<SimpleSectionedRecyclerViewAdapter.Section>(sections.size)
         val adapter = SimpleSectionedRecyclerViewAdapter(
             context,
             R.layout.view_schedule_header,
@@ -223,7 +216,7 @@ class ScheduleFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
         override fun onItemClick(view: View, position: Int) {
             //Show map preview if they clicked on a scheduled time
             if (isConnected) {
-                if (!getPreviewLoadingDialog()?.isShowing) {
+                if (getPreviewLoadingDialog()?.isShowing != true) {
                     val itemPosition = mSectionedAdapter.getItemId(position)
                     if (itemPosition < Integer.MAX_VALUE / 2) {
                         val route =
@@ -250,11 +243,6 @@ class ScheduleFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
                                     (activity as MainActivity).showRoutePreview(bundle)
                                 }
                             }
-
-//                        RoutePreviewTask().executeOnExecutor(
-//                            AsyncTask.THREAD_POOL_EXECUTOR,
-//                            route.routeSchedule.RouteID
-//                        )
                     }
                 }
             } else {
@@ -266,25 +254,6 @@ class ScheduleFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
             }
         }
     }
-
-//    private inner class RoutePreviewTask : AsyncTask<Int, Void, Route>() {
-//        protected override fun doInBackground(vararg integers: Int): Route {
-//            Log.d(Constants.LOG_TAG, "requesting route preview data")
-//            return TrolleyAPI.getRouteDetails(integers[0])
-//        }
-//
-//        override fun onPostExecute(route: Route) {
-//            if (!isAdded) {
-//                return
-//            }
-//            val routes = arrayOf(route)
-//            val bundle = Bundle()
-//            TrolleyData.getInstance().routes = routes
-//
-//            getPreviewLoadingDialog().dismiss()
-//            (activity as MainActivity).showRoutePreview(bundle)
-//        }
-//    }
 
     private inner class ScheduleUpdateTask : AsyncTask<Void, Void, Array<RouteSchedule>>() {
         override fun doInBackground(vararg params: Void): Array<RouteSchedule> {

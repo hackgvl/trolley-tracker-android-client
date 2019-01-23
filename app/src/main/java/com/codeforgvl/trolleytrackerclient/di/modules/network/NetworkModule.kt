@@ -4,8 +4,6 @@ import android.content.Context
 import com.codeforgvl.trolleytrackerclient.BuildConfig
 import com.codeforgvl.trolleytrackerclient.network.ApiClient
 import com.codeforgvl.trolleytrackerclient.network.ApiService
-import com.squareup.moshi.JsonAdapter
-import com.squareup.moshi.Moshi
 import dagger.Module
 import dagger.Provides
 import okhttp3.Cache
@@ -14,12 +12,11 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.moshi.MoshiConverterFactory
-import javax.inject.Qualifier
 import javax.inject.Singleton
 
 @Module
 class NetworkModule {
-    private val BASE_URL = if (BuildConfig.DEBUG) "yeahthattrolley.azurewebsites.net" else "api.yeahthattrolley.com"
+    private val BASE_URL = if (BuildConfig.DEBUG) "http://yeahthattrolley.azurewebsites.net" else "http://api.yeahthattrolley.com"
 
     @Provides
     @Singleton
@@ -34,9 +31,15 @@ class NetworkModule {
         return OkHttpClient.Builder()
             .cache(cache)
             .addInterceptor(
-                HttpLoggingInterceptor().setLevel(
-                    HttpLoggingInterceptor.Level.BODY
-                )
+                if (BuildConfig.DEBUG) {
+                    HttpLoggingInterceptor().setLevel(
+                        HttpLoggingInterceptor.Level.BODY
+                    )
+                } else {
+                    HttpLoggingInterceptor().setLevel(
+                        HttpLoggingInterceptor.Level.NONE
+                    )
+                }
             )
             .build()
     }
@@ -47,8 +50,15 @@ class NetworkModule {
         return Retrofit.Builder()
             .baseUrl(BASE_URL)
             .client(okHttpClient)
+            .addConverterFactory(MoshiConverterFactory.create())
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideApiService(retrofit: Retrofit): ApiService {
+        return retrofit.create(ApiService::class.java)
     }
 
     @Provides

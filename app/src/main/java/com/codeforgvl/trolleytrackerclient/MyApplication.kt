@@ -22,13 +22,10 @@ import javax.inject.Inject
 /**
  * Created by ahodges on 8/25/2015.
  */
-class MyApplication : Application(), HasActivityInjector, HasSupportFragmentInjector {
+class MyApplication : Application(), HasSupportFragmentInjector {
 
     @Inject
     lateinit var dispatchingAndroidInjector: DispatchingAndroidInjector<Fragment>
-
-    @Inject
-    lateinit var dispatchingAndroidActivityInjector: DispatchingAndroidInjector<Activity>
 
     override fun onCreate() {
         super.onCreate()
@@ -51,10 +48,6 @@ class MyApplication : Application(), HasActivityInjector, HasSupportFragmentInje
 
     override fun supportFragmentInjector(): AndroidInjector<Fragment> {
         return dispatchingAndroidInjector
-    }
-
-    override fun activityInjector(): DispatchingAndroidInjector<Activity>? {
-        return dispatchingAndroidActivityInjector
     }
 
     fun setTestComponenet(component: ApplicationComponent) {

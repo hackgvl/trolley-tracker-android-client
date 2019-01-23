@@ -3,6 +3,7 @@ package com.codeforgvl.trolleytrackerclient.di.component
 import com.codeforgvl.trolleytrackerclient.MyApplication
 import com.codeforgvl.trolleytrackerclient.di.modules.ApplicationModule
 import com.codeforgvl.trolleytrackerclient.di.modules.network.NetworkModule
+import com.codeforgvl.trolleytrackerclient.di.modules.ui.FragmentsModule
 import dagger.BindsInstance
 import dagger.Component
 import javax.inject.Singleton
@@ -11,6 +12,7 @@ import javax.inject.Singleton
 @Component(
     modules = [
         ApplicationModule::class,
+        FragmentsModule::class,
         NetworkModule::class
     ]
 )

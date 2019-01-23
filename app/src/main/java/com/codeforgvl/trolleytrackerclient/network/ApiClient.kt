@@ -5,7 +5,6 @@ import io.reactivex.Observable
 
 class ApiClient(private val api: ApiService) {
 
-
     fun getRouteDetails(routeId: String): Observable<Route> {
         return api.getRouteDetails(routeId)
     }

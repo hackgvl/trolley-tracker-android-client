@@ -64,6 +64,7 @@ dependencies {
     api 'com.google.android.gms:play-services-base:16.0.1'
     api 'com.google.android.gms:play-services-maps:16.0.0'
     api 'com.google.android.gms:play-services-location:16.0.0'
+    api 'com.google.guava:guava:24.1-android'
 
     api 'com.joanzapata.iconify:android-iconify:2.0.8'
     api 'com.joanzapata.iconify:android-iconify-material:2.0.8'
