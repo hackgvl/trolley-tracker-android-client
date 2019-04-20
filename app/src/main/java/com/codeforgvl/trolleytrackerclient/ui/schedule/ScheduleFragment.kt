@@ -2,26 +2,21 @@ package com.codeforgvl.trolleytrackerclient.ui.schedule
 
 import android.content.Context
 import android.net.ConnectivityManager
-import android.os.AsyncTask
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 
 import com.afollestad.materialdialogs.MaterialDialog
-import com.codeforgvl.trolleytrackerclient.Constants
 import com.codeforgvl.trolleytrackerclient.R
 import com.codeforgvl.trolleytrackerclient.Utils
 import com.codeforgvl.trolleytrackerclient.activities.MainActivity
 import com.codeforgvl.trolleytrackerclient.adapters.ScheduleAdapter
 import com.codeforgvl.trolleytrackerclient.adapters.SimpleSectionedRecyclerViewAdapter
-import com.codeforgvl.trolleytrackerclient.data.TrolleyAPI
 import com.codeforgvl.trolleytrackerclient.data.TrolleyData
 import com.codeforgvl.trolleytrackerclient.helpers.RecyclerItemClickListener
 import com.codeforgvl.trolleytrackerclient.models.ScheduledRoute
@@ -47,7 +42,7 @@ import kotlinx.android.synthetic.main.fragment_schedule.*
  */
 class ScheduleFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, ScheduleContract.View {
     //long lastUpdatedAt;
-    internal var lastScheduleUpdate: Array<RouteSchedule>? = null
+    private var lastScheduleUpdate: Array<RouteSchedule>? = null
 
     @Inject
     lateinit var presenter: ScheduleContract.Presenter
@@ -71,6 +66,13 @@ class ScheduleFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, Sched
         } else {
             processBundle(arguments)
         }
+    }
+
+    override fun onCreateView(
+            inflater: LayoutInflater?, container: ViewGroup?,
+            savedInstanceState: Bundle?
+    ): View? {
+        return inflater!!.inflate(R.layout.fragment_schedule, container, false)
     }
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
@@ -135,13 +137,6 @@ class ScheduleFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, Sched
             Utils.getActivity(this).setTitle(R.string.title_fragment_schedule)
             mSectionedAdapter.notifyDataSetChanged()
         }
-    }
-
-    override fun onCreateView(
-            inflater: LayoutInflater?, container: ViewGroup?,
-            savedInstanceState: Bundle?
-    ): View? {
-        return inflater!!.inflate(R.layout.fragment_schedule, container, false)
     }
 
     private fun createScheduleViewAdapter(schedule: Array<RouteSchedule>?): SimpleSectionedRecyclerViewAdapter {
@@ -235,7 +230,6 @@ class ScheduleFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, Sched
 
     override fun getRoutesSuccess(routes: Array<Route>) {
         val bundle = Bundle()
-        TrolleyData.getInstance().routes = routes
         getPreviewLoadingDialog()?.dismiss()
         (activity as MainActivity).showRoutePreview(bundle)
     }
@@ -254,19 +248,10 @@ class ScheduleFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, Sched
         }
 
         lastScheduleUpdate = schedule
-        TrolleyData.getInstance().schedules = lastScheduleUpdate
-
 
         mSectionedAdapter = createScheduleViewAdapter(schedule)
-        val listView = activity.findViewById<RecyclerView>(R.id.scheduleList)
-
-        if (listView != null) {
-            listView.adapter = mSectionedAdapter
-        }
-
-
-        (activity.findViewById<View>(R.id.scheduleRefreshLayout) as SwipeRefreshLayout).isRefreshing =
-                false
+        scheduleList.adapter = mSectionedAdapter
+        scheduleRefreshLayout.isRefreshing = false
     }
 
     override fun getRouteScheduleFailure() {

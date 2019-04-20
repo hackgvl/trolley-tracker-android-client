@@ -1,5 +1,6 @@
 package com.codeforgvl.trolleytrackerclient.ui.schedule
 
+import com.codeforgvl.trolleytrackerclient.data.TrolleyData
 import com.codeforgvl.trolleytrackerclient.network.ApiClient
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -22,7 +23,9 @@ class SchedulePresenter
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe ({
-                    view.getRoutesSuccess(arrayOf(it))
+                    val routes = arrayOf(it)
+                    TrolleyData.getInstance().routes = routes
+                    view.getRoutesSuccess(routes)
                 }, {
                     view.getRoutesFailure()
                 }))
@@ -33,6 +36,7 @@ class SchedulePresenter
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe ({
+                    TrolleyData.getInstance().schedules = it
                     view.getRouteScheduleSuccess(it)
                 }, {
                     view.getRouteScheduleFailure()
