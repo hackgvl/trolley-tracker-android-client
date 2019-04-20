@@ -19,7 +19,7 @@ interface ApiService {
     fun getActiveRoutes(): Observable<ArrayList<Route>>
 
     @GET("/api/v1/RouteSchedules")
-    fun getRouteSchedules(): Observable<ArrayList<RouteSchedule>>
+    fun getRouteSchedules(): Observable<Array<RouteSchedule>>
 
     @GET("/api/v1/Routes/{id}")
     fun getRouteDetails(@Path("id") routeId: String): Observable<Route>

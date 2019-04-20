@@ -109,7 +109,7 @@ class ScheduleFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, Sched
 
         val lastUpdate = TrolleyData.getInstance().lastScheduleUpdateTime
         if (lastUpdate.isBefore(DateTime.now().minusHours(4))) {
-            ScheduleUpdateTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
+            presenter.getRouteSchedule()
         }
     }
 
@@ -191,7 +191,7 @@ class ScheduleFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, Sched
     }
 
     override fun onRefresh() {
-        ScheduleUpdateTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
+        presenter.getRouteSchedule()
     }
 
     private fun getPreviewLoadingDialog(): MaterialDialog? {
@@ -247,33 +247,33 @@ class ScheduleFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, Sched
         ).show()
     }
 
-    private inner class ScheduleUpdateTask : AsyncTask<Void, Void, Array<RouteSchedule>>() {
-        override fun doInBackground(vararg params: Void): Array<RouteSchedule> {
-
-            Log.d(Constants.LOG_TAG, "requesting schedule update")
-            return TrolleyAPI.getRouteSchedule()
+    override fun getRouteScheduleSuccess(schedule: Array<RouteSchedule>) {
+        if (!isAdded) {
+            return
         }
 
-        override fun onPostExecute(schedule: Array<RouteSchedule>) {
-            if (!isAdded) {
-                return
-            }
-
-            lastScheduleUpdate = schedule
-            TrolleyData.getInstance().schedules = lastScheduleUpdate
+        lastScheduleUpdate = schedule
+        TrolleyData.getInstance().schedules = lastScheduleUpdate
 
 
-            mSectionedAdapter = createScheduleViewAdapter(schedule)
-            val listView = activity.findViewById<RecyclerView>(R.id.scheduleList)
+        mSectionedAdapter = createScheduleViewAdapter(schedule)
+        val listView = activity.findViewById<RecyclerView>(R.id.scheduleList)
 
-            if (listView != null) {
-                listView.adapter = mSectionedAdapter
-            }
-
-
-            (activity.findViewById<View>(R.id.scheduleRefreshLayout) as SwipeRefreshLayout).isRefreshing =
-                    false
+        if (listView != null) {
+            listView.adapter = mSectionedAdapter
         }
+
+
+        (activity.findViewById<View>(R.id.scheduleRefreshLayout) as SwipeRefreshLayout).isRefreshing =
+                false
+    }
+
+    override fun getRouteScheduleFailure() {
+        Toast.makeText(
+                activity,
+                "Please check your internet connection ",
+                Toast.LENGTH_SHORT
+        ).show()
     }
 
     companion object {
