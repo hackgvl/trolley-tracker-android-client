@@ -1,4 +1,4 @@
-package com.codeforgvl.trolleytrackerclient.fragments
+package com.codeforgvl.trolleytrackerclient.ui.schedule
 
 import android.content.Context
 import android.net.ConnectivityManager
@@ -26,35 +26,31 @@ import com.codeforgvl.trolleytrackerclient.data.TrolleyData
 import com.codeforgvl.trolleytrackerclient.helpers.RecyclerItemClickListener
 import com.codeforgvl.trolleytrackerclient.models.ScheduledRoute
 import com.codeforgvl.trolleytrackerclient.models.json.RouteSchedule
-import com.codeforgvl.trolleytrackerclient.network.ApiClient
 import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration
 
 import org.joda.time.DateTime
 import org.joda.time.DurationFieldType
 
 import java.util.ArrayList
-import java.util.Collections
 import java.util.HashMap
 
 import javax.inject.Inject
 
 import dagger.android.support.AndroidSupportInjection
-import icepick.Icepick
-import io.reactivex.functions.Consumer
-import io.reactivex.schedulers.Schedulers
 
 import android.content.Context.CONNECTIVITY_SERVICE
-import io.reactivex.android.schedulers.AndroidSchedulers
+import com.codeforgvl.trolleytrackerclient.models.json.Route
+import kotlinx.android.synthetic.main.fragment_schedule.*
 
 /**
  * Created by ahodges on 12/21/2015.
  */
-class ScheduleFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
-    internal var lastScheduleUpdate: Array<RouteSchedule>? = null
+class ScheduleFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, ScheduleContract.View {
     //long lastUpdatedAt;
+    internal var lastScheduleUpdate: Array<RouteSchedule>? = null
 
     @Inject
-    lateinit var apiClient: ApiClient
+    lateinit var presenter: ScheduleContract.Presenter
 
     private lateinit var mSectionedAdapter: SimpleSectionedRecyclerViewAdapter
 
@@ -75,6 +71,25 @@ class ScheduleFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
         } else {
             processBundle(arguments)
         }
+    }
+
+    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        presenter.setView(this)
+
+        scheduleList.setHasFixedSize(true)
+        scheduleList.adapter = mSectionedAdapter
+        scheduleList.addItemDecoration(HorizontalDividerItemDecoration.Builder(context).build())
+        val layoutManager = LinearLayoutManager(context)
+        scheduleList.layoutManager = layoutManager
+        scheduleList.addOnItemTouchListener(
+                RecyclerItemClickListener(
+                        context,
+                        ScheduleItemClickListener()
+                )
+        )
+
+        scheduleRefreshLayout.setOnRefreshListener(this)
     }
 
     private fun processBundle(b: Bundle?) {
@@ -100,16 +115,12 @@ class ScheduleFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
-        try {
-        } catch (e: ClassCastException) {
-            throw ClassCastException(context!!.toString() + " must implement MapFragmentListener")
-        }
-
         AndroidSupportInjection.inject(this)
     }
 
-    override fun onDetach() {
-        super.onDetach()
+    override fun onDestroy() {
+        super.onDestroy()
+        presenter.onDestroy()
     }
 
     override fun onSaveInstanceState(outState: Bundle?) {
@@ -127,30 +138,10 @@ class ScheduleFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater?, container: ViewGroup?,
-        savedInstanceState: Bundle?
+            inflater: LayoutInflater?, container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View? {
-        val view = inflater!!.inflate(R.layout.fragment_schedule, container, false)
-
-        val listView = view.findViewById<View>(R.id.scheduleList) as RecyclerView
-        if (listView != null) {
-            listView.setHasFixedSize(true)
-            listView.adapter = mSectionedAdapter
-            listView.addItemDecoration(HorizontalDividerItemDecoration.Builder(context).build())
-            val layoutManager = LinearLayoutManager(context)
-            listView.layoutManager = layoutManager
-            listView.addOnItemTouchListener(
-                RecyclerItemClickListener(
-                    context,
-                    ScheduleItemClickListener()
-                )
-            )
-        }
-
-        val swipeRefresh = view.findViewById<SwipeRefreshLayout>(R.id.scheduleRefreshLayout)
-        swipeRefresh?.setOnRefreshListener(this)
-
-        return view
+        return inflater!!.inflate(R.layout.fragment_schedule, container, false)
     }
 
     private fun createScheduleViewAdapter(schedule: Array<RouteSchedule>?): SimpleSectionedRecyclerViewAdapter {
@@ -185,15 +176,15 @@ class ScheduleFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
         }
 
         //Sort schedule
-        Collections.sort(srList)
+        srList.sort()
 
         //Create adapters
         val mAdapter = ScheduleAdapter(context, srList)
         val adapter = SimpleSectionedRecyclerViewAdapter(
-            context,
-            R.layout.view_schedule_header,
-            R.id.section_text,
-            mAdapter
+                context,
+                R.layout.view_schedule_header,
+                R.id.section_text,
+                mAdapter
         )
         adapter.setSections(sections.toTypedArray())
         return adapter
@@ -206,8 +197,8 @@ class ScheduleFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
     private fun getPreviewLoadingDialog(): MaterialDialog? {
         if (previewLoadingDialog == null) {
             previewLoadingDialog =
-                MaterialDialog.Builder(context).title(R.string.preview_loading_title)
-                    .progress(true, 0).build()
+                    MaterialDialog.Builder(context).title(R.string.preview_loading_title)
+                            .progress(true, 0).build()
         }
         return previewLoadingDialog
     }
@@ -220,39 +211,40 @@ class ScheduleFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
                     val itemPosition = mSectionedAdapter.getItemId(position)
                     if (itemPosition < Integer.MAX_VALUE / 2) {
                         val route =
-                            (mSectionedAdapter.baseAdapter as ScheduleAdapter).getItem(itemPosition.toInt())
+                                (mSectionedAdapter.baseAdapter as ScheduleAdapter).getItem(itemPosition.toInt())
                         getPreviewLoadingDialog()?.setContent(
-                            String.format(
-                                context.getString(R.string.preview_loading_content),
-                                route.routeSchedule.RouteLongName
-                            )
+                                String.format(
+                                        context.getString(R.string.preview_loading_content),
+                                        route.routeSchedule.RouteLongName
+                                )
                         )
                         getPreviewLoadingDialog()!!.show()
 
-
-                        val disposable = apiClient.getRouteDetails(route.routeSchedule.RouteID.toString())
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe {it ->
-                                if (isAdded) {
-                                    val routes = arrayOf(it)
-                                    val bundle = Bundle()
-                                    TrolleyData.getInstance().routes = routes
-
-                                    getPreviewLoadingDialog()?.dismiss()
-                                    (activity as MainActivity).showRoutePreview(bundle)
-                                }
-                            }
+                        presenter.getRoutes(route.routeSchedule.RouteID.toString())
                     }
                 }
             } else {
                 Toast.makeText(
-                    activity,
-                    "Please check your internet connection ",
-                    Toast.LENGTH_SHORT
+                        activity,
+                        "Please check your internet connection ",
+                        Toast.LENGTH_SHORT
                 ).show()
             }
         }
+    }
+
+    override fun getRoutesSuccess(routes: Array<Route>) {
+        val bundle = Bundle()
+        getPreviewLoadingDialog()?.dismiss()
+        (activity as MainActivity).showRoutePreview(bundle)
+    }
+
+    override fun getRoutesFailure() {
+        Toast.makeText(
+                activity,
+                "Please check your internet connection ",
+                Toast.LENGTH_SHORT
+        ).show()
     }
 
     private inner class ScheduleUpdateTask : AsyncTask<Void, Void, Array<RouteSchedule>>() {
@@ -280,7 +272,7 @@ class ScheduleFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
 
 
             (activity.findViewById<View>(R.id.scheduleRefreshLayout) as SwipeRefreshLayout).isRefreshing =
-                false
+                    false
         }
     }
 
