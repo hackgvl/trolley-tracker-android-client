@@ -235,6 +235,7 @@ class ScheduleFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, Sched
 
     override fun getRoutesSuccess(routes: Array<Route>) {
         val bundle = Bundle()
+        TrolleyData.getInstance().routes = routes
         getPreviewLoadingDialog()?.dismiss()
         (activity as MainActivity).showRoutePreview(bundle)
     }
