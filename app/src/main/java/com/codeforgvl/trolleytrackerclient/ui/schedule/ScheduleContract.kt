@@ -1,7 +1,7 @@
 package com.codeforgvl.trolleytrackerclient.ui.schedule
 
 import com.codeforgvl.trolleytrackerclient.models.json.Route
-import com.codeforgvl.trolleytrackerclient.models.json.RouteSchedule
+import com.codeforgvl.trolleytrackerclient.models.ScheduleItems
 
 interface ScheduleContract {
     interface Presenter {
@@ -13,7 +13,7 @@ interface ScheduleContract {
 
     interface View {
         fun getRoutesSuccess(routes: Array<Route>)
-        fun getRouteScheduleSuccess(schedule: Array<RouteSchedule>)
+        fun getRouteScheduleSuccess(schedule: ArrayList<ScheduleItems>)
         fun getRouteScheduleFailure()
         fun getRoutesFailure()
     }

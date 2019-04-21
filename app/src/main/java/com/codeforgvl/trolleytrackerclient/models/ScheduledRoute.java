@@ -3,7 +3,9 @@ package com.codeforgvl.trolleytrackerclient.models;
 import com.codeforgvl.trolleytrackerclient.Constants;
 import com.codeforgvl.trolleytrackerclient.Utils;
 import com.codeforgvl.trolleytrackerclient.models.json.RouteSchedule;
+import com.codeforgvl.trolleytrackerclient.ui.schedule.adapter.SchedulesAdapter;
 
+import org.jetbrains.annotations.NotNull;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeFieldType;
 import org.joda.time.Interval;
@@ -16,7 +18,7 @@ import java.util.Locale;
 /**
  * Created by ahodges on 12/29/2015.
  */
-public class ScheduledRoute implements Comparable {
+public class ScheduledRoute extends ScheduleItems implements Comparable {
     private static final DateTimeFormatter INPUT_DATE_FORMAT = DateTimeFormat.forPattern("EEEE h:m a").withLocale(Locale.ENGLISH);
 
     private Interval interval;
@@ -51,9 +53,15 @@ public class ScheduledRoute implements Comparable {
         return dayOfWeek;
     }
 
+    @NotNull
+    @Override
+    public SchedulesAdapter.Type getType() {
+        return SchedulesAdapter.Type.SCHEDULE;
+    }
+
     @Override
     public int compareTo(Object o) {
-        if(o.getClass() == ScheduledRoute.class){
+        if(o instanceof ScheduledRoute){
             ScheduledRoute other = (ScheduledRoute)o;
             return interval.getStart().compareTo(other.getInterval().getStart());
         }
