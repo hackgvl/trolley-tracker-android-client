@@ -13,7 +13,7 @@ class SchedulesAdapter(
         private val context: Context,
         private val scheduledClickedListener: ScheduleClickedListener,
         private val items: ArrayList<ScheduleItems>
-): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     enum class Type {
         SCHEDULE, DAY
@@ -25,14 +25,12 @@ class SchedulesAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): RecyclerView.ViewHolder {
         return if (viewType == Type.DAY.ordinal) {
-            DayViewHolder(
-                    LayoutInflater.from(context)
-                            .inflate(R.layout.view_schedule_header, parent, false)
+            DayViewHolder(LayoutInflater.from(context)
+                    .inflate(R.layout.view_schedule_header, parent, false)
             )
         } else {
-            ScheduleViewHolder(
-                    LayoutInflater.from(context)
-                            .inflate(R.layout.view_schedule_item, parent, false)
+            ScheduleViewHolder(LayoutInflater.from(context)
+                    .inflate(R.layout.view_schedule_item, parent, false)
             )
         }
     }
